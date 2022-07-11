@@ -8,7 +8,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! nextsv = "0.3.0"
+//! nextsv = "0.3.1"
 //! ```
 //!
 //! ```rust

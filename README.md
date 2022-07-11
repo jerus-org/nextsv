@@ -11,5 +11,5 @@ Pre-requisites:
 Successful execution returns the next semantic version based on the current release and the commits since that release was made.
 
 ```toml
-nextsv = "0.3.0"
+nextsv = "0.3.1"
 ```
