@@ -100,6 +100,7 @@ jobs:
           name: install cargo-release
           command: |
             cargo install cargo-release
+      - checkout
       - run:
           name: Configure git for user and signing
           command: |
@@ -107,7 +108,6 @@ jobs:
             git config user.name "$USER_NAME"
             git config --global gpg.program gpg
             git config --global user.signingkey 9F13CF618E462C69
-      - checkout
       - run:
           name: Checkout Release Branch
           command: |
