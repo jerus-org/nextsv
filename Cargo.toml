@@ -14,7 +14,7 @@ include = ["**/*.rs", "Cargo.toml", "README.md", "LICENSE", "CHANGES.md"]
 [dependencies]
 clap = { version = "4.0.26", features = ["derive"] }
 clap-verbosity-flag = "2.0.0"
-env_logger = "0.9.1"
+env_logger = "0.9.3"
 git-conventional = "0.12.0"
 git2 = "0.15.0"
 log = "0.4.17"
