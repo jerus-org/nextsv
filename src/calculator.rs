@@ -279,7 +279,7 @@ impl VersionCalculator {
         // check the conventional commits. No conventional commits; no change.
         #[cfg(let_else)]
         let Some(conventional) = self.conventional.clone() else {
-            return Answer::new(Level::None , self.current_version.clone(), None)
+            return Answer::new(Level::None, self.current_version.clone(), None);
         };
         #[cfg(not(let_else))]
         let conventional = match self.conventional.clone() {
