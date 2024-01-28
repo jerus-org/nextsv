@@ -15,9 +15,10 @@ use crate::Error;
 
 /// Level at which the next increment will be made
 ///
-#[derive(Debug, PartialOrd, PartialEq, Eq, Ord, Clone)]
+#[derive(Debug, PartialOrd, PartialEq, Eq, Ord, Clone, Default)]
 pub enum Level {
     /// When no update has been detected the level is set to none
+    #[default]
     None,
     /// Update will be made at the patch level
     Patch,
@@ -33,12 +34,6 @@ pub enum Level {
     Beta,
     /// Update is to an rc pre-release suffix (for future use)
     Rc,
-}
-
-impl Default for Level {
-    fn default() -> Self {
-        Level::None
-    }
 }
 
 impl fmt::Display for Level {

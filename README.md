@@ -3,7 +3,7 @@
 [![Crates.io][crates-badge]][crates-url]
 [![MIT licensed][mit-badge]][mit-url]
 [![Build Status][circleci-badge]][circleci-url]
-[![Rust 1.61+][version-badge]][version-url]
+[![Rust 1.70+][version-badge]][version-url]
 [![FOSSA Status][fossa-badge]][fossa-url]
 [![Docs][docs-badge]][docs-url]
 [![BuyMeaCoffee][bmac-badge]][bmac-url]
@@ -15,7 +15,7 @@
 [mit-url]: https://github.com/jerusdp/nextsv/blob/main/LICENSE
 [circleci-badge]:https://circleci.com/gh/jerusdp/nextsv/tree/main.svg?style=svg
 [circleci-url]: https://circleci.com/gh/jerusdp/nextsv/tree/?branch=main
-[version-badge]: https://img.shields.io/badge/rust-1.61+-orange.svg
+[version-badge]: https://img.shields.io/badge/rust-1.70+-orange.svg
 [version-url]: https://www.rust-lang.org
 [fossa-badge]: https://app.fossa.com/api/projects/custom%2B22707%2Fgithub.com%2Fjerusdp%2Fnextsv.svg?type=shield
 [fossa-url]: https://app.fossa.com/projects/custom%2B22707%2Fgithub.com%2Fjerusdp%2Fnextsv?ref=badge_shield
@@ -34,7 +34,7 @@ A utility to calculate the level of change and the next semantic version number 
 - [x] Calculate the level to change for next semantic version number
 - [x] Support basic semantic version components: Major, Minor, and Patch
 - [x] Check for required files (e.g. CHANGELOG.md)
-- [x] Set level of change (Breaking, Feature, Fix, Other) at which required files are required 
+- [x] Set level of change (Breaking, Feature, Fix, Other) at which required files are required
 - [x] Check that any changes made meet a specified level
 - [ ] Support pre-release versions (alpha, beta, rc)
 - [ ] Handle case where no tag is found

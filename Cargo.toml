@@ -3,13 +3,14 @@ name = "nextsv"
 version = "0.7.9"
 edition = "2021"
 authors = ["jerusdp <jrussell@jerus.ie>"]
-rust-version = "1.60"
+rust-version = "1.70"
 description = "Next semantic version calculator"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/jerusdp/nextsv"
 keywords = ["semantic", "version", "calculator"]
 include = ["**/*.rs", "Cargo.toml", "README.md", "LICENSE", "CHANGES.md"]
+
 
 [dependencies]
 clap = { version = "4.0.30", features = ["derive"] }
