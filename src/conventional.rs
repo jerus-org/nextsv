@@ -1,9 +1,11 @@
 //! Represents a vector of conventional commits
 //!
 
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt};
 
 use clap::ValueEnum;
+use colored::Colorize;
+use log::debug;
 
 use crate::Error;
 
@@ -56,6 +58,17 @@ impl TypeHierarchy {
         })
     }
 }
+
+impl fmt::Display for TypeHierarchy {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            TypeHierarchy::Breaking => write!(f, "{}", "[Major]".red()),
+            TypeHierarchy::Feature => write!(f, "{}", "[Minor]".yellow()),
+            TypeHierarchy::Fix => write!(f, "{}", "[Patch]".green()),
+            TypeHierarchy::Other => write!(f, "{}", "[Patch]".white()),
+        }
+    }
+}
 #[derive(Default, Debug, PartialEq, Eq, Clone)]
 pub struct ConventionalCommits {
     commits: Vec<String>,
@@ -74,6 +87,13 @@ impl ConventionalCommits {
             if let Ok(conventional) = git_conventional::Commit::parse(
                 commit.summary().take().unwrap_or("NotConventional"),
             ) {
+                debug!(
+                    "Commit: ({}) {} {}",
+                    conventional.type_(),
+                    conventional.description(),
+                    TypeHierarchy::parse(&conventional.type_().to_string())
+                        .unwrap_or(TypeHierarchy::Other),
+                );
                 self.increment_counts(conventional.type_());
 
                 if !self.breaking {
@@ -127,9 +147,10 @@ impl ConventionalCommits {
     fn set_top_type_if_higher(&mut self, type_: &str) -> &mut Self {
         let th = TypeHierarchy::parse(type_);
         if let Ok(th) = th {
-            #[allow(clippy::redundant_clone)]
-            if th.clone() as u32 > self.top_type_discriminant() {
-                self.top_type = Some(th)
+            if let Some(current_top_type) = &self.top_type {
+                if th > *current_top_type {
+                    self.top_type = Some(th)
+                }
             }
         }
 
