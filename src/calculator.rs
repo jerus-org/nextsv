@@ -9,6 +9,7 @@
 
 use crate::{ConventionalCommits, Error, Level, Semantic, TypeHierarchy};
 use git2::Repository;
+use log::debug;
 use std::{collections::HashSet, ffi::OsString, fmt};
 
 /// Struct the store the result of the calculation (the "answer" :) )
@@ -310,8 +311,16 @@ impl VersionCalculator {
         let final_bump = if self.current_version.major() == 0 {
             log::info!("Not yet at a stable version");
             match bump {
-                Level::Major => Level::Minor,
-                Level::Minor => Level::Patch,
+                Level::Major => {
+                    let new_bump = Level::Minor;
+                    debug!("Shifting right from {} to {}", bump, new_bump);
+                    new_bump
+                }
+                Level::Minor => {
+                    let new_bump = Level::Patch;
+                    debug!("Shifting right from {} to {}", bump, new_bump);
+                    new_bump
+                }
                 _ => bump,
             }
         } else {
