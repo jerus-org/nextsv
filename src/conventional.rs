@@ -1,11 +1,11 @@
 //! Represents a vector of conventional commits
 //!
 
-use std::{collections::HashMap, fmt};
+use std::{cmp, collections::HashMap, fmt};
 
 use clap::ValueEnum;
 use colored::Colorize;
-use log::debug;
+use log::{debug, trace};
 
 use crate::Error;
 
@@ -27,7 +27,7 @@ use crate::Error;
 ///
 /// If a breaking change is found it sets breaking hierarchy.
 ///
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, ValueEnum)]
+#[derive(Debug, PartialEq, Eq, Clone, ValueEnum)]
 pub enum TypeHierarchy {
     /// enforce requirements for all types
     Other = 1,
@@ -37,6 +37,31 @@ pub enum TypeHierarchy {
     Feature = 3,
     /// enforce requirements for breaking only
     Breaking = 4,
+}
+
+impl Ord for TypeHierarchy {
+    fn cmp(&self, other: &Self) -> cmp::Ordering {
+        match (self, other) {
+            (TypeHierarchy::Breaking, TypeHierarchy::Breaking)
+            | (TypeHierarchy::Feature, TypeHierarchy::Feature)
+            | (TypeHierarchy::Fix, TypeHierarchy::Fix)
+            | (TypeHierarchy::Other, TypeHierarchy::Other) => cmp::Ordering::Equal,
+            (TypeHierarchy::Other, _) => cmp::Ordering::Less,
+            (TypeHierarchy::Breaking, _) => cmp::Ordering::Greater,
+            (TypeHierarchy::Fix, TypeHierarchy::Other) => cmp::Ordering::Greater,
+            (TypeHierarchy::Fix, TypeHierarchy::Feature)
+            | (TypeHierarchy::Fix, TypeHierarchy::Breaking) => cmp::Ordering::Less,
+            (TypeHierarchy::Feature, TypeHierarchy::Other)
+            | (TypeHierarchy::Feature, TypeHierarchy::Fix) => cmp::Ordering::Greater,
+            (TypeHierarchy::Feature, TypeHierarchy::Breaking) => cmp::Ordering::Less,
+        }
+    }
+}
+
+impl PartialOrd for TypeHierarchy {
+    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl TypeHierarchy {
@@ -99,7 +124,7 @@ impl ConventionalCommits {
                 if !self.breaking {
                     if conventional.breaking() {
                         self.breaking = conventional.breaking();
-                        self.set_top_type_if_higher("breaking");
+                        self.set_top_type(TypeHierarchy::Breaking);
                     } else {
                         self.set_top_type_if_higher(conventional.type_().as_str());
                     }
@@ -144,33 +169,32 @@ impl ConventionalCommits {
         self
     }
 
+    /// Set the value of the top type to a valid TypeHierarchy value
+    ///
+
+    fn set_top_type(&mut self, top_type: TypeHierarchy) -> &mut Self {
+        self.top_type = Some(top_type);
+        self
+    }
+
     fn set_top_type_if_higher(&mut self, type_: &str) -> &mut Self {
+        trace!("Testing if {type_:?} is higher than {:?}", self.top_type);
         let th = TypeHierarchy::parse(type_);
+        trace!("Result of parse to TypeHierarchy: {th:?}");
         if let Ok(th) = th {
-            if let Some(current_top_type) = &self.top_type {
-                if th > *current_top_type {
-                    self.top_type = Some(th)
+            if self.top_type.is_some() {
+                if th > self.top_type().unwrap() {
+                    self.top_type = Some(th);
                 }
+            } else {
+                self.top_type = Some(th);
             }
         }
 
         self
     }
 
-    /// top_type_discriminant
-    ///
-    /// Returns the discriminant of a TypeHierarchy if the Option is Some
-    /// and returns 0 if the Option is None.  
-    ///
-    fn top_type_discriminant(&self) -> u32 {
-        if self.top_type.is_none() {
-            0_u32
-        } else {
-            self.top_type().unwrap() as u32
-        }
-    }
-
-    /// top_type
+    /// top_type  
     ///
     /// Returns the top type.
     ///
@@ -181,49 +205,169 @@ impl ConventionalCommits {
 
 #[cfg(test)]
 mod tests {
+    use std::cmp::Ordering;
+
+    use crate::TypeHierarchy;
+
     use super::ConventionalCommits;
 
     #[test]
-    fn top_discrimant_returns_0_for_none() {
-        let value_under_test = ConventionalCommits::new();
-        let expected = 0_u32;
+    fn type_hierarchy_ordering() {
+        let tests = [
+            (
+                TypeHierarchy::Breaking,
+                TypeHierarchy::Breaking,
+                Ordering::Equal,
+            ),
+            (
+                TypeHierarchy::Feature,
+                TypeHierarchy::Feature,
+                Ordering::Equal,
+            ),
+            (TypeHierarchy::Fix, TypeHierarchy::Fix, Ordering::Equal),
+            (TypeHierarchy::Other, TypeHierarchy::Other, Ordering::Equal),
+            (
+                TypeHierarchy::Breaking,
+                TypeHierarchy::Feature,
+                Ordering::Greater,
+            ),
+            (
+                TypeHierarchy::Breaking,
+                TypeHierarchy::Fix,
+                Ordering::Greater,
+            ),
+            (
+                TypeHierarchy::Breaking,
+                TypeHierarchy::Other,
+                Ordering::Greater,
+            ),
+            (
+                TypeHierarchy::Feature,
+                TypeHierarchy::Breaking,
+                Ordering::Less,
+            ),
+            (
+                TypeHierarchy::Feature,
+                TypeHierarchy::Fix,
+                Ordering::Greater,
+            ),
+            (
+                TypeHierarchy::Feature,
+                TypeHierarchy::Other,
+                Ordering::Greater,
+            ),
+            (TypeHierarchy::Fix, TypeHierarchy::Breaking, Ordering::Less),
+            (TypeHierarchy::Fix, TypeHierarchy::Feature, Ordering::Less),
+            (TypeHierarchy::Fix, TypeHierarchy::Other, Ordering::Greater),
+            (
+                TypeHierarchy::Other,
+                TypeHierarchy::Breaking,
+                Ordering::Less,
+            ),
+            (TypeHierarchy::Other, TypeHierarchy::Feature, Ordering::Less),
+            (TypeHierarchy::Other, TypeHierarchy::Fix, Ordering::Less),
+        ];
 
-        assert_eq!(expected, value_under_test.top_type_discriminant());
+        for test in tests {
+            println!("Test case: {test:#?}");
+            let lhs = test.0;
+            assert_eq!(test.2, lhs.cmp(&test.1));
+        }
     }
 
     #[test]
-    fn top_discrimant_returns_other() {
+    fn set_top_type_test_currently_breaking() {
         let mut value_under_test = ConventionalCommits::new();
-        value_under_test.top_type = Some(crate::TypeHierarchy::Other);
-        let expected = 1_u32;
 
-        assert_eq!(expected, value_under_test.top_type_discriminant());
+        let test_level = TypeHierarchy::Breaking;
+
+        let tests = ["other", "fix", "feat", "breaking"];
+        const ARRAY_REPEAT_VALUE: crate::conventional::TypeHierarchy = TypeHierarchy::Breaking;
+        let expected = [ARRAY_REPEAT_VALUE; 4];
+
+        let test_result_pairs = tests.iter().zip(expected);
+
+        for pair in test_result_pairs {
+            println!("Testing pair: {pair:?}");
+            value_under_test.set_top_type(test_level.clone());
+            assert_eq!(Some(test_level.clone()), value_under_test.top_type());
+            value_under_test.set_top_type_if_higher(pair.0);
+            assert_eq!(Some(pair.1), value_under_test.top_type());
+        }
     }
 
     #[test]
-    fn top_discrimant_returns_fix() {
+    fn set_top_type_test_currently_feature() {
         let mut value_under_test = ConventionalCommits::new();
-        value_under_test.top_type = Some(crate::TypeHierarchy::Fix);
-        let expected = 2_u32;
 
-        assert_eq!(expected, value_under_test.top_type_discriminant());
+        let test_level = TypeHierarchy::Feature;
+
+        let tests = ["other", "fix", "feat", "breaking"];
+        let expected = [
+            TypeHierarchy::Feature,
+            TypeHierarchy::Feature,
+            TypeHierarchy::Feature,
+            TypeHierarchy::Breaking,
+        ];
+
+        let test_result_pairs = tests.iter().zip(expected);
+
+        for pair in test_result_pairs {
+            println!("Testing pair: {pair:?}");
+            value_under_test.set_top_type(test_level.clone());
+            assert_eq!(Some(test_level.clone()), value_under_test.top_type());
+            value_under_test.set_top_type_if_higher(pair.0);
+            assert_eq!(Some(pair.1), value_under_test.top_type());
+        }
     }
 
     #[test]
-    fn top_discrimant_returns_feature() {
+    fn set_top_type_test_currently_fix() {
         let mut value_under_test = ConventionalCommits::new();
-        value_under_test.top_type = Some(crate::TypeHierarchy::Feature);
-        let expected = 3_u32;
 
-        assert_eq!(expected, value_under_test.top_type_discriminant());
+        let test_level = TypeHierarchy::Fix;
+
+        let tests = ["other", "fix", "feat", "breaking"];
+        let expected = [
+            TypeHierarchy::Fix,
+            TypeHierarchy::Fix,
+            TypeHierarchy::Feature,
+            TypeHierarchy::Breaking,
+        ];
+
+        let test_result_pairs = tests.iter().zip(expected);
+
+        for pair in test_result_pairs {
+            println!("Testing pair: {pair:?}");
+            value_under_test.set_top_type(test_level.clone());
+            assert_eq!(Some(test_level.clone()), value_under_test.top_type());
+            value_under_test.set_top_type_if_higher(pair.0);
+            assert_eq!(Some(pair.1), value_under_test.top_type());
+        }
     }
 
     #[test]
-    fn top_discrimant_returns_breaking() {
+    fn set_top_type_test_currently_other() {
         let mut value_under_test = ConventionalCommits::new();
-        value_under_test.top_type = Some(crate::TypeHierarchy::Breaking);
-        let expected = 4_u32;
 
-        assert_eq!(expected, value_under_test.top_type_discriminant());
+        let test_level = TypeHierarchy::Other;
+
+        let tests = ["other", "fix", "feat", "breaking"];
+        let expected = [
+            TypeHierarchy::Other,
+            TypeHierarchy::Fix,
+            TypeHierarchy::Feature,
+            TypeHierarchy::Breaking,
+        ];
+
+        let test_result_pairs = tests.iter().zip(expected);
+
+        for pair in test_result_pairs {
+            println!("Testing pair: {pair:?}");
+            value_under_test.set_top_type(test_level.clone());
+            assert_eq!(Some(test_level.clone()), value_under_test.top_type());
+            value_under_test.set_top_type_if_higher(pair.0);
+            assert_eq!(Some(pair.1), value_under_test.top_type());
+        }
     }
 }
