@@ -10,8 +10,9 @@
 use crate::{ConventionalCommits, Error, Level, Semantic, TypeHierarchy};
 use git2::Repository;
 use log::debug;
-use std::{collections::HashSet, ffi::OsString, fmt};
+use regex::Regex;
 
+use std::{collections::HashSet, ffi::OsString, fmt};
 /// Struct the store the result of the calculation (the "answer" :) )
 ///
 #[derive(Debug)]
@@ -55,15 +56,29 @@ impl Answer {
 pub fn latest(version_prefix: &str) -> Result<Semantic, Error> {
     let repo = Repository::open(".")?;
     log::debug!("repo opened to find latest");
+
+    let regex = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
+
+    println!("the regex is: {}", regex);
+
+    let re = Regex::new(r"(v\d+\.\d+\.\d+)").unwrap();
+
     let mut versions = vec![];
     repo.tag_foreach(|_id, name| {
         if let Ok(name) = String::from_utf8(name.to_owned()) {
-            if let Some(name) = name.strip_prefix("refs/tags/") {
-                if name.starts_with(version_prefix) {
-                    if let Ok(semantic_version) = Semantic::parse(name, version_prefix) {
-                        log::trace!("found qualifying tag {}", &semantic_version);
-                        versions.push(semantic_version);
-                    }
+            // println!("Found tag called {name:?}");
+            // let caps = re.captures(&name);
+            // println!("regex captured {:#?}", caps);
+            // name.trim_matches(pat)
+            if let Some(name) = re.captures(&name)
+            // name.strip_prefix("refs/tags/")
+            {
+                // println!("Captured name: {:#?}", name);
+                let name = &name[1];
+                println!("working with processed tag {name:?}");
+                if let Ok(semantic_version) = Semantic::parse(name, version_prefix) {
+                    println!("found qualifying tag {}", &semantic_version);
+                    versions.push(semantic_version);
                 }
             }
         }
@@ -226,6 +241,7 @@ impl VersionCalculator {
         revwalk.push_head()?;
         log::debug!("starting the walk from the HEAD");
         let glob = format!("refs/tags/{}", &self.current_version);
+        println!("the glob for revwalk is {glob}");
         revwalk.hide_ref(&glob)?;
         log::debug!("hide commits from {}", &self.current_version);
 
