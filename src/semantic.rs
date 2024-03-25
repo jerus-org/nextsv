@@ -12,6 +12,7 @@
 use std::fmt;
 
 use crate::Error;
+use regex::Regex;
 
 /// Level at which the next increment will be made
 ///
@@ -57,10 +58,13 @@ impl fmt::Display for Level {
 ///
 #[derive(Debug, Default, PartialEq, PartialOrd, Eq, Ord, Clone)]
 pub struct Semantic {
+    tag_prefix: String,
     version_prefix: String,
     major: usize,
     minor: usize,
     patch: usize,
+    tag_suffix: String,
+    tag: String,
 }
 
 impl fmt::Display for Semantic {
@@ -75,12 +79,23 @@ impl fmt::Display for Semantic {
 
 impl Semantic {
     // Create a new struct specifying each of the semantic version components.
-    fn new(version_prefix: String, major: usize, minor: usize, patch: usize) -> Self {
+    fn new(
+        tag_prefix: String,
+        version_prefix: String,
+        major: usize,
+        minor: usize,
+        patch: usize,
+        tag_suffix: String,
+        tag: String,
+    ) -> Self {
         Semantic {
+            tag_prefix,
             version_prefix,
             major,
             minor,
             patch,
+            tag_suffix,
+            tag,
         }
     }
     /// Parse a tag and return a struct
@@ -113,40 +128,26 @@ impl Semantic {
     /// to identify tags with semantic version numbers
     /// the tag name can be parsed
     pub fn parse(tag: &str, version_prefix: &str) -> Result<Self, Error> {
-        // the tag string must start with the version_prefix
-        if !tag.starts_with(version_prefix) {
-            return Err(Error::NotVersionTag(
-                version_prefix.to_string(),
-                tag.to_string(),
-            ));
-        }
+        let re_tag = format!(
+            r"(?<refs>refs/tags/)(?<tag_pre>.*)(?<ver_pre>{})(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?<tag_suf>.*)",
+            version_prefix
+        );
+        println!("semantic: the tag regex is: {}", re_tag);
 
-        let version = tag.trim_start_matches(version_prefix);
-        let components: Vec<&str> = version.split('.').collect();
+        let re = Regex::new(&re_tag);
+        println!("Regex result: {re:?}");
+        let re = re.unwrap();
 
-        let mut count_numbers = 0;
-        let mut numbers = vec![];
-
-        for item in components {
-            count_numbers += 1;
-            if count_numbers > 3 {
-                return Err(Error::TooManyComponents(count_numbers));
-            }
-            numbers.push(match item.parse::<usize>() {
-                Ok(n) => n,
-                Err(_) => return Err(Error::MustBeNumber(item.to_string())),
-            });
-        }
-
-        if count_numbers < 3 {
-            return Err(Error::TooFewComponents(count_numbers));
-        }
+        let caps = re.captures(tag).unwrap();
 
         Ok(Semantic::new(
+            caps.name("tag_pre").unwrap().as_str().to_string(),
             version_prefix.to_string(),
-            numbers[0],
-            numbers[1],
-            numbers[2],
+            caps.name("major").unwrap().as_str().parse().unwrap(),
+            caps.name("minor").unwrap().as_str().parse().unwrap(),
+            caps.name("patch").unwrap().as_str().parse().unwrap(),
+            caps.name("tag_suf").unwrap().as_str().to_string(),
+            tag.to_string(),
         ))
     }
 
@@ -217,6 +218,12 @@ impl Semantic {
     ///
     pub fn patch(&self) -> usize {
         self.patch
+    }
+
+    /// Report the tag that sourced the version
+    ///
+    pub fn tag(&self) -> &str {
+        self.tag.as_str()
     }
 }
 
