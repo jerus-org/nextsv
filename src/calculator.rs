@@ -57,40 +57,38 @@ pub fn latest(version_prefix: &str) -> Result<Semantic, Error> {
     let repo = Repository::open(".")?;
     log::debug!("repo opened to find latest");
 
-    let regex = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
+    let re_version = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
 
-    println!("the regex is: {}", regex);
+    println!("the version regex is: {}", re_version);
 
-    let re = Regex::new(r"(v\d+\.\d+\.\d+)").unwrap();
+    let re = Regex::new(&re_version).unwrap();
 
     let mut versions = vec![];
-    repo.tag_foreach(|_id, name| {
-        if let Ok(name) = String::from_utf8(name.to_owned()) {
+    repo.tag_foreach(|_id, tag| {
+        if let Ok(tag) = String::from_utf8(tag.to_owned()) {
             // println!("Found tag called {name:?}");
             // let caps = re.captures(&name);
             // println!("regex captured {:#?}", caps);
-            // name.trim_matches(pat)
-            if let Some(name) = re.captures(&name)
+            if let Some(version) = re.captures(&tag)
             // name.strip_prefix("refs/tags/")
             {
-                // println!("Captured name: {:#?}", name);
-                let name = &name[1];
-                println!("working with processed tag {name:?}");
-                if let Ok(semantic_version) = Semantic::parse(name, version_prefix) {
-                    println!("found qualifying tag {}", &semantic_version);
-                    versions.push(semantic_version);
-                }
+                println!("Captured version: {:#?}", version);
+                let version = Semantic::parse(&tag, version_prefix).unwrap();
+
+                versions.push(version);
             }
         }
         true
     })?;
+
+    println!("versions: {versions:#?}");
 
     versions.sort();
     log::debug!("versions sorted");
 
     match versions.last().cloned() {
         Some(v) => {
-            log::trace!("latest version found is {}", &v);
+            log::trace!("latest version found is {:#?}", &v);
             Ok(v)
         }
         None => Err(Error::NoVersionTag),
@@ -240,9 +238,9 @@ impl VersionCalculator {
         revwalk.set_sorting(git2::Sort::NONE)?;
         revwalk.push_head()?;
         log::debug!("starting the walk from the HEAD");
-        let glob = format!("refs/tags/{}", &self.current_version);
+        let glob = &self.current_version.tag();
         println!("the glob for revwalk is {glob}");
-        revwalk.hide_ref(&glob)?;
+        revwalk.hide_ref(glob)?;
         log::debug!("hide commits from {}", &self.current_version);
 
         macro_rules! filter_try {
