@@ -9,7 +9,7 @@
 //! for pre-release suffixes.
 //!
 
-use std::fmt;
+use std::{cmp::Ordering, fmt};
 
 use crate::Error;
 use regex::Regex;
@@ -65,12 +65,32 @@ macro_rules! some_or_none_string {
 /// The VersionTag data structure represents a git tag containing a
 /// semantic version number.
 ///
-#[derive(Debug, Default, PartialEq, PartialOrd, Eq, Ord, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct VersionTag {
     refs: String,
     tag_prefix: String,
     version_prefix: String,
     semantic_version: Semantic,
+}
+
+impl PartialEq for VersionTag {
+    fn eq(&self, other: &Self) -> bool {
+        self.semantic_version == other.semantic_version
+    }
+}
+
+impl Eq for VersionTag {}
+
+impl PartialOrd for VersionTag {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for VersionTag {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.semantic_version.cmp(&other.semantic_version)
+    }
 }
 
 impl fmt::Display for VersionTag {
