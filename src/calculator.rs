@@ -7,7 +7,7 @@
 //!
 //!
 
-use crate::{ConventionalCommits, Error, Level, Semantic, TypeHierarchy};
+use crate::{ConventionalCommits, Error, Level, TypeHierarchy, VersionTag};
 use git2::Repository;
 use log::debug;
 use regex::Regex;
@@ -21,7 +21,7 @@ pub struct Answer {
     pub bump_level: Level,
     /// the next version number calculated by applying the bump level to the
     /// current version number
-    pub version_number: Semantic,
+    pub version_number: VersionTag,
     /// the change level calculated during the review of conventional commits
     pub change_level: Option<TypeHierarchy>,
 }
@@ -31,7 +31,7 @@ impl Answer {
     ///
     pub fn new(
         bump_level: Level,
-        version_number: Semantic,
+        version_number: VersionTag,
         change_level: Option<TypeHierarchy>,
     ) -> Answer {
         Answer {
@@ -53,7 +53,7 @@ impl Answer {
 
 /// The latest semantic version tag (vx.y.z)
 ///
-pub fn latest(version_prefix: &str) -> Result<Semantic, Error> {
+pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
     let repo = Repository::open(".")?;
     log::debug!("repo opened to find latest");
 
@@ -73,7 +73,7 @@ pub fn latest(version_prefix: &str) -> Result<Semantic, Error> {
             // name.strip_prefix("refs/tags/")
             {
                 println!("Captured version: {:#?}", version);
-                let version = Semantic::parse(&tag, version_prefix).unwrap();
+                let version = VersionTag::parse(&tag, version_prefix).unwrap();
 
                 versions.push(version);
             }
@@ -84,6 +84,11 @@ pub fn latest(version_prefix: &str) -> Result<Semantic, Error> {
     println!("versions: {versions:#?}");
 
     versions.sort();
+    println!("Sorted versions:");
+    for ver in &versions {
+        println!("\t{}", ver);
+    }
+
     log::debug!("versions sorted");
 
     match versions.last().cloned() {
@@ -127,7 +132,7 @@ impl fmt::Display for ForceLevel {
 ///
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct VersionCalculator {
-    current_version: Semantic,
+    current_version: VersionTag,
     conventional: Option<ConventionalCommits>,
     files: Option<HashSet<OsString>>,
 }
@@ -150,7 +155,7 @@ impl VersionCalculator {
 
     /// Report the current_version
     ///
-    pub fn name(&self) -> Semantic {
+    pub fn name(&self) -> VersionTag {
         self.current_version.clone()
     }
 
@@ -238,8 +243,11 @@ impl VersionCalculator {
         revwalk.set_sorting(git2::Sort::NONE)?;
         revwalk.push_head()?;
         log::debug!("starting the walk from the HEAD");
-        let glob = &self.current_version.tag();
-        println!("the glob for revwalk is {glob}");
+        let glob = &self.current_version.to_string();
+        println!(
+            "the glob for revwalk is {glob} based on current version of {:?}",
+            self.current_version
+        );
         revwalk.hide_ref(glob)?;
         log::debug!("hide commits from {}", &self.current_version);
 
@@ -322,7 +330,7 @@ impl VersionCalculator {
             Level::None
         };
 
-        let final_bump = if self.current_version.major() == 0 {
+        let final_bump = if self.current_version.version().major() == 0 {
             log::info!("Not yet at a stable version");
             match bump {
                 Level::Major => {
@@ -351,9 +359,9 @@ impl VersionCalculator {
     ///
     /// Report error if major version number is greater than 0
     pub fn promote_first(&mut self) -> Result<Answer, Error> {
-        if 0 < self.current_version.major() {
+        if 0 < self.current_version.version().major() {
             Err(Error::MajorAlreadyUsed(
-                self.current_version.major().to_string(),
+                self.current_version.version().major().to_string(),
             ))
         } else {
             Ok(self.force(ForceLevel::Major).next_version())
@@ -408,11 +416,20 @@ impl VersionCalculator {
     }
 }
 
-fn next_version_calculator(mut version: Semantic, bump: &Level) -> Semantic {
+fn next_version_calculator(mut version: VersionTag, bump: &Level) -> VersionTag {
     match *bump {
-        Level::Major => version.increment_major().clone(),
-        Level::Minor => version.increment_minor().clone(),
-        Level::Patch => version.increment_patch().clone(),
+        Level::Major => {
+            version.version_mut().increment_major();
+            version
+        }
+        Level::Minor => {
+            version.version_mut().increment_minor();
+            version
+        }
+        Level::Patch => {
+            version.version_mut().increment_patch();
+            version
+        }
         _ => version,
     }
 }

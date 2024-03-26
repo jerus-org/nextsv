@@ -52,50 +52,50 @@ impl fmt::Display for Level {
     }
 }
 
-/// The Semantic data structure represents a semantic version number.
-///
-/// TODO: Implement support for pre-release and build
-///
-#[derive(Debug, Default, PartialEq, PartialOrd, Eq, Ord, Clone)]
-pub struct Semantic {
-    tag_prefix: String,
-    version_prefix: String,
-    major: usize,
-    minor: usize,
-    patch: usize,
-    tag_suffix: String,
-    tag: String,
+macro_rules! some_or_none_string {
+    ($i:ident) => {
+        if !$i.is_empty() {
+            Some($i.to_string())
+        } else {
+            None
+        }
+    };
 }
 
-impl fmt::Display for Semantic {
+/// The VersionTag data structure represents a git tag containing a
+/// semantic version number.
+///
+#[derive(Debug, Default, PartialEq, PartialOrd, Eq, Ord, Clone)]
+pub struct VersionTag {
+    refs: String,
+    tag_prefix: String,
+    version_prefix: String,
+    semantic_version: Semantic,
+}
+
+impl fmt::Display for VersionTag {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{}{}.{}.{}",
-            self.version_prefix, self.major, self.minor, self.patch
+            "{}{}{}{}",
+            self.refs, self.tag_prefix, self.version_prefix, self.semantic_version
         )
     }
 }
 
-impl Semantic {
+impl VersionTag {
     // Create a new struct specifying each of the semantic version components.
     fn new(
+        refs: String,
         tag_prefix: String,
         version_prefix: String,
-        major: usize,
-        minor: usize,
-        patch: usize,
-        tag_suffix: String,
-        tag: String,
+        semantic_version: Semantic,
     ) -> Self {
-        Semantic {
+        VersionTag {
+            refs,
             tag_prefix,
             version_prefix,
-            major,
-            minor,
-            patch,
-            tag_suffix,
-            tag,
+            semantic_version,
         }
     }
     /// Parse a tag and return a struct
@@ -129,26 +129,95 @@ impl Semantic {
     /// the tag name can be parsed
     pub fn parse(tag: &str, version_prefix: &str) -> Result<Self, Error> {
         let re_tag = format!(
-            r"(?<refs>refs/tags/)(?<tag_pre>.*)(?<ver_pre>{})(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?<tag_suf>.*)",
+            r"(?<refs>refs\/tags\/)(?<tag_prefix>.*)(?<version_prefix>{})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?",
             version_prefix
         );
-        println!("semantic: the tag regex is: {}", re_tag);
+        // println!("semantic: the tag regex is: {}", re_tag);
 
         let re = Regex::new(&re_tag);
-        println!("Regex result: {re:?}");
+        // println!("Regex result: {re:?}");
         let re = re.unwrap();
+        println!("Assessing {tag}");
+        let caps_res = re.captures(tag);
+        println!("Capture result: {:#?}", caps_res);
+        let caps = caps_res.unwrap();
 
-        let caps = re.captures(tag).unwrap();
+        let semantic_version = Semantic::new(
+            caps.name("major").unwrap().as_str(),
+            caps.name("minor").unwrap().as_str(),
+            caps.name("patch").unwrap().as_str(),
+            caps.name("pre_release").map_or("", |m| m.as_str()),
+            caps.name("build_meta_data").map_or("", |m| m.as_str()),
+        );
 
-        Ok(Semantic::new(
-            caps.name("tag_pre").unwrap().as_str().to_string(),
+        Ok(VersionTag::new(
+            caps.name("refs").map_or("", |m| m.as_str()).to_string(),
+            caps.name("tag_prefix")
+                .map_or("", |m| m.as_str())
+                .to_string(),
             version_prefix.to_string(),
-            caps.name("major").unwrap().as_str().parse().unwrap(),
-            caps.name("minor").unwrap().as_str().parse().unwrap(),
-            caps.name("patch").unwrap().as_str().parse().unwrap(),
-            caps.name("tag_suf").unwrap().as_str().to_string(),
-            tag.to_string(),
+            semantic_version,
         ))
+    }
+
+    /// Provide a reference to the semantic version
+    ///
+    pub fn version(&self) -> &Semantic {
+        &self.semantic_version
+    }
+
+    /// Provide a mutable reference to the semantic version
+    ///
+    pub fn version_mut(&mut self) -> &mut Semantic {
+        &mut self.semantic_version
+    }
+}
+/// The Semantic data structure represents a semantic version number.
+///
+/// TODO: Implement support for pre-release and build
+///
+#[derive(Debug, Default, PartialEq, PartialOrd, Eq, Ord, Clone)]
+pub struct Semantic {
+    major: u32,
+    minor: u32,
+    patch: u32,
+    pre_release: Option<String>,
+    build_meta_data: Option<String>,
+}
+
+impl fmt::Display for Semantic {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut version = format!("{}.{}.{}", self.major, self.minor, self.patch);
+        if let Some(pre) = &self.pre_release {
+            version = version + "-" + &pre
+        };
+        if let Some(build) = &self.build_meta_data {
+            version = version + "+" + &build
+        }
+        write!(f, "{}", version)
+    }
+}
+
+impl Semantic {
+    // Create a new struct specifying each of the semantic version components.
+    fn new(
+        major: &str,
+        minor: &str,
+        patch: &str,
+        pre_release: &str,
+        build_meta_data: &str,
+    ) -> Self {
+        let major: u32 = major.parse().unwrap();
+        let minor: u32 = minor.parse().unwrap();
+        let patch: u32 = patch.parse().unwrap();
+
+        Semantic {
+            major,
+            minor,
+            patch,
+            pre_release: some_or_none_string!(pre_release),
+            build_meta_data: some_or_none_string!(build_meta_data),
+        }
     }
 
     /// Increment the version based on a breaking change
@@ -206,29 +275,24 @@ impl Semantic {
 
     /// Report the major version number
     ///
-    pub fn major(&self) -> usize {
+    pub fn major(&self) -> u32 {
         self.major
     }
     /// Report the minor version number
-    pub fn minor(&self) -> usize {
+    pub fn minor(&self) -> u32 {
         self.minor
     }
 
     /// Report the patch version number
     ///
-    pub fn patch(&self) -> usize {
+    pub fn patch(&self) -> u32 {
         self.patch
-    }
-
-    /// Report the tag that sourced the version
-    ///
-    pub fn tag(&self) -> &str {
-        self.tag.as_str()
     }
 }
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
 
     #[test]
@@ -266,7 +330,7 @@ mod tests {
     fn parse_valid_version_tag_to_new_semantic_struct() {
         let tag = "v0.3.90";
         let version_prefix = "v";
-        let semantic = Semantic::parse(tag, version_prefix);
+        let semantic = VersionTag::parse(tag, version_prefix);
 
         claims::assert_ok!(&semantic);
         let semantic = match semantic {
@@ -280,7 +344,7 @@ mod tests {
     fn parse_long_valid_version_tag_to_new_semantic_struct() {
         let tag = "Release Version 0.3.90";
         let version_prefix = "Release Version ";
-        let semantic = Semantic::parse(tag, version_prefix);
+        let semantic = VersionTag::parse(tag, version_prefix);
 
         claims::assert_ok!(&semantic);
         let semantic = match semantic {
@@ -294,7 +358,7 @@ mod tests {
     fn parse_error_failed_not_version_tag() {
         let tag = "0.3.90";
         let version_prefix = "v";
-        let semantic = Semantic::parse(tag, version_prefix);
+        let semantic = VersionTag::parse(tag, version_prefix);
 
         claims::assert_err!(&semantic);
         let semantic = match semantic {
@@ -311,7 +375,7 @@ mod tests {
     fn parse_error_too_many_components() {
         let tag = "v0.3.90.8";
         let version_prefix = "v";
-        let semantic = Semantic::parse(tag, version_prefix);
+        let semantic = VersionTag::parse(tag, version_prefix);
 
         claims::assert_err!(&semantic);
         let semantic = match semantic {
@@ -328,7 +392,7 @@ mod tests {
     fn parse_error_not_enough_components() {
         let tag = "v0.3";
         let version_prefix = "v";
-        let semantic = Semantic::parse(tag, version_prefix);
+        let semantic = VersionTag::parse(tag, version_prefix);
 
         claims::assert_err!(&semantic);
         let semantic = match semantic {
@@ -345,7 +409,7 @@ mod tests {
     fn parse_error_version_must_be_a_number() {
         let tag = "v0.3.90-8";
         let version_prefix = "v";
-        let semantic = Semantic::parse(tag, version_prefix);
+        let semantic = VersionTag::parse(tag, version_prefix);
 
         claims::assert_err!(&semantic);
         let semantic = match semantic {
@@ -356,4 +420,13 @@ mod tests {
     }
     // #[error("Version must be a number")]
     // MustBeNumber,
+
+    #[test]
+    fn display_returns_the_tag_string() {
+        let tag = "refs/tags/hcaptcha-v2.3.1-ALPHA+build";
+
+        let mytag = VersionTag::parse(tag, "v").unwrap().to_string();
+
+        assert_eq!(tag, mytag);
+    }
 }

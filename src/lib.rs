@@ -45,4 +45,4 @@ pub use calculator::{Answer, ForceLevel, VersionCalculator};
 pub(crate) use conventional::ConventionalCommits;
 pub use conventional::TypeHierarchy;
 pub use error::Error;
-pub use semantic::{Level, Semantic};
+pub use semantic::{Level, VersionTag};
