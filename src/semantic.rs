@@ -133,14 +133,14 @@ impl VersionTag {
     ///
     /// ```rust
     /// # fn main() -> Result<(), nextsv::Error> {
-    /// use nextsv::Semantic;
+    /// use nextsv::VersionTag;
     ///
-    /// let tag = "v0.2.3";
-    /// let semantic_version = Semantic::parse(tag, "v")?;
+    /// let tag = "refs/tags/v0.2.3";
+    /// let semantic_version = VersionTag::parse(tag, "v")?;
     ///
-    /// assert_eq!(0, semantic_version.major());
-    /// assert_eq!(2, semantic_version.minor());
-    /// assert_eq!(3, semantic_version.patch());
+    /// assert_eq!(0, semantic_version.version().major());
+    /// assert_eq!(2, semantic_version.version().minor());
+    /// assert_eq!(3, semantic_version.version().patch());
     ///
     /// # Ok(())
     /// # }
@@ -149,18 +149,26 @@ impl VersionTag {
     /// the tag name can be parsed
     pub fn parse(tag: &str, version_prefix: &str) -> Result<Self, Error> {
         let re_tag = format!(
-            r"(?<refs>refs\/tags\/)(?<tag_prefix>.*)(?<version_prefix>{})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?",
+            r"(?<refs>refs\/tags\/)(?<tag_prefix>.*)(?<version_prefix>{})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$",
             version_prefix
         );
         // println!("semantic: the tag regex is: {}", re_tag);
 
         let re = Regex::new(&re_tag);
+
         // println!("Regex result: {re:?}");
-        let re = re.unwrap();
+        let Ok(re) = re else {
+            tag_validation(tag, version_prefix)?;
+            panic!("Tag validation failed");
+        };
+
         println!("Assessing {tag}");
         let caps_res = re.captures(tag);
         println!("Capture result: {:#?}", caps_res);
-        let caps = caps_res.unwrap();
+        let Some(caps) = caps_res else {
+            tag_validation(tag, version_prefix)?;
+            panic!("Tag validation failed");
+        };
 
         let semantic_version = Semantic::new(
             caps.name("major").unwrap().as_str(),
@@ -192,6 +200,64 @@ impl VersionTag {
         &mut self.semantic_version
     }
 }
+
+fn tag_validation(tag: &str, version_prefix: &str) -> Result<(), Error> {
+    println!("Tag for validation is: {tag}");
+
+    // let re_version = format!(
+    //     r"({}(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+))",
+    //     version_prefix
+    // );
+
+    // println!("the version regex is: {}", re_version);
+
+    // let re = Regex::new(&re_version).unwrap();
+
+    // match re.captures(&tag) {
+    //     Some(ver) => valid version String
+
+    // };
+
+    println!("The version prefix is {version_prefix}");
+    // let version = dbg!(tag.trim_start_matches(version_prefix));
+    let re = Regex::new(version_prefix).unwrap();
+    let m_res = re.find(tag);
+
+    // the tag string must start with the version_prefix
+    let Some(m) = m_res else {
+        return Err(Error::NotVersionTag(
+            version_prefix.to_string(),
+            tag.to_string(),
+        ));
+    };
+
+    let (_prefix, version) = tag.split_at(m.end());
+    println!("The version string is: {version}");
+    let components: Vec<&str> = version.split('.').collect();
+
+    println!("{components:#?}");
+
+    let mut count_numbers = 0;
+    let mut numbers = vec![];
+
+    for item in components {
+        count_numbers += 1;
+        if count_numbers > 3 {
+            return Err(Error::TooManyComponents(count_numbers));
+        }
+        numbers.push(match item.parse::<usize>() {
+            Ok(n) => n,
+            Err(_) => return Err(Error::MustBeNumber(item.to_string())),
+        });
+    }
+
+    if count_numbers < 3 {
+        return Err(Error::TooFewComponents(count_numbers));
+    };
+
+    Ok(())
+}
+
 /// The Semantic data structure represents a semantic version number.
 ///
 /// TODO: Implement support for pre-release and build
@@ -348,7 +414,7 @@ mod tests {
 
     #[test]
     fn parse_valid_version_tag_to_new_semantic_struct() {
-        let tag = "v0.3.90";
+        let tag = "refs/tags/v0.3.90";
         let version_prefix = "v";
         let semantic = VersionTag::parse(tag, version_prefix);
 
@@ -361,8 +427,8 @@ mod tests {
     }
 
     #[test]
-    fn parse_long_valid_version_tag_to_new_semantic_struct() {
-        let tag = "Release Version 0.3.90";
+    fn parse_valid_long_version_tag_to_new_semantic_struct() {
+        let tag = "refs/tags/Release Version 0.3.90";
         let version_prefix = "Release Version ";
         let semantic = VersionTag::parse(tag, version_prefix);
 
@@ -376,7 +442,7 @@ mod tests {
 
     #[test]
     fn parse_error_failed_not_version_tag() {
-        let tag = "0.3.90";
+        let tag = "ref/tags/0.3.90";
         let version_prefix = "v";
         let semantic = VersionTag::parse(tag, version_prefix);
 
@@ -386,14 +452,14 @@ mod tests {
             Err(e) => e.to_string(),
         };
         assert_eq!(
-            r#"Version tags must start with "v" but tag is 0.3.90"#,
+            r#"Version tags must start with "v" but tag is ref/tags/0.3.90"#,
             semantic
         );
     }
 
     #[test]
     fn parse_error_too_many_components() {
-        let tag = "v0.3.90.8";
+        let tag = "refs/tags/v0.3.90.8";
         let version_prefix = "v";
         let semantic = VersionTag::parse(tag, version_prefix);
 
@@ -410,7 +476,7 @@ mod tests {
 
     #[test]
     fn parse_error_not_enough_components() {
-        let tag = "v0.3";
+        let tag = "refs/tags/v0.3";
         let version_prefix = "v";
         let semantic = VersionTag::parse(tag, version_prefix);
 
@@ -427,7 +493,7 @@ mod tests {
 
     #[test]
     fn parse_error_version_must_be_a_number() {
-        let tag = "v0.3.90-8";
+        let tag = "refs/tags/v0.3.9a";
         let version_prefix = "v";
         let semantic = VersionTag::parse(tag, version_prefix);
 
@@ -436,7 +502,7 @@ mod tests {
             Ok(s) => s.to_string(),
             Err(e) => e.to_string(),
         };
-        assert_eq!("Version must be a number but found 90-8", semantic);
+        assert_eq!("Version must be a number but found 9a", semantic);
     }
     // #[error("Version must be a number")]
     // MustBeNumber,
