@@ -43,6 +43,9 @@ pub enum Error {
     /// Not a valid Type Hierachy name.
     #[error("{0} is not a valid type hierarchy namne.")]
     NotTypeHierachyName(String),
+    /// Corrupt version check regex. Check the `prefix` value.
+    #[error("Version check regex error {0}. Check the `prefix` value.")]
+    CorruptVersionRegex(regex::Error),
     /// List of files has not been generated yet (or there are no commits). Call `commits` to generate the list by walking back to the current version tag.
     #[error("No files have been listed. May have been called before `commits`.")]
     NoFilesListed,

@@ -5,7 +5,6 @@ use std::{cmp, collections::HashMap, fmt};
 
 use clap::ValueEnum;
 use colored::Colorize;
-use log::{debug, trace};
 
 use crate::Error;
 
@@ -112,7 +111,7 @@ impl ConventionalCommits {
             if let Ok(conventional) = git_conventional::Commit::parse(
                 commit.summary().take().unwrap_or("NotConventional"),
             ) {
-                debug!(
+                log::trace!(
                     "Commit: ({}) {} {}",
                     conventional.type_(),
                     conventional.description(),
@@ -178,9 +177,9 @@ impl ConventionalCommits {
     }
 
     fn set_top_type_if_higher(&mut self, type_: &str) -> &mut Self {
-        trace!("Testing if {type_:?} is higher than {:?}", self.top_type);
+        log::trace!("Testing if {type_:?} is higher than {:?}", self.top_type);
         let th = TypeHierarchy::parse(type_);
-        trace!("Result of parse to TypeHierarchy: {th:?}");
+        log::trace!("Result of parse to TypeHierarchy: {th:?}");
         if let Ok(th) = th {
             if self.top_type.is_some() {
                 if th > self.top_type().unwrap() {

@@ -12,7 +12,6 @@
 use std::{cmp::Ordering, fmt};
 
 use crate::Error;
-use log::debug;
 use regex::Regex;
 
 /// Level at which the next increment will be made
@@ -154,17 +153,11 @@ impl VersionTag {
             version_prefix
         );
 
-        let re = Regex::new(&re_tag);
+        let re = Regex::new(&re_tag).unwrap();
 
-        debug!("Regex result: {re:?}");
-        let Ok(re) = re else {
-            tag_validation(tag, version_prefix)?;
-            panic!("Tag validation failed");
-        };
-
-        debug!("Parsing the git `{tag}` into a VersionTag struct");
+        log::trace!("Parsing git tag `{tag}` into VersionTag");
         let caps_res = re.captures(tag);
-        debug!("Regex captures result: {:#?}", caps_res);
+        log::trace!("Regex captures result: {:?}", caps_res);
         let Some(caps) = caps_res else {
             tag_validation(tag, version_prefix)?;
             panic!("Tag validation failed");
@@ -202,7 +195,9 @@ impl VersionTag {
 }
 
 fn tag_validation(tag: &str, version_prefix: &str) -> Result<(), Error> {
-    debug!("Error found: validating the tag {tag} with version identified by {version_prefix}");
+    log::debug!(
+        "Error found: validating the tag {tag} with version identified by {version_prefix}"
+    );
     let re = Regex::new(version_prefix).unwrap();
     let m_res = re.find(tag);
 
@@ -215,10 +210,10 @@ fn tag_validation(tag: &str, version_prefix: &str) -> Result<(), Error> {
     };
 
     let (_prefix, version) = tag.split_at(m.end());
-    debug!("The version string is: {version}");
+    log::debug!("The version string is: {version}");
     let components: Vec<&str> = version.split('.').collect();
 
-    debug!("The components of the version string are {components:#?}");
+    log::debug!("The components of the version string are {components:#?}");
 
     let mut count_numbers = 0;
     let mut numbers = vec![];

@@ -6,6 +6,8 @@
 //! ## Panics
 //!
 //!
+//!
+//!
 
 use crate::{ConventionalCommits, Error, Level, TypeHierarchy, VersionTag};
 use git2::Repository;
@@ -61,13 +63,17 @@ pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
 
     log::debug!("The version regex is: {}", re_version);
 
-    let re = Regex::new(&re_version).unwrap();
+    let re = match Regex::new(&re_version) {
+        Ok(r) => r,
+        Err(e) => return Err(Error::CorruptVersionRegex(e)),
+    };
 
     let mut versions = vec![];
     repo.tag_foreach(|_id, tag| {
         if let Ok(tag) = String::from_utf8(tag.to_owned()) {
+            log::trace!("Is git tag `{tag}` a version tag?");
             if let Some(version) = re.captures(&tag) {
-                log::debug!("Captured version: {:#?}", version);
+                log::trace!("Captured version: {:?}", version);
                 let version = VersionTag::parse(&tag, version_prefix).unwrap();
 
                 versions.push(version);
@@ -76,14 +82,22 @@ pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
         true
     })?;
 
-    log::debug!("Tags containing version numbers identified by `{version_prefix}`: {versions:#?}");
-
-    versions.sort();
-    log::debug!("versions sorted");
-    log::trace!("Sorted versions:");
-    for ver in &versions {
-        log::trace!("\t{}", ver);
+    macro_rules! log_items {
+        ($versions:ident,$prefix_version:ident) => {
+            log::trace!(
+                "Tags with semantic version numbers prefixed with `{}`",
+                version_prefix
+            );
+            for ver in &versions {
+                log::trace!("\t{}", ver);
+            }
+        };
     }
+
+    log_items!(versions, prefix_version);
+    versions.sort();
+    log::debug!("Version tags have been sorted");
+    log_items!(versions, prefix_version);
 
     match versions.last().cloned() {
         Some(v) => {
@@ -284,7 +298,7 @@ impl VersionCalculator {
         }
 
         self.conventional = Some(conventional_commits);
-        log::debug!("Files found: {:#?}", &files);
+        log::debug!("Files found: {:?}", &files);
         self.files = Some(files);
 
         Ok(self)
