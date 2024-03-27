@@ -59,20 +59,15 @@ pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
 
     let re_version = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
 
-    println!("the version regex is: {}", re_version);
+    log::debug!("The version regex is: {}", re_version);
 
     let re = Regex::new(&re_version).unwrap();
 
     let mut versions = vec![];
     repo.tag_foreach(|_id, tag| {
         if let Ok(tag) = String::from_utf8(tag.to_owned()) {
-            // println!("Found tag called {name:?}");
-            // let caps = re.captures(&name);
-            // println!("regex captured {:#?}", caps);
-            if let Some(version) = re.captures(&tag)
-            // name.strip_prefix("refs/tags/")
-            {
-                println!("Captured version: {:#?}", version);
+            if let Some(version) = re.captures(&tag) {
+                log::debug!("Captured version: {:#?}", version);
                 let version = VersionTag::parse(&tag, version_prefix).unwrap();
 
                 versions.push(version);
@@ -81,15 +76,14 @@ pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
         true
     })?;
 
-    println!("versions: {versions:#?}");
+    log::debug!("Tags containing version numbers identified by `{version_prefix}`: {versions:#?}");
 
     versions.sort();
-    println!("Sorted versions:");
-    for ver in &versions {
-        println!("\t{}", ver);
-    }
-
     log::debug!("versions sorted");
+    log::trace!("Sorted versions:");
+    for ver in &versions {
+        log::trace!("\t{}", ver);
+    }
 
     match versions.last().cloned() {
         Some(v) => {
@@ -244,7 +238,7 @@ impl VersionCalculator {
         revwalk.push_head()?;
         log::debug!("starting the walk from the HEAD");
         let glob = &self.current_version.to_string();
-        println!(
+        log::debug!(
             "the glob for revwalk is {glob} based on current version of {:?}",
             self.current_version
         );

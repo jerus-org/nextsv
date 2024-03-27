@@ -12,6 +12,7 @@
 use std::{cmp::Ordering, fmt};
 
 use crate::Error;
+use log::debug;
 use regex::Regex;
 
 /// Level at which the next increment will be made
@@ -152,19 +153,18 @@ impl VersionTag {
             r"(?<refs>refs\/tags\/)(?<tag_prefix>.*)(?<version_prefix>{})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$",
             version_prefix
         );
-        // println!("semantic: the tag regex is: {}", re_tag);
 
         let re = Regex::new(&re_tag);
 
-        // println!("Regex result: {re:?}");
+        debug!("Regex result: {re:?}");
         let Ok(re) = re else {
             tag_validation(tag, version_prefix)?;
             panic!("Tag validation failed");
         };
 
-        println!("Assessing {tag}");
+        debug!("Parsing the git `{tag}` into a VersionTag struct");
         let caps_res = re.captures(tag);
-        println!("Capture result: {:#?}", caps_res);
+        debug!("Regex captures result: {:#?}", caps_res);
         let Some(caps) = caps_res else {
             tag_validation(tag, version_prefix)?;
             panic!("Tag validation failed");
@@ -202,24 +202,7 @@ impl VersionTag {
 }
 
 fn tag_validation(tag: &str, version_prefix: &str) -> Result<(), Error> {
-    println!("Tag for validation is: {tag}");
-
-    // let re_version = format!(
-    //     r"({}(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+))",
-    //     version_prefix
-    // );
-
-    // println!("the version regex is: {}", re_version);
-
-    // let re = Regex::new(&re_version).unwrap();
-
-    // match re.captures(&tag) {
-    //     Some(ver) => valid version String
-
-    // };
-
-    println!("The version prefix is {version_prefix}");
-    // let version = dbg!(tag.trim_start_matches(version_prefix));
+    debug!("Error found: validating the tag {tag} with version identified by {version_prefix}");
     let re = Regex::new(version_prefix).unwrap();
     let m_res = re.find(tag);
 
@@ -232,10 +215,10 @@ fn tag_validation(tag: &str, version_prefix: &str) -> Result<(), Error> {
     };
 
     let (_prefix, version) = tag.split_at(m.end());
-    println!("The version string is: {version}");
+    debug!("The version string is: {version}");
     let components: Vec<&str> = version.split('.').collect();
 
-    println!("{components:#?}");
+    debug!("The components of the version string are {components:#?}");
 
     let mut count_numbers = 0;
     let mut numbers = vec![];
@@ -514,5 +497,22 @@ mod tests {
         let mytag = VersionTag::parse(tag, "v").unwrap().to_string();
 
         assert_eq!(tag, mytag);
+    }
+
+    #[test]
+    fn tag_broken_down_correctly() {
+        let tag = "refs/tags/hcaptcha-v2.3.1-Beta.3+20876.675";
+
+        let vt = VersionTag::parse(tag, "v").unwrap();
+
+        assert_eq!("refs/tags/", vt.refs);
+        assert_eq!("hcaptcha-", vt.tag_prefix);
+        assert_eq!("v", vt.version_prefix);
+        assert_eq!("2.3.1-Beta.3+20876.675", vt.version().to_string().as_str());
+        assert_eq!(2, vt.version().major);
+        assert_eq!(3, vt.version().minor);
+        assert_eq!(1, vt.version().patch);
+        assert_eq!("Beta.3", vt.version().pre_release.as_ref().unwrap());
+        assert_eq!("20876.675", vt.version().build_meta_data.as_ref().unwrap());
     }
 }
