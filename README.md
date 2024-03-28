@@ -80,15 +80,16 @@ USAGE:
     nextsv [OPTIONS]
 
 OPTIONS:
-    -f, --force <FORCE>      Force the calculation of the version number [possible values: major,
-                             minor, patch, first]
-    -h, --help               Print help information
-        --level              Report the level of the version number change
-        --number             Report the version number
-    -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
-    -q, --quiet              Pass many times for less log output
-    -v, --verbose            Pass many times for more log output
-    -V, --version            Print version information
+    -f, --force <FORCE>         Force the calculation of the version number [possible values: major,
+                                minor, patch, first]
+    -h, --help                  Print help information (use `-h` for a summary)
+        --level                 Report the level of the version number change
+        --number                Report the version number
+    -p, --prefix <PREFIX>       Prefix string to identify version number tags [default: v]
+    --pre-release <PRE_RELEASE> Suffix string to identify pre-release [example: alpha, beta, rc]
+    -q, --quiet                 Pass many times for less log output
+    -v, --verbose               Pass many times for more log output
+    -V, --version               Print version information
 $
 
 ```

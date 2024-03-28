@@ -2,7 +2,7 @@ use std::ffi::OsString;
 use std::fmt;
 
 use clap::{Parser, ValueEnum};
-use nextsv::{Answer, Error, ForceLevel, TypeHierarchy, VersionCalculator};
+use nextsv::{Answer, Error, ForceLevel, Semantic, TypeHierarchy, VersionCalculator};
 use proc_exit::{Code, ExitResult};
 
 #[derive(ValueEnum, Debug, Clone)]
@@ -40,6 +40,10 @@ struct Cli {
     /// Report the version number
     #[arg(long)]
     number: bool,
+    /// Set a pre-release string (optional)
+    /// [example values: alpha, beta, rc]
+    #[arg(long, default_value = None)]
+    pre_release: Option<String>,
     /// Require changes to these file before building release
     #[arg(short, long)]
     require: Vec<OsString>,
@@ -76,7 +80,7 @@ fn run() -> ExitResult {
         (true, true) => log::info!("Calculating the next version number and level"),
     };
 
-    let latest_version = VersionCalculator::new(&args.prefix)?;
+    let latest_version = VersionCalculator::new(&args.prefix, args.pre_release)?;
 
     log::trace!("require: {:#?}", args.require);
 
@@ -127,10 +131,24 @@ fn calculate(
     if let Some(f) = &force {
         log::debug!("Force option set to {}", f);
     };
+
+    let pre_release = latest_version.get_pre_release();
+    let has_existing_pre_release: bool = has_existing_pre_release(latest_version.name());
+    if has_existing_pre_release
+        && pre_release.is_some()
+        && latest_version.name().pre_release().unwrap().suffix() == pre_release.clone().unwrap()
+    {
+        // increment existing pre-release only
+        let new_version = latest_version.name().increment_pre_release().clone();
+        let answer = Answer::new(nextsv::Level::PreRelease, new_version, None);
+        return Ok(answer);
+    }
+
     latest_version = latest_version.walk_commits()?;
     if let Some(f) = files {
         latest_version.has_required(f, enforce_level)?;
     }
+
     let mut answer = if let Some(svc) = force {
         match svc {
             ForceOptions::Major => latest_version.force(ForceLevel::Major).next_version(),
@@ -139,12 +157,43 @@ fn calculate(
             ForceOptions::First => latest_version.promote_first()?,
         }
     } else {
-        latest_version.next_version()
+        if pre_release.is_none() && has_existing_pre_release {
+            // just promote pre-release
+            let new_version = latest_version.name().unset_pre_release().clone();
+            return Ok(Answer::new(nextsv::Level::Release, new_version, None));
+        }
+        let mut answer = latest_version.next_version();
+        let mut next_version = answer.version_number.clone();
+        if pre_release.is_some() {
+            if has_existing_pre_release {
+                next_version = latest_version.name();
+            }
+            next_version = next_version
+                .first_pre_release(&pre_release.unwrap().to_string())
+                .clone();
+            answer = Answer::new(nextsv::Level::PreRelease, next_version, None);
+        }
+        answer
     };
 
     answer.change_level = latest_version.top_level();
 
     Ok(answer)
+}
+
+/// Reports if version is a Pre-Release
+///
+fn has_existing_pre_release(version: Semantic) -> bool {
+    match version.pre_release() {
+        Some(_) => {
+            log::info!("Is a pre-release: {}", version);
+            true
+        }
+        None => {
+            log::info!("Is not a pre-release: {}", version);
+            false
+        }
+    }
 }
 
 pub fn get_logging(level: log::LevelFilter) -> env_logger::Builder {

@@ -26,7 +26,7 @@
 //!     use nextsv::VersionCalculator;
 //!     let version_prefix = "v"; // Identifies a version tag
 //!
-//!     let latest_version = VersionCalculator::new(version_prefix)?;
+//!     let latest_version = VersionCalculator::new(version_prefix, None)?;
 //!
 //!     let answer = latest_version.walk_commits()?.next_version();
 //!
@@ -45,4 +45,4 @@ pub use calculator::{Answer, ForceLevel, VersionCalculator};
 pub(crate) use conventional::ConventionalCommits;
 pub use conventional::TypeHierarchy;
 pub use error::Error;
-pub use semantic::{Level, Semantic};
+pub use semantic::{Level, Semantic, SemanticPreRelease};
