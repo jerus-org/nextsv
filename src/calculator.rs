@@ -116,6 +116,7 @@ pub struct VersionCalculator {
     current_version: Semantic,
     conventional: Option<ConventionalCommits>,
     files: Option<HashSet<OsString>>,
+    pre_release: Option<String>,
 }
 
 impl VersionCalculator {
@@ -125,12 +126,16 @@ impl VersionCalculator {
     ///
     ///  - version_prefix - identifies version tags
     ///
-    pub fn new(version_prefix: &str) -> Result<VersionCalculator, Error> {
+    pub fn new(
+        version_prefix: &str,
+        pre_release: Option<String>,
+    ) -> Result<VersionCalculator, Error> {
         let current_version = latest(version_prefix)?;
         Ok(VersionCalculator {
             current_version,
             conventional: None,
             files: None,
+            pre_release,
         })
     }
 
@@ -382,6 +387,19 @@ impl VersionCalculator {
         }
 
         Ok(())
+    }
+
+    /// Get the pre-release value
+    ///
+    pub fn get_pre_release(&mut self) -> Option<String> {
+        self.pre_release.clone()
+    }
+
+    /// Set the pre-release value
+    ///
+    pub fn set_pre_release(&mut self, suffix: Option<String>) -> &mut Self {
+        self.pre_release = suffix;
+        self
     }
 }
 
