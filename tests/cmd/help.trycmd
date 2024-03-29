@@ -53,7 +53,7 @@ Options:
           - breaking: enforce requirements for breaking only
 
       --set-env <SET_ENV>
-          add outupt to environment variable
+          add output to environment variable
           
           [default: NEXTSV_LEVEL]
 

@@ -53,7 +53,7 @@ struct Cli {
     /// exits with an error if the threshold is not met.
     #[clap(short, long)]
     check: Option<TypeHierarchy>,
-    /// add outupt to environment variable
+    /// add output to environment variable
     #[clap(long, default_value = "NEXTSV_LEVEL")]
     set_env: Option<String>,
 }
