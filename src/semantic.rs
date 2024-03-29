@@ -189,7 +189,7 @@ impl Semantic {
     /// assert_eq!(0, semantic_version.major());
     /// assert_eq!(2, semantic_version.minor());
     /// assert_eq!(3, semantic_version.patch());
-    /// assert_eq!(tag, semantic_veersion.to_string());
+    /// assert_eq!(tag, semantic_version.to_string());
     ///
     /// # Ok(())
     /// # }
