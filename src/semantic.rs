@@ -26,11 +26,13 @@ pub enum Level {
     Minor,
     /// Update will be made at the major level
     Major,
+    /// Update is to a generic pre-release suffix (for future use)
+    PreRelease,
     /// Update is a release removing any pre-release suffixes (for future use)
     Release,
     /// Update is to an alpha pre-release suffix (for future use)
     Alpha,
-    /// Update is to an beta pre-release suffix (for future use)
+    /// Update is to a beta pre-release suffix (for future use)
     Beta,
     /// Update is to an rc pre-release suffix (for future use)
     Rc,
@@ -44,6 +46,7 @@ impl fmt::Display for Level {
             Level::Minor => write!(f, "minor"),
             Level::Major => write!(f, "major"),
             Level::Release => write!(f, "release"),
+            Level::PreRelease => write!(f, "pre-release"),
             Level::Alpha => write!(f, "alpha"),
             Level::Beta => write!(f, "beta"),
             Level::Rc => write!(f, "rc"),
@@ -51,9 +54,75 @@ impl fmt::Display for Level {
     }
 }
 
+const PRE_RELEASE_PREFIX: &str = "-";
+
+/// The semantic data structure for pre-releases
+///
+#[derive(Debug, Default, PartialEq, PartialOrd, Eq, Ord, Clone)]
+pub struct SemanticPreRelease {
+    suffix: String,
+    id: usize,
+}
+
+impl fmt::Display for SemanticPreRelease {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "-{}.{}", self.suffix, self.id)
+    }
+}
+
+impl SemanticPreRelease {
+    // Create a new struct specifying each of the semantic version components.
+    fn new(suffix: String, id: usize) -> Self {
+        SemanticPreRelease { suffix, id }
+    }
+
+    /// ```rust
+    /// # fn main() -> Result<(), nextsv::Error> {
+    /// use nextsv::SemanticPreRelease;
+    ///
+    /// let semantic_version = SemanticPreRelease::parse("rc.0")?;
+    ///
+    /// assert_eq!("rc", semantic_version.suffix());
+    /// assert_eq!(0, semantic_version.id());
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn parse(pre_release: &str) -> Result<Self, Error> {
+        let components: Vec<&str> = pre_release.split('.').collect();
+
+        if components.len() < 2 {
+            return Err(Error::InvalidPreReleaseFormat(pre_release.to_string()));
+        }
+
+        let suffix = components[0].to_string();
+        let id: usize = components[1].to_string().parse().unwrap();
+
+        Ok(SemanticPreRelease::new(suffix, id))
+    }
+
+    /// Increment pre-release version
+    ///
+    pub fn increment(&mut self) -> &mut Self {
+        self.id += 1;
+        self
+    }
+
+    /// get suffix
+    ///
+    pub fn suffix(&self) -> String {
+        self.suffix.clone()
+    }
+
+    /// get id
+    ///
+    pub fn id(&self) -> usize {
+        self.id
+    }
+}
 /// The Semantic data structure represents a semantic version number.
 ///
-/// TODO: Implement support for pre-release and build
+/// TODO: Implement support for build
 ///
 #[derive(Debug, Default, PartialEq, PartialOrd, Eq, Ord, Clone)]
 pub struct Semantic {
@@ -61,28 +130,42 @@ pub struct Semantic {
     major: usize,
     minor: usize,
     patch: usize,
+    pre_release: Option<SemanticPreRelease>,
 }
 
 impl fmt::Display for Semantic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // let pre_release = self.pre_release()
+        let mut pre_release_tag: String = "".to_string();
+        if let Some(pre_release_some) = self.pre_release() {
+            pre_release_tag = format!("{}", pre_release_some)
+        }
         write!(
             f,
-            "{}{}.{}.{}",
-            self.version_prefix, self.major, self.minor, self.patch
+            "{}{}.{}.{}{}",
+            self.version_prefix, self.major, self.minor, self.patch, pre_release_tag
         )
     }
 }
 
 impl Semantic {
     // Create a new struct specifying each of the semantic version components.
-    fn new(version_prefix: String, major: usize, minor: usize, patch: usize) -> Self {
+    fn new(
+        version_prefix: String,
+        major: usize,
+        minor: usize,
+        patch: usize,
+        pre_release: Option<SemanticPreRelease>,
+    ) -> Self {
         Semantic {
             version_prefix,
             major,
             minor,
             patch,
+            pre_release,
         }
     }
+
     /// Parse a tag and return a struct
     /// String format expect: <version_prefix>x.y.z
     ///
@@ -106,6 +189,7 @@ impl Semantic {
     /// assert_eq!(0, semantic_version.major());
     /// assert_eq!(2, semantic_version.minor());
     /// assert_eq!(3, semantic_version.patch());
+    /// assert_eq!(tag, semantic_veersion.to_string());
     ///
     /// # Ok(())
     /// # }
@@ -122,7 +206,8 @@ impl Semantic {
         }
 
         let version = tag.trim_start_matches(version_prefix);
-        let components: Vec<&str> = version.split('.').collect();
+        let semver_parts: Vec<&str> = version.split(PRE_RELEASE_PREFIX).collect();
+        let components: Vec<&str> = semver_parts[0].split('.').collect();
 
         let mut count_numbers = 0;
         let mut numbers = vec![];
@@ -142,11 +227,21 @@ impl Semantic {
             return Err(Error::TooFewComponents(count_numbers));
         }
 
+        let mut pre_release = None;
+        if semver_parts.len() > 1 {
+            match SemanticPreRelease::parse(semver_parts[1]) {
+                Ok(t) => pre_release = Some(t),
+                Err(e) => return Err(e),
+            }
+            // pre_release = SemanticPreRelease::parse(semver_parts[1])
+        }
+
         Ok(Semantic::new(
             version_prefix.to_string(),
             numbers[0],
             numbers[1],
             numbers[2],
+            pre_release.clone(),
         ))
     }
 
@@ -190,6 +285,27 @@ impl Semantic {
         self
     }
 
+    /// Increment the number of the pre-release
+    ///
+    pub fn increment_pre_release(&mut self) -> &mut Self {
+        self.pre_release.as_mut().unwrap().increment();
+        self
+    }
+
+    /// Create initial pre-release
+    ///
+    pub fn first_pre_release(&mut self, suffix: &str) -> &mut Self {
+        self.pre_release = Some(SemanticPreRelease::new(suffix.to_string(), 0));
+        self
+    }
+
+    /// Unset pre-release, for promoting to actual release
+    ///
+    pub fn unset_pre_release(&mut self) -> &mut Self {
+        self.pre_release = None;
+        self
+    }
+
     /// Set the first production release version
     ///
     pub fn first_production(&mut self) -> Result<&mut Self, Error> {
@@ -217,6 +333,12 @@ impl Semantic {
     ///
     pub fn patch(&self) -> usize {
         self.patch
+    }
+
+    /// Report the pre-release
+    ///
+    pub fn pre_release(&self) -> Option<SemanticPreRelease> {
+        self.pre_release.clone()
     }
 }
 
@@ -253,6 +375,38 @@ mod tests {
         let updated_version = version.increment_major();
 
         assert_eq!("1.0.0", &updated_version.to_string());
+    }
+
+    #[test]
+    fn set_pre_release_version_number() {
+        let mut version = Semantic::default();
+        let updated_version = version.first_pre_release("rc");
+
+        assert_eq!("0.0.0-rc.0", &updated_version.to_string());
+    }
+
+    #[test]
+    fn bump_pre_release_version_number_by_one() {
+        let mut version = Semantic::default();
+        version.first_pre_release("rc");
+
+        let updated_version = version.increment_pre_release();
+
+        assert_eq!("0.0.0-rc.1", &updated_version.to_string());
+    }
+
+    #[test]
+    fn parse_valid_pre_release_version_tag_to_new_semantic_struct() {
+        let tag = "v0.3.90-rc.4";
+        let version_prefix = "v";
+        let semantic = Semantic::parse(tag, version_prefix);
+
+        claims::assert_ok!(&semantic);
+        let semantic = match semantic {
+            Ok(s) => s.to_string(),
+            Err(e) => e.to_string(),
+        };
+        assert_eq!(tag, semantic);
     }
 
     #[test]
@@ -335,7 +489,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_error_version_must_be_a_number() {
+    fn parse_error_invalid_pre_release() {
         let tag = "v0.3.90-8";
         let version_prefix = "v";
         let semantic = Semantic::parse(tag, version_prefix);
@@ -345,7 +499,7 @@ mod tests {
             Ok(s) => s.to_string(),
             Err(e) => e.to_string(),
         };
-        assert_eq!("Version must be a number but found 90-8", semantic);
+        assert_eq!("Invalid PreRelease format: 8", semantic);
     }
     // #[error("Version must be a number")]
     // MustBeNumber,
