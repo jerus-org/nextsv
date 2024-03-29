@@ -27,6 +27,9 @@ Options:
       --number
           Report the version number
 
+      --pre-release <PRE_RELEASE>
+          Set a pre-release string (optional) [example values: alpha, beta, rc]
+
   -r, --require <REQUIRE>
           Require changes to these file before building release
 
@@ -53,7 +56,7 @@ Options:
           - breaking: enforce requirements for breaking only
 
       --set-env <SET_ENV>
-          add outupt to environment variable
+          add output to environment variable
           
           [default: NEXTSV_LEVEL]
 
@@ -61,7 +64,7 @@ Options:
           Print help (see a summary with '-h')
 
   -V, --version
-          Print version
+          Print version information
 
 ```
 
