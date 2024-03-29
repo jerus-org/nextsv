@@ -70,6 +70,19 @@ jobs:
           name: Test generation of all of the documentation for the crate
           command: |
             cargo +nightly doc --lib --no-deps --all-features --document-private-items
+  
+  security:
+    executor: rust-env
+    steps:
+      - checkout
+      - run:
+          name: Install cargo-audit
+          command: |
+            cargo install cargo-audit
+      - run:
+          name: Audit rust code
+          command: |
+            cargo audit -D warnings
 
   make-release:
     executor: rust-env
@@ -111,6 +124,7 @@ workflows:
       - basic-tests
       - docs
       - optional-builds
+      - security
   release-check:
     when:
       and:
