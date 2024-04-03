@@ -133,10 +133,18 @@ fn calculate(
     }
     let mut answer = if let Some(svc) = force {
         match svc {
-            ForceOptions::Major => latest_version.force(ForceLevel::Major).next_version(),
-            ForceOptions::Minor => latest_version.force(ForceLevel::Minor).next_version(),
-            ForceOptions::Patch => latest_version.force(ForceLevel::Patch).next_version(),
-            ForceOptions::First => latest_version.promote_first()?,
+            ForceOptions::Major => latest_version
+                .set_force(Some(ForceLevel::Major))
+                .next_version(),
+            ForceOptions::Minor => latest_version
+                .set_force(Some(ForceLevel::Minor))
+                .next_version(),
+            ForceOptions::Patch => latest_version
+                .set_force(Some(ForceLevel::Patch))
+                .next_version(),
+            ForceOptions::First => latest_version
+                .set_force(Some(ForceLevel::First))
+                .next_version(),
         }
     } else {
         latest_version.next_version()

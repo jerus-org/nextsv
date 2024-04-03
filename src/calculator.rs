@@ -14,7 +14,11 @@ use git2::Repository;
 use log::debug;
 use regex::Regex;
 
-use std::{collections::HashSet, ffi::OsString, fmt};
+use std::{
+    collections::HashSet,
+    ffi::OsString,
+    fmt::{self},
+};
 /// Struct the store the result of the calculation (the "answer" :) )
 ///
 #[derive(Debug)]
@@ -113,7 +117,7 @@ pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
 /// The enum is used by the force method to define the level
 /// at which the forced change is made.
 ///
-#[derive(Debug)]
+#[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Clone)]
 pub enum ForceLevel {
     /// force change to the major component of semver
     Major,
@@ -121,6 +125,8 @@ pub enum ForceLevel {
     Minor,
     /// force change to the patch component of semver
     Patch,
+    /// Force update of major version number from 0 to 1
+    First,
 }
 
 impl fmt::Display for ForceLevel {
@@ -129,6 +135,7 @@ impl fmt::Display for ForceLevel {
             ForceLevel::Major => write!(f, "major"),
             ForceLevel::Minor => write!(f, "minor"),
             ForceLevel::Patch => write!(f, "patch"),
+            ForceLevel::First => write!(f, "first"),
         }
     }
 }
@@ -143,6 +150,7 @@ pub struct VersionCalculator {
     current_version: VersionTag,
     conventional: Option<ConventionalCommits>,
     files: Option<HashSet<OsString>>,
+    force_level: Option<ForceLevel>,
 }
 
 impl VersionCalculator {
@@ -158,6 +166,7 @@ impl VersionCalculator {
             current_version,
             conventional: None,
             files: None,
+            force_level: None,
         })
     }
 
@@ -216,22 +225,8 @@ impl VersionCalculator {
     ///
     /// Options are defined in `ForceLevel`
     ///
-    pub fn force(&mut self, level: ForceLevel) -> Self {
-        let mut conventional_commits = ConventionalCommits::new();
-        log::debug!("forcing a change to {}", level);
-        match level {
-            ForceLevel::Major => {
-                conventional_commits.set_breaking(true);
-            }
-            ForceLevel::Minor => {
-                conventional_commits.increment_counts(git_conventional::Type::FEAT);
-            }
-            ForceLevel::Patch => {
-                conventional_commits.increment_counts(git_conventional::Type::FIX);
-            }
-        }
-
-        self.conventional = Some(conventional_commits);
+    pub fn set_force(&mut self, level: Option<ForceLevel>) -> Self {
+        self.force_level = level;
         self.clone()
     }
 
@@ -318,62 +313,53 @@ impl VersionCalculator {
             None => return Answer::new(Level::None, self.current_version.clone(), None),
         };
 
-        let bump = if conventional.breaking() {
-            // Breaking change found in commits
-            log::debug!("breaking change found");
-            Level::Major
-        } else if 0 < conventional.commits_by_type("feat") {
-            log::debug!(
-                "{} feature commit(s) found requiring increment of minor number",
-                &conventional.commits_by_type("feat")
-            );
-            Level::Minor
-        } else if 0 < conventional.commits_all_types() {
-            log::debug!(
-                "{} conventional commit(s) found requiring increment of patch number",
-                &conventional.commits_all_types()
-            );
-            Level::Patch
-        } else {
-            Level::None
+        let final_bump = match &self.force_level {
+            None => {
+                let bump = if conventional.breaking() {
+                    // Breaking change found in commits
+                    log::debug!("breaking change found");
+                    Level::Major
+                } else if 0 < conventional.commits_by_type("feat") {
+                    log::debug!(
+                        "{} feature commit(s) found requiring increment of minor number",
+                        &conventional.commits_by_type("feat")
+                    );
+                    Level::Minor
+                } else if 0 < conventional.commits_all_types() {
+                    log::debug!(
+                        "{} conventional commit(s) found requiring increment of patch number",
+                        &conventional.commits_all_types()
+                    );
+                    Level::Patch
+                } else {
+                    Level::None
+                };
+
+                if self.current_version.version().major() == 0 {
+                    log::info!("Not yet at a stable version");
+                    match bump {
+                        Level::Major => {
+                            let new_bump = Level::Minor;
+                            debug!("Shifting right from {} to {}", bump, new_bump);
+                            new_bump
+                        }
+                        Level::Minor => {
+                            let new_bump = Level::Patch;
+                            debug!("Shifting right from {} to {}", bump, new_bump);
+                            new_bump
+                        }
+                        _ => bump,
+                    }
+                } else {
+                    bump
+                }
+            }
+            Some(forced_level) => forced_level.clone().into(),
         };
 
-        let final_bump = if self.current_version.version().major() == 0 {
-            log::info!("Not yet at a stable version");
-            match bump {
-                Level::Major => {
-                    let new_bump = Level::Minor;
-                    debug!("Shifting right from {} to {}", bump, new_bump);
-                    new_bump
-                }
-                Level::Minor => {
-                    let new_bump = Level::Patch;
-                    debug!("Shifting right from {} to {}", bump, new_bump);
-                    new_bump
-                }
-                _ => bump,
-            }
-        } else {
-            bump
-        };
         let next_version = next_version_calculator(self.current_version.clone(), &final_bump);
 
         Answer::new(final_bump, next_version, None)
-    }
-
-    /// Report version 1.0.0 and update level major
-    ///
-    /// ## Error
-    ///
-    /// Report error if major version number is greater than 0
-    pub fn promote_first(&mut self) -> Result<Answer, Error> {
-        if 0 < self.current_version.version().major() {
-            Err(Error::MajorAlreadyUsed(
-                self.current_version.version().major().to_string(),
-            ))
-        } else {
-            Ok(self.force(ForceLevel::Major).next_version())
-        }
     }
 
     /// Check for required files
@@ -425,7 +411,7 @@ impl VersionCalculator {
 }
 
 fn next_version_calculator(mut version: VersionTag, bump: &Level) -> VersionTag {
-    match *bump {
+    let next_version = match *bump {
         Level::Major => {
             version.version_mut().increment_major();
             version
@@ -438,6 +424,137 @@ fn next_version_calculator(mut version: VersionTag, bump: &Level) -> VersionTag 
             version.version_mut().increment_patch();
             version
         }
+        Level::First => {
+            version.version_mut().major = 1;
+            version.version_mut().minor = 0;
+            version.version_mut().patch = 0;
+            version
+        }
         _ => version,
+    };
+    log::debug!("Next version is: {next_version}");
+
+    next_version
+}
+
+#[cfg(test)]
+mod test {
+    use std::collections::{HashMap, HashSet};
+    use std::ffi::OsString;
+
+    use crate::ForceLevel;
+    use crate::TypeHierarchy::Feature;
+    use crate::{semantic::Semantic, ConventionalCommits, VersionCalculator, VersionTag};
+
+    fn gen_current_version(
+        version_prefix: &str,
+        major: u32,
+        minor: u32,
+        patch: u32,
+        pre_release: Option<String>,
+        build_meta_data: Option<String>,
+    ) -> VersionTag {
+        VersionTag {
+            refs: "refs/tags/".to_string(),
+            tag_prefix: "".to_string(),
+            version_prefix: version_prefix.to_string(),
+            semantic_version: Semantic {
+                major,
+                minor,
+                patch,
+                pre_release,
+                build_meta_data,
+            },
+        }
+    }
+
+    fn gen_conventional_commits() -> Option<ConventionalCommits> {
+        let mut counts = HashMap::new();
+        let values = [
+            ("chore".to_string(), 1),
+            ("docs".to_string(), 1),
+            ("feat".to_string(), 1),
+            ("refactor".to_string(), 1),
+            ("ci".to_string(), 1),
+            ("test".to_string(), 1),
+            ("fix".to_string(), 1),
+        ];
+
+        for val in values {
+            counts.insert(val.0, val.1);
+        }
+
+        Some(
+            ConventionalCommits {
+                commits: vec!(
+                    "fix: spelling of output in description of set_env".to_string(),
+                    "Merge branch 'main' of github.com:jerusdp/nextsv into fix/version-level-assessment".to_string(),
+                    "test: Ensure all current tests are passing".to_string(),
+                    "refactor: implemented VersionTag".to_string(),
+                    "feat: Regex implemented to extract version string".to_string(),
+                    "chore: Updated minium rust version references".to_string(),
+                    "ci: Updated Minimum rust version to 1.74".to_string(),
+                    "docs: Updated tests in docs.".to_string()
+                ),
+                counts,
+                breaking: false,
+                top_type: Some(
+                    Feature,
+                ),
+            },
+        )
+    }
+
+    fn gen_files() -> Option<HashSet<OsString>> {
+        let file_list = [
+            "calculator.rs",
+            "help.trycmd",
+            "CHANGELOG.md",
+            "Cargo.toml",
+            "config.yml",
+            "error.rs",
+            "README.md",
+        ];
+        let mut files = HashSet::new();
+
+        for file in file_list {
+            files.insert(OsString::from(file));
+        }
+
+        Some(files)
+    }
+
+    #[test]
+    fn promote_to_version_one() {
+        let current_version = gen_current_version("v", 0, 7, 9, None, None);
+
+        let conventional = gen_conventional_commits();
+
+        let files = gen_files();
+
+        let force_level = Some(ForceLevel::First);
+
+        let mut this_version = VersionCalculator {
+            current_version,
+            conventional,
+            files,
+            force_level,
+        };
+
+        let new_version = this_version.next_version();
+        println!("The promoted version string is: {:?}", new_version);
+        let version_string = new_version.version_number.version().to_string();
+        println!("The promoted version string is: {:?}", version_string);
+
+        assert_eq!("1.0.0", new_version.bump_level.to_string().as_str());
+
+        let version_number = format!(
+            "{}.{}.{}",
+            new_version.version_number.semantic_version.major,
+            new_version.version_number.semantic_version.minor,
+            new_version.version_number.semantic_version.patch
+        );
+
+        assert_eq!("1.0.0", version_number)
     }
 }

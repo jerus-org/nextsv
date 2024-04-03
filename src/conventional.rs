@@ -95,10 +95,10 @@ impl fmt::Display for TypeHierarchy {
 }
 #[derive(Default, Debug, PartialEq, Eq, Clone)]
 pub struct ConventionalCommits {
-    commits: Vec<String>,
-    counts: HashMap<String, u32>,
-    breaking: bool,
-    top_type: Option<TypeHierarchy>,
+    pub(crate) commits: Vec<String>,
+    pub(crate) counts: HashMap<String, u32>,
+    pub(crate) breaking: bool,
+    pub(crate) top_type: Option<TypeHierarchy>,
 }
 
 impl ConventionalCommits {
@@ -159,13 +159,6 @@ impl ConventionalCommits {
 
     pub fn breaking(&self) -> bool {
         self.breaking
-    }
-
-    /// Set the breaking flag value
-    ///
-    pub fn set_breaking(&mut self, flag: bool) -> &mut Self {
-        self.breaking = flag;
-        self
     }
 
     /// Set the value of the top type to a valid TypeHierarchy value

@@ -11,7 +11,7 @@
 
 use std::{cmp::Ordering, fmt};
 
-use crate::Error;
+use crate::{Error, ForceLevel};
 use regex::Regex;
 
 /// Level at which the next increment will be made
@@ -35,6 +35,8 @@ pub enum Level {
     Beta,
     /// Update is to an rc pre-release suffix (for future use)
     Rc,
+    /// Update is to version 1.0.0
+    First,
 }
 
 impl fmt::Display for Level {
@@ -48,6 +50,18 @@ impl fmt::Display for Level {
             Level::Alpha => write!(f, "alpha"),
             Level::Beta => write!(f, "beta"),
             Level::Rc => write!(f, "rc"),
+            Level::First => write!(f, "1.0.0"),
+        }
+    }
+}
+
+impl From<ForceLevel> for Level {
+    fn from(force_level: ForceLevel) -> Self {
+        match force_level {
+            ForceLevel::First => Level::First,
+            ForceLevel::Major => Level::Major,
+            ForceLevel::Minor => Level::Minor,
+            ForceLevel::Patch => Level::Patch,
         }
     }
 }
@@ -67,10 +81,10 @@ macro_rules! some_or_none_string {
 ///
 #[derive(Debug, Default, Clone)]
 pub struct VersionTag {
-    refs: String,
-    tag_prefix: String,
-    version_prefix: String,
-    semantic_version: Semantic,
+    pub(crate) refs: String,
+    pub(crate) tag_prefix: String,
+    pub(crate) version_prefix: String,
+    pub(crate) semantic_version: Semantic,
 }
 
 impl PartialEq for VersionTag {
@@ -242,11 +256,11 @@ fn tag_validation(tag: &str, version_prefix: &str) -> Result<(), Error> {
 ///
 #[derive(Debug, Default, PartialEq, PartialOrd, Eq, Ord, Clone)]
 pub struct Semantic {
-    major: u32,
-    minor: u32,
-    patch: u32,
-    pre_release: Option<String>,
-    build_meta_data: Option<String>,
+    pub(crate) major: u32,
+    pub(crate) minor: u32,
+    pub(crate) patch: u32,
+    pub(crate) pre_release: Option<String>,
+    pub(crate) build_meta_data: Option<String>,
 }
 
 impl fmt::Display for Semantic {
