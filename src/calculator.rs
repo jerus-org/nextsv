@@ -450,6 +450,7 @@ mod test {
     use crate::{semantic::Semantic, ConventionalCommits, VersionCalculator, VersionTag};
     use crate::{ForceLevel, TypeHierarchy};
 
+    #[derive(Debug)]
     pub(crate) enum ConventionalType {
         Feat,
         Fix,
@@ -606,7 +607,7 @@ mod test {
     }
 
     #[rstest(commit => ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci", "revert"])]
-    fn bump_result_for_nonprod_curren_version_and_nonbreaking(commit: ConventionalType) {
+    fn bump_result_for_nonprod_current_version_and_nonbreaking(commit: ConventionalType) {
         let current_version = gen_current_version("v", 0, 7, 9, None, None);
 
         let conventional = gen_conventional_commit(commit, false);
@@ -634,6 +635,38 @@ mod test {
         );
 
         assert_eq!("0.7.10", version_number)
+    }
+
+    #[rstest(commit => ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci", "revert"])]
+    // #[trace]
+    fn bump_result_for_nonprod_current_version_and_breaking(commit: ConventionalType) {
+        let current_version = gen_current_version("v", 0, 7, 9, None, None);
+
+        let conventional = gen_conventional_commit(commit, true);
+
+        let files = gen_files();
+
+        let force_level = None;
+
+        let mut this_version = VersionCalculator {
+            current_version,
+            conventional,
+            files,
+            force_level,
+        };
+
+        let new_version = this_version.next_version();
+
+        assert_eq!("minor", new_version.bump_level.to_string().as_str());
+
+        let version_number = format!(
+            "{}.{}.{}",
+            new_version.version_number.semantic_version.major,
+            new_version.version_number.semantic_version.minor,
+            new_version.version_number.semantic_version.patch
+        );
+
+        assert_eq!("0.8.0", version_number)
     }
 
     #[test]
