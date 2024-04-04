@@ -441,10 +441,68 @@ fn next_version_calculator(mut version: VersionTag, bump: &Level) -> VersionTag 
 mod test {
     use std::collections::{HashMap, HashSet};
     use std::ffi::OsString;
+    use std::fmt;
+    use std::str::FromStr;
 
-    use crate::ForceLevel;
+    use rstest::rstest;
+
     use crate::TypeHierarchy::Feature;
     use crate::{semantic::Semantic, ConventionalCommits, VersionCalculator, VersionTag};
+    use crate::{ForceLevel, TypeHierarchy};
+
+    pub(crate) enum ConventionalType {
+        Feat,
+        Fix,
+        Docs,
+        Style,
+        Refactor,
+        Perf,
+        Test,
+        Build,
+        Ci,
+        Chore,
+        Revert,
+    }
+
+    impl fmt::Display for ConventionalType {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            match self {
+                ConventionalType::Feat => write!(f, "feat"),
+                ConventionalType::Fix => write!(f, "fix"),
+                ConventionalType::Docs => write!(f, "docs"),
+                ConventionalType::Style => write!(f, "style"),
+                ConventionalType::Refactor => write!(f, "refactor"),
+                ConventionalType::Perf => write!(f, "perf"),
+                ConventionalType::Test => write!(f, "test"),
+                ConventionalType::Build => write!(f, "build"),
+                ConventionalType::Chore => write!(f, "chore"),
+                ConventionalType::Ci => write!(f, "ci"),
+                ConventionalType::Revert => write!(f, "revert"),
+            }
+        }
+    }
+
+    // Implement the FromStr trait for the Direction enum
+    impl FromStr for ConventionalType {
+        type Err = ();
+
+        fn from_str(s: &str) -> Result<Self, Self::Err> {
+            match s.trim().to_lowercase().as_str() {
+                "feat" => Ok(ConventionalType::Feat),
+                "fix" => Ok(ConventionalType::Fix),
+                "docs" => Ok(ConventionalType::Docs),
+                "style" => Ok(ConventionalType::Style),
+                "refactor" => Ok(ConventionalType::Refactor),
+                "perf" => Ok(ConventionalType::Perf),
+                "test" => Ok(ConventionalType::Test),
+                "build" => Ok(ConventionalType::Build),
+                "chore" => Ok(ConventionalType::Chore),
+                "ci" => Ok(ConventionalType::Ci),
+                "revert" => Ok(ConventionalType::Revert),
+                _ => Err(()),
+            }
+        }
+    }
 
     fn gen_current_version(
         version_prefix: &str,
@@ -505,6 +563,29 @@ mod test {
         )
     }
 
+    fn gen_conventional_commit(
+        commit_type: ConventionalType,
+        breaking: bool,
+    ) -> Option<ConventionalCommits> {
+        let mut counts = HashMap::new();
+        counts.insert(format!("{}", commit_type), 1);
+
+        let commits = vec![format!(
+            "{}{} commit for testing purposes only",
+            if breaking { "!" } else { "" },
+            breaking
+        )];
+
+        let top_type = Some(TypeHierarchy::parse(&commit_type.to_string()).unwrap());
+
+        Some(ConventionalCommits {
+            commits,
+            counts,
+            breaking,
+            top_type,
+        })
+    }
+
     fn gen_files() -> Option<HashSet<OsString>> {
         let file_list = [
             "calculator.rs",
@@ -522,6 +603,37 @@ mod test {
         }
 
         Some(files)
+    }
+
+    #[rstest(commit => ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci", "revert"])]
+    fn bump_result_for_nonprod_curren_version_and_nonbreaking(commit: ConventionalType) {
+        let current_version = gen_current_version("v", 0, 7, 9, None, None);
+
+        let conventional = gen_conventional_commit(commit, false);
+
+        let files = gen_files();
+
+        let force_level = None;
+
+        let mut this_version = VersionCalculator {
+            current_version,
+            conventional,
+            files,
+            force_level,
+        };
+
+        let new_version = this_version.next_version();
+
+        assert_eq!("patch", new_version.bump_level.to_string().as_str());
+
+        let version_number = format!(
+            "{}.{}.{}",
+            new_version.version_number.semantic_version.major,
+            new_version.version_number.semantic_version.minor,
+            new_version.version_number.semantic_version.patch
+        );
+
+        assert_eq!("0.7.10", version_number)
     }
 
     #[test]
@@ -542,9 +654,6 @@ mod test {
         };
 
         let new_version = this_version.next_version();
-        println!("The promoted version string is: {:?}", new_version);
-        let version_string = new_version.version_number.version().to_string();
-        println!("The promoted version string is: {:?}", version_string);
 
         assert_eq!("1.0.0", new_version.bump_level.to_string().as_str());
 
