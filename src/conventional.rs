@@ -78,6 +78,8 @@ impl TypeHierarchy {
             "test" => TypeHierarchy::Other,
             "chore" => TypeHierarchy::Other,
             "breaking" => TypeHierarchy::Breaking,
+            "build" => TypeHierarchy::Other,
+            "ci" => TypeHierarchy::Other,
             _ => return Err(Error::NotTypeHierachyName(s.to_string())),
         })
     }
