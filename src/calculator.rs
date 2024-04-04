@@ -11,7 +11,6 @@
 
 use crate::{ConventionalCommits, Error, Level, TypeHierarchy, VersionTag};
 use git2::Repository;
-use log::debug;
 use regex::Regex;
 
 use std::{
@@ -313,48 +312,39 @@ impl VersionCalculator {
             None => return Answer::new(Level::None, self.current_version.clone(), None),
         };
 
-        let final_bump = match &self.force_level {
-            None => {
-                let bump = if conventional.breaking() {
-                    // Breaking change found in commits
-                    log::debug!("breaking change found");
-                    Level::Major
-                } else if 0 < conventional.commits_by_type("feat") {
-                    log::debug!(
-                        "{} feature commit(s) found requiring increment of minor number",
-                        &conventional.commits_by_type("feat")
-                    );
-                    Level::Minor
-                } else if 0 < conventional.commits_all_types() {
-                    log::debug!(
-                        "{} conventional commit(s) found requiring increment of patch number",
-                        &conventional.commits_all_types()
-                    );
-                    Level::Patch
-                } else {
-                    Level::None
-                };
+        if let Some(forced_level) = &self.force_level {
+            let final_bump = forced_level.clone().into();
+            let next_version = next_version_calculator(self.current_version.clone(), &final_bump);
+            return Answer::new(final_bump, next_version, None);
+        }
 
-                if self.current_version.version().major() == 0 {
-                    log::info!("Not yet at a stable version");
-                    match bump {
-                        Level::Major => {
-                            let new_bump = Level::Minor;
-                            debug!("Shifting right from {} to {}", bump, new_bump);
-                            new_bump
-                        }
-                        Level::Minor => {
-                            let new_bump = Level::Patch;
-                            debug!("Shifting right from {} to {}", bump, new_bump);
-                            new_bump
-                        }
-                        _ => bump,
-                    }
-                } else {
-                    bump
-                }
-            }
-            Some(forced_level) => forced_level.clone().into(),
+        let bump = if conventional.breaking() {
+            // Breaking change found in commits
+            log::debug!("breaking change found");
+            Level::Major
+        } else if 0 < conventional.commits_by_type("feat") {
+            log::debug!(
+                "{} feature commit(s) found requiring increment of minor number",
+                &conventional.commits_by_type("feat")
+            );
+            Level::Minor
+        } else if 0 < conventional.commits_all_types() {
+            log::debug!(
+                "{} conventional commit(s) found requiring increment of patch number",
+                &conventional.commits_all_types()
+            );
+            Level::Patch
+        } else {
+            Level::None
+        };
+
+        let final_bump = if self.current_version.version().major() == 0 {
+            log::info!("Not yet at a stable version");
+            let new_bump = shift_right_for_non_prod_version(&bump);
+            log::debug!("Shifting right from {} to {}", bump, new_bump);
+            new_bump
+        } else {
+            bump
         };
 
         let next_version = next_version_calculator(self.current_version.clone(), &final_bump);
@@ -437,6 +427,13 @@ fn next_version_calculator(mut version: VersionTag, bump: &Level) -> VersionTag 
     next_version
 }
 
+fn shift_right_for_non_prod_version(bump: &Level) -> Level {
+    match bump {
+        Level::Major => Level::Minor,
+        Level::Minor => Level::Patch,
+        _ => bump.clone(),
+    }
+}
 #[cfg(test)]
 mod test {
     use std::collections::{HashMap, HashSet};
@@ -444,6 +441,8 @@ mod test {
     use std::fmt;
     use std::str::FromStr;
 
+    use log::LevelFilter;
+    use log4rs_test_utils::test_logging;
     use rstest::rstest;
 
     use crate::TypeHierarchy::Feature;
@@ -727,9 +726,55 @@ mod test {
         assert_eq!(expected_version, version_number)
     }
 
-    #[rstest(commit => ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci", "revert"])]
+    #[rstest]
     // #[trace]
-    fn bump_result_for_prod_current_version_and_breaking(commit: ConventionalType) {
+    fn bump_result_for_nonprod_current_version_and_nonbreaking_with_prerelease(
+        #[values(
+            "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci",
+            "revert"
+        )]
+        commit: ConventionalType,
+    ) {
+        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
+
+        let current_version = gen_current_version("v", 0, 7, 9, Some("alpha.1".to_string()), None);
+
+        let conventional = gen_conventional_commit(commit, false);
+
+        let files = gen_files();
+
+        let force_level = None;
+
+        let mut this_version = VersionCalculator {
+            current_version,
+            conventional,
+            files,
+            force_level,
+        };
+
+        let new_version = this_version.next_version();
+
+        assert_eq!("alpha", new_version.bump_level.to_string().as_str());
+
+        let version_number = format!(
+            "{}.{}.{}",
+            new_version.version_number.semantic_version.major,
+            new_version.version_number.semantic_version.minor,
+            new_version.version_number.semantic_version.patch
+        );
+
+        assert_eq!("0.7.9-alpha.2", version_number)
+    }
+
+    #[rstest]
+    // #[trace]
+    fn bump_result_for_prod_current_version_and_breaking(
+        #[values(
+            "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci",
+            "revert"
+        )]
+        commit: ConventionalType,
+    ) {
         let current_version = gen_current_version("v", 1, 7, 9, None, None);
 
         let conventional = gen_conventional_commit(commit, true);
