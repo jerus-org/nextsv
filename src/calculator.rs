@@ -606,8 +606,14 @@ mod test {
         Some(files)
     }
 
-    #[rstest(commit => ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci", "revert"])]
-    fn bump_result_for_nonprod_current_version_and_nonbreaking(commit: ConventionalType) {
+    #[rstest]
+    fn bump_result_for_nonprod_current_version_and_nonbreaking(
+        #[values(
+            "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci",
+            "revert"
+        )]
+        commit: ConventionalType,
+    ) {
         let current_version = gen_current_version("v", 0, 7, 9, None, None);
 
         let conventional = gen_conventional_commit(commit, false);
@@ -637,9 +643,15 @@ mod test {
         assert_eq!("0.7.10", version_number)
     }
 
-    #[rstest(commit => ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci", "revert"])]
+    #[rstest]
     // #[trace]
-    fn bump_result_for_nonprod_current_version_and_breaking(commit: ConventionalType) {
+    fn bump_result_for_nonprod_current_version_and_breaking(
+        #[values(
+            "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci",
+            "revert"
+        )]
+        commit: ConventionalType,
+    ) {
         let current_version = gen_current_version("v", 0, 7, 9, None, None);
 
         let conventional = gen_conventional_commit(commit, true);
@@ -667,6 +679,84 @@ mod test {
         );
 
         assert_eq!("0.8.0", version_number)
+    }
+
+    #[rstest]
+    #[case::feat("feat", "minor", "1.8.0")]
+    #[case::fix("fix", "patch", "1.7.10")]
+    #[case::docs("docs", "patch", "1.7.10")]
+    #[case::style("style", "patch", "1.7.10")]
+    #[case::refactor("refactor", "patch", "1.7.10")]
+    #[case::perf("perf", "patch", "1.7.10")]
+    #[case::test("test", "patch", "1.7.10")]
+    #[case::build("build", "patch", "1.7.10")]
+    #[case::chore("chore", "patch", "1.7.10")]
+    #[case::ci("ci", "patch", "1.7.10")]
+    #[case::revert("revert", "patch", "1.7.10")]
+    fn bump_result_for_prod_current_version_and_nonbreaking(
+        #[case] commit: ConventionalType,
+        #[case] expected_bump: &str,
+        #[case] expected_version: &str,
+    ) {
+        let current_version = gen_current_version("v", 1, 7, 9, None, None);
+
+        let conventional = gen_conventional_commit(commit, false);
+
+        let files = gen_files();
+
+        let force_level = None;
+
+        let mut this_version = VersionCalculator {
+            current_version,
+            conventional,
+            files,
+            force_level,
+        };
+
+        let new_version = this_version.next_version();
+
+        assert_eq!(expected_bump, new_version.bump_level.to_string());
+
+        let version_number = format!(
+            "{}.{}.{}",
+            new_version.version_number.semantic_version.major,
+            new_version.version_number.semantic_version.minor,
+            new_version.version_number.semantic_version.patch
+        );
+
+        assert_eq!(expected_version, version_number)
+    }
+
+    #[rstest(commit => ["feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci", "revert"])]
+    // #[trace]
+    fn bump_result_for_prod_current_version_and_breaking(commit: ConventionalType) {
+        let current_version = gen_current_version("v", 1, 7, 9, None, None);
+
+        let conventional = gen_conventional_commit(commit, true);
+
+        let files = gen_files();
+
+        let force_level = None;
+
+        let mut this_version = VersionCalculator {
+            current_version,
+            conventional,
+            files,
+            force_level,
+        };
+
+        let new_version = this_version.next_version();
+
+        assert_eq!("major", new_version.bump_level.to_string().as_str());
+
+        let version_number = format!(
+            "{}.{}.{}",
+            new_version.version_number.semantic_version.major,
+            new_version.version_number.semantic_version.minor,
+            new_version.version_number.semantic_version.patch
+        );
+
+        assert_eq!("2.0.0", version_number)
     }
 
     #[test]
