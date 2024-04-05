@@ -37,6 +37,8 @@ pub enum Level {
     Rc,
     /// Update is to version 1.0.0
     First,
+    /// Custom for update to a custom pre-release label
+    Custom(String),
 }
 
 impl fmt::Display for Level {
@@ -51,6 +53,7 @@ impl fmt::Display for Level {
             Level::Beta => write!(f, "beta"),
             Level::Rc => write!(f, "rc"),
             Level::First => write!(f, "1.0.0"),
+            Level::Custom(s) => write!(f, "{}", s),
         }
     }
 }
@@ -250,6 +253,57 @@ fn tag_validation(tag: &str, version_prefix: &str) -> Result<(), Error> {
     Ok(())
 }
 
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
+pub(crate) enum PreReleaseType {
+    Alpha,
+    Beta,
+    Rc,
+    Custom,
+}
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
+pub(crate) struct PreRelease {
+    pub(crate) label: String,
+    pub(crate) counter: Option<u32>,
+    pub(crate) pre_type: PreReleaseType,
+}
+
+impl fmt::Display for PreRelease {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(number) = self.counter {
+            write!(f, "{}.{}", self.label, number)
+        } else {
+            write!(f, "{}", self.label)
+        }
+    }
+}
+
+impl PreRelease {
+    pub(crate) fn new(pre_release: &str) -> PreRelease {
+        let (label, counter) = if let Some((label, number)) = pre_release.rsplit_once('.') {
+            match number.parse::<u32>() {
+                Ok(n) => (label.to_string(), Some(n)),
+                Err(_) => (format!("{}.{}", label, number), None),
+            }
+        } else {
+            (pre_release.to_string(), None)
+        };
+        let mut pre_type = PreReleaseType::Custom;
+        if label.to_ascii_lowercase() == "alpha" {
+            pre_type = PreReleaseType::Alpha;
+        }
+        if label.to_ascii_lowercase() == "beta" {
+            pre_type = PreReleaseType::Beta;
+        }
+        if label.to_ascii_lowercase() == "rc" {
+            pre_type = PreReleaseType::Rc;
+        }
+        PreRelease {
+            label,
+            counter,
+            pre_type,
+        }
+    }
+}
 /// The Semantic data structure represents a semantic version number.
 ///
 /// TODO: Implement support for pre-release and build
@@ -259,7 +313,7 @@ pub struct Semantic {
     pub(crate) major: u32,
     pub(crate) minor: u32,
     pub(crate) patch: u32,
-    pub(crate) pre_release: Option<String>,
+    pub(crate) pre_release: Option<PreRelease>,
     pub(crate) build_meta_data: Option<String>,
 }
 
@@ -267,7 +321,7 @@ impl fmt::Display for Semantic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut version = format!("{}.{}.{}", self.major, self.minor, self.patch);
         if let Some(pre) = &self.pre_release {
-            version = version + "-" + &pre
+            version = version + "-" + pre.to_string().as_str()
         };
         if let Some(build) = &self.build_meta_data {
             version = version + "+" + &build
@@ -289,11 +343,17 @@ impl Semantic {
         let minor: u32 = minor.parse().unwrap();
         let patch: u32 = patch.parse().unwrap();
 
+        let pre_release = if pre_release.is_empty() {
+            None
+        } else {
+            Some(PreRelease::new(pre_release))
+        };
+
         Semantic {
             major,
             minor,
             patch,
-            pre_release: some_or_none_string!(pre_release),
+            pre_release,
             build_meta_data: some_or_none_string!(build_meta_data),
         }
     }
@@ -321,20 +381,21 @@ impl Semantic {
         self
     }
 
-    /// Increment the minor component of the version number by 1
+    /// Increment the pre_release component of the version number by 1
+    /// If no counter exists a counter will be added with an iniital
+    /// count of 1.
     ///
-    pub fn increment_minor(&mut self) -> &mut Self {
-        self.minor += 1;
-        self.patch = 0;
-        self
-    }
+    pub fn increment_pre_release(&mut self) -> &mut Self {
+        let mut pre_release = self.pre_release.clone().unwrap();
+        let new_count = if let Some(mut c) = pre_release.counter {
+            c += 1;
+            c
+        } else {
+            1
+        };
+        pre_release.counter = Some(new_count);
 
-    /// Increment the major component of the version number by 1
-    ///
-    pub fn increment_major(&mut self) -> &mut Self {
-        self.major += 1;
-        self.minor = 0;
-        self.patch = 0;
+        self.pre_release = Some(pre_release);
         self
     }
 
@@ -391,15 +452,16 @@ mod tests {
     #[test]
     fn bump_minor_version_number_by_one() {
         let mut version = Semantic::default();
-        let updated_version = version.increment_minor();
+        version.minor += 1;
+        version.patch = 0;
 
-        assert_eq!("0.1.0", &updated_version.to_string());
+        assert_eq!("0.1.0", &version.to_string());
     }
 
     #[test]
     fn bump_major_version_number_by_one() {
         let mut version = Semantic::default();
-        let updated_version = version.increment_major();
+        let updated_version = version.increment_pre_release();
 
         assert_eq!("1.0.0", &updated_version.to_string());
     }
@@ -521,7 +583,17 @@ mod tests {
         assert_eq!(2, vt.version().major);
         assert_eq!(3, vt.version().minor);
         assert_eq!(1, vt.version().patch);
-        assert_eq!("Beta.3", vt.version().pre_release.as_ref().unwrap());
-        assert_eq!("20876.675", vt.version().build_meta_data.as_ref().unwrap());
+        assert_eq!(
+            "Beta.3",
+            vt.semantic_version
+                .pre_release
+                .unwrap()
+                .to_string()
+                .as_str()
+        );
+        assert_eq!(
+            "20876.675",
+            vt.semantic_version.build_meta_data.as_ref().unwrap()
+        );
     }
 }

@@ -9,7 +9,9 @@
 //!
 //!
 
-use crate::{ConventionalCommits, Error, Level, TypeHierarchy, VersionTag};
+use crate::{
+    semantic::PreReleaseType, ConventionalCommits, Error, Level, TypeHierarchy, VersionTag,
+};
 use git2::Repository;
 use regex::Regex;
 
@@ -139,6 +141,23 @@ impl fmt::Display for ForceLevel {
     }
 }
 
+// #[derive(Debug)]
+// enum Lane {
+//     Start,
+//     Gather,
+//     Calculate,
+//     Report,
+//     Finish,
+// }
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
+enum CalcRoute {
+    NonProd,
+    PreRelease,
+    Prod,
+    Forced(ForceLevel),
+}
+
 /// VersionCalculator
 ///
 /// Builds up data about the current version to calculate the next version
@@ -149,7 +168,7 @@ pub struct VersionCalculator {
     current_version: VersionTag,
     conventional: Option<ConventionalCommits>,
     files: Option<HashSet<OsString>>,
-    force_level: Option<ForceLevel>,
+    route: CalcRoute,
 }
 
 impl VersionCalculator {
@@ -161,11 +180,13 @@ impl VersionCalculator {
     ///
     pub fn new(version_prefix: &str) -> Result<VersionCalculator, Error> {
         let current_version = latest(version_prefix)?;
+        let route = calculation_route(&current_version);
+
         Ok(VersionCalculator {
             current_version,
             conventional: None,
             files: None,
-            force_level: None,
+            route,
         })
     }
 
@@ -225,7 +246,9 @@ impl VersionCalculator {
     /// Options are defined in `ForceLevel`
     ///
     pub fn set_force(&mut self, level: Option<ForceLevel>) -> Self {
-        self.force_level = level;
+        if let Some(level) = level {
+            self.route = CalcRoute::Forced(level)
+        }
         self.clone()
     }
 
@@ -312,44 +335,86 @@ impl VersionCalculator {
             None => return Answer::new(Level::None, self.current_version.clone(), None),
         };
 
-        if let Some(forced_level) = &self.force_level {
-            let final_bump = forced_level.clone().into();
-            let next_version = next_version_calculator(self.current_version.clone(), &final_bump);
-            return Answer::new(final_bump, next_version, None);
-        }
+        log::debug!(
+            "Calculating according to the route data provided: {:?}",
+            &self.route
+        );
 
-        let bump = if conventional.breaking() {
-            // Breaking change found in commits
-            log::debug!("breaking change found");
-            Level::Major
-        } else if 0 < conventional.commits_by_type("feat") {
-            log::debug!(
-                "{} feature commit(s) found requiring increment of minor number",
-                &conventional.commits_by_type("feat")
-            );
-            Level::Minor
-        } else if 0 < conventional.commits_all_types() {
-            log::debug!(
-                "{} conventional commit(s) found requiring increment of patch number",
-                &conventional.commits_all_types()
-            );
-            Level::Patch
-        } else {
-            Level::None
+        let mut bump = Level::None;
+        log::debug!("Starting calculation with bump level of {bump:?}");
+        match &self.route {
+            CalcRoute::Forced(forced_level) => {
+                log::debug!("Forcing the bump level output to `{forced_level}`");
+                let mut final_bump = forced_level.clone().into();
+                let next_version =
+                    next_version_calculator(self.current_version.clone(), &mut final_bump);
+                return Answer::new(final_bump, next_version, None);
+            }
+            CalcRoute::NonProd => {
+                bump = if conventional.breaking() {
+                    // Breaking change found in commits
+                    log::debug!("breaking change found");
+                    Level::Minor
+                } else if 0 < conventional.commits_by_type("feat") {
+                    log::debug!(
+                        "{} feature commit(s) found requiring increment of minor number",
+                        &conventional.commits_by_type("feat")
+                    );
+                    Level::Minor
+                } else {
+                    log::debug!(
+                        "{} conventional commit(s) found requiring increment of patch number",
+                        &conventional.commits_all_types()
+                    );
+                    Level::Patch
+                };
+
+                log::debug!("Calculting the non-prod version change bump");
+            }
+            CalcRoute::PreRelease => {
+                bump = match self
+                    .current_version
+                    .semantic_version
+                    .pre_release
+                    .as_ref()
+                    .unwrap()
+                    .pre_type
+                {
+                    PreReleaseType::Alpha => Level::Alpha,
+                    PreReleaseType::Beta => Level::Beta,
+                    PreReleaseType::Rc => Level::Rc,
+                    PreReleaseType::Custom => Level::Custom(String::new()),
+                };
+                log::debug!("Calculting the pre-release version change bump");
+            }
+            CalcRoute::Prod => {
+                log::debug!("Calculting the prod version change bump");
+                bump = if conventional.breaking() {
+                    log::debug!("breaking change found");
+                    Level::Major
+                } else if 0 < conventional.commits_by_type("feat") {
+                    log::debug!(
+                        "{} feature commit(s) found requiring increment of minor number",
+                        &conventional.commits_by_type("feat")
+                    );
+                    Level::Minor
+                } else {
+                    log::debug!(
+                        "{} conventional commit(s) found requiring increment of patch number",
+                        &conventional.commits_all_types()
+                    );
+                    Level::Patch
+                };
+            }
         };
 
-        let final_bump = if self.current_version.version().major() == 0 {
-            log::info!("Not yet at a stable version");
-            let new_bump = shift_right_for_non_prod_version(&bump);
-            log::debug!("Shifting right from {} to {}", bump, new_bump);
-            new_bump
-        } else {
-            bump
-        };
+        let next_version = next_version_calculator(self.current_version.clone(), &mut bump);
 
-        let next_version = next_version_calculator(self.current_version.clone(), &final_bump);
+        // if let Level::Custom(_) = bump {
+        //     bump = Level::Custom(next_version.to_string())
+        // };
 
-        Answer::new(final_bump, next_version, None)
+        Answer::new(bump, next_version, None)
     }
 
     /// Check for required files
@@ -400,18 +465,38 @@ impl VersionCalculator {
     }
 }
 
-fn next_version_calculator(mut version: VersionTag, bump: &Level) -> VersionTag {
-    let next_version = match *bump {
+fn calculation_route(current_version: &VersionTag) -> CalcRoute {
+    if current_version
+        .semantic_version
+        .clone()
+        .pre_release
+        .is_some()
+    {
+        return CalcRoute::PreRelease;
+    };
+    if current_version.semantic_version.major == 0 {
+        return CalcRoute::NonProd;
+    };
+    CalcRoute::Prod
+}
+
+fn next_version_calculator(mut version: VersionTag, bump: &mut Level) -> VersionTag {
+    log::debug!("Starting version is: {version}");
+    let mut new_bump = bump.clone();
+    let next_version = match bump {
         Level::Major => {
-            version.version_mut().increment_major();
+            version.version_mut().major += 1;
+            version.version_mut().minor = 0;
+            version.version_mut().patch = 0;
             version
         }
         Level::Minor => {
-            version.version_mut().increment_minor();
+            version.version_mut().minor += 1;
+            version.version_mut().patch = 0;
             version
         }
         Level::Patch => {
-            version.version_mut().increment_patch();
+            version.version_mut().patch += 1;
             version
         }
         Level::First => {
@@ -420,20 +505,23 @@ fn next_version_calculator(mut version: VersionTag, bump: &Level) -> VersionTag 
             version.version_mut().patch = 0;
             version
         }
+        Level::Alpha | Level::Beta | Level::Rc => {
+            version.version_mut().increment_pre_release();
+            version
+        }
+        Level::Custom(_s) => {
+            version.version_mut().increment_pre_release();
+            new_bump = Level::Custom(version.to_string());
+            version
+        }
         _ => version,
     };
     log::debug!("Next version is: {next_version}");
+    *bump = new_bump;
 
     next_version
 }
 
-fn shift_right_for_non_prod_version(bump: &Level) -> Level {
-    match bump {
-        Level::Major => Level::Minor,
-        Level::Minor => Level::Patch,
-        _ => bump.clone(),
-    }
-}
 #[cfg(test)]
 mod test {
     use std::collections::{HashMap, HashSet};
@@ -445,6 +533,8 @@ mod test {
     use log4rs_test_utils::test_logging;
     use rstest::rstest;
 
+    use crate::calculator::CalcRoute;
+    use crate::semantic::PreRelease;
     use crate::TypeHierarchy::Feature;
     use crate::{semantic::Semantic, ConventionalCommits, VersionCalculator, VersionTag};
     use crate::{ForceLevel, TypeHierarchy};
@@ -509,7 +599,7 @@ mod test {
         major: u32,
         minor: u32,
         patch: u32,
-        pre_release: Option<String>,
+        pre_release: Option<PreRelease>,
         build_meta_data: Option<String>,
     ) -> VersionTag {
         VersionTag {
@@ -614,18 +704,14 @@ mod test {
         commit: ConventionalType,
     ) {
         let current_version = gen_current_version("v", 0, 7, 9, None, None);
-
         let conventional = gen_conventional_commit(commit, false);
-
         let files = gen_files();
-
-        let force_level = None;
 
         let mut this_version = VersionCalculator {
             current_version,
             conventional,
             files,
-            force_level,
+            route: CalcRoute::NonProd,
         };
 
         let new_version = this_version.next_version();
@@ -652,18 +738,14 @@ mod test {
         commit: ConventionalType,
     ) {
         let current_version = gen_current_version("v", 0, 7, 9, None, None);
-
         let conventional = gen_conventional_commit(commit, true);
-
         let files = gen_files();
-
-        let force_level = None;
 
         let mut this_version = VersionCalculator {
             current_version,
             conventional,
             files,
-            force_level,
+            route: CalcRoute::NonProd,
         };
 
         let new_version = this_version.next_version();
@@ -698,18 +780,14 @@ mod test {
         #[case] expected_version: &str,
     ) {
         let current_version = gen_current_version("v", 1, 7, 9, None, None);
-
         let conventional = gen_conventional_commit(commit, false);
-
         let files = gen_files();
-
-        let force_level = None;
 
         let mut this_version = VersionCalculator {
             current_version,
             conventional,
             files,
-            force_level,
+            route: CalcRoute::Prod,
         };
 
         let new_version = this_version.next_version();
@@ -736,20 +814,16 @@ mod test {
         commit: ConventionalType,
     ) {
         test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
-
-        let current_version = gen_current_version("v", 0, 7, 9, Some("alpha.1".to_string()), None);
-
+        let current_version =
+            gen_current_version("v", 0, 7, 9, Some(PreRelease::new("alpha.1")), None);
         let conventional = gen_conventional_commit(commit, false);
-
         let files = gen_files();
-
-        let force_level = None;
 
         let mut this_version = VersionCalculator {
             current_version,
             conventional,
             files,
-            force_level,
+            route: CalcRoute::NonProd,
         };
 
         let new_version = this_version.next_version();
@@ -776,18 +850,14 @@ mod test {
         commit: ConventionalType,
     ) {
         let current_version = gen_current_version("v", 1, 7, 9, None, None);
-
         let conventional = gen_conventional_commit(commit, true);
-
         let files = gen_files();
-
-        let force_level = None;
 
         let mut this_version = VersionCalculator {
             current_version,
             conventional,
             files,
-            force_level,
+            route: CalcRoute::Prod,
         };
 
         let new_version = this_version.next_version();
@@ -807,18 +877,14 @@ mod test {
     #[test]
     fn promote_to_version_one() {
         let current_version = gen_current_version("v", 0, 7, 9, None, None);
-
         let conventional = gen_conventional_commits();
-
         let files = gen_files();
-
-        let force_level = Some(ForceLevel::First);
 
         let mut this_version = VersionCalculator {
             current_version,
             conventional,
             files,
-            force_level,
+            route: CalcRoute::Forced(ForceLevel::First),
         };
 
         let new_version = this_version.next_version();
