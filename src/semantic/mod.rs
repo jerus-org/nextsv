@@ -11,63 +11,11 @@
 
 use std::{cmp::Ordering, fmt};
 
-use crate::{Error, ForceLevel};
+use crate::Error;
 use regex::Regex;
 
-/// Level at which the next increment will be made
-///
-#[derive(Debug, PartialOrd, PartialEq, Eq, Ord, Clone, Default)]
-pub enum Level {
-    /// When no update has been detected the level is set to none
-    #[default]
-    None,
-    /// Update will be made at the patch level
-    Patch,
-    /// Update will be made at the private level
-    Minor,
-    /// Update will be made at the major level
-    Major,
-    /// Update is a release removing any pre-release suffixes (for future use)
-    Release,
-    /// Update is to an alpha pre-release suffix (for future use)
-    Alpha,
-    /// Update is to an beta pre-release suffix (for future use)
-    Beta,
-    /// Update is to an rc pre-release suffix (for future use)
-    Rc,
-    /// Update is to version 1.0.0
-    First,
-    /// Custom for update to a custom pre-release label
-    Custom(String),
-}
-
-impl fmt::Display for Level {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Level::None => write!(f, "none"),
-            Level::Patch => write!(f, "patch"),
-            Level::Minor => write!(f, "minor"),
-            Level::Major => write!(f, "major"),
-            Level::Release => write!(f, "release"),
-            Level::Alpha => write!(f, "alpha"),
-            Level::Beta => write!(f, "beta"),
-            Level::Rc => write!(f, "rc"),
-            Level::First => write!(f, "1.0.0"),
-            Level::Custom(s) => write!(f, "{}", s),
-        }
-    }
-}
-
-impl From<ForceLevel> for Level {
-    fn from(force_level: ForceLevel) -> Self {
-        match force_level {
-            ForceLevel::First => Level::First,
-            ForceLevel::Major => Level::Major,
-            ForceLevel::Minor => Level::Minor,
-            ForceLevel::Patch => Level::Patch,
-        }
-    }
-}
+mod level;
+pub use level::Level;
 
 macro_rules! some_or_none_string {
     ($i:ident) => {
