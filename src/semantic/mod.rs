@@ -9,13 +9,16 @@
 //! for pre-release suffixes.
 //!
 
-use std::{cmp::Ordering, fmt};
+use std::fmt;
 
 use crate::Error;
-use regex::Regex;
 
 mod level;
+pub(crate) mod test_utils;
+mod version_tag;
+
 pub use level::Level;
+pub use version_tag::VersionTag;
 
 macro_rules! some_or_none_string {
     ($i:ident) => {
@@ -25,180 +28,6 @@ macro_rules! some_or_none_string {
             None
         }
     };
-}
-
-/// The VersionTag data structure represents a git tag containing a
-/// semantic version number.
-///
-#[derive(Debug, Default, Clone)]
-pub struct VersionTag {
-    pub(crate) refs: String,
-    pub(crate) tag_prefix: String,
-    pub(crate) version_prefix: String,
-    pub(crate) semantic_version: Semantic,
-}
-
-impl PartialEq for VersionTag {
-    fn eq(&self, other: &Self) -> bool {
-        self.semantic_version == other.semantic_version
-    }
-}
-
-impl Eq for VersionTag {}
-
-impl PartialOrd for VersionTag {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for VersionTag {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.semantic_version.cmp(&other.semantic_version)
-    }
-}
-
-impl fmt::Display for VersionTag {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}{}{}{}",
-            self.refs, self.tag_prefix, self.version_prefix, self.semantic_version
-        )
-    }
-}
-
-impl VersionTag {
-    // Create a new struct specifying each of the semantic version components.
-    fn new(
-        refs: String,
-        tag_prefix: String,
-        version_prefix: String,
-        semantic_version: Semantic,
-    ) -> Self {
-        VersionTag {
-            refs,
-            tag_prefix,
-            version_prefix,
-            semantic_version,
-        }
-    }
-    /// Parse a tag and return a struct
-    /// String format expect: <version_prefix>x.y.z
-    ///
-    /// # Fields
-    ///
-    /// tag - the tag proposed as a semantic version tag
-    /// version_prefix - any string before the semantic version number
-    ///
-    /// # Example
-    ///
-    /// Parse a tag into a semantic version number where "v" is used to identify
-    /// tags representing semantic version numbers.
-    ///
-    /// ```rust
-    /// # fn main() -> Result<(), nextsv::Error> {
-    /// use nextsv::VersionTag;
-    ///
-    /// let tag = "refs/tags/v0.2.3";
-    /// let semantic_version = VersionTag::parse(tag, "v")?;
-    ///
-    /// assert_eq!(0, semantic_version.version().major());
-    /// assert_eq!(2, semantic_version.version().minor());
-    /// assert_eq!(3, semantic_version.version().patch());
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    /// to identify tags with semantic version numbers
-    /// the tag name can be parsed
-    pub fn parse(tag: &str, version_prefix: &str) -> Result<Self, Error> {
-        let re_tag = format!(
-            r"(?<refs>refs\/tags\/)(?<tag_prefix>.*)(?<version_prefix>{})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$",
-            version_prefix
-        );
-
-        let re = Regex::new(&re_tag).unwrap();
-
-        log::trace!("Parsing git tag `{tag}` into VersionTag");
-        let caps_res = re.captures(tag);
-        log::trace!("Regex captures result: {:?}", caps_res);
-        let Some(caps) = caps_res else {
-            tag_validation(tag, version_prefix)?;
-            panic!("Tag validation failed");
-        };
-
-        let semantic_version = Semantic::new(
-            caps.name("major").unwrap().as_str(),
-            caps.name("minor").unwrap().as_str(),
-            caps.name("patch").unwrap().as_str(),
-            caps.name("pre_release").map_or("", |m| m.as_str()),
-            caps.name("build_meta_data").map_or("", |m| m.as_str()),
-        );
-
-        Ok(VersionTag::new(
-            caps.name("refs").map_or("", |m| m.as_str()).to_string(),
-            caps.name("tag_prefix")
-                .map_or("", |m| m.as_str())
-                .to_string(),
-            version_prefix.to_string(),
-            semantic_version,
-        ))
-    }
-
-    /// Provide a reference to the semantic version
-    ///
-    pub fn version(&self) -> &Semantic {
-        &self.semantic_version
-    }
-
-    /// Provide a mutable reference to the semantic version
-    ///
-    pub fn version_mut(&mut self) -> &mut Semantic {
-        &mut self.semantic_version
-    }
-}
-
-fn tag_validation(tag: &str, version_prefix: &str) -> Result<(), Error> {
-    log::debug!(
-        "Error found: validating the tag {tag} with version identified by {version_prefix}"
-    );
-    let re = Regex::new(version_prefix).unwrap();
-    let m_res = re.find(tag);
-
-    // the tag string must start with the version_prefix
-    let Some(m) = m_res else {
-        return Err(Error::NotVersionTag(
-            version_prefix.to_string(),
-            tag.to_string(),
-        ));
-    };
-
-    let (_prefix, version) = tag.split_at(m.end());
-    log::debug!("The version string is: {version}");
-    let components: Vec<&str> = version.split('.').collect();
-
-    log::debug!("The components of the version string are {components:#?}");
-
-    let mut count_numbers = 0;
-    let mut numbers = vec![];
-
-    for item in components {
-        count_numbers += 1;
-        if count_numbers > 3 {
-            return Err(Error::TooManyComponents(count_numbers));
-        }
-        numbers.push(match item.parse::<usize>() {
-            Ok(n) => n,
-            Err(_) => return Err(Error::MustBeNumber(item.to_string())),
-        });
-    }
-
-    if count_numbers < 3 {
-        return Err(Error::TooFewComponents(count_numbers));
-    };
-
-    Ok(())
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
