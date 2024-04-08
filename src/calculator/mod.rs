@@ -8,6 +8,9 @@
 //!
 //!
 //!
+mod force_level;
+
+pub use force_level::ForceLevel;
 
 use crate::{
     semantic::PreReleaseType, ConventionalCommits, Error, Level, TypeHierarchy, VersionTag,
@@ -15,11 +18,7 @@ use crate::{
 use git2::Repository;
 use regex::Regex;
 
-use std::{
-    collections::HashSet,
-    ffi::OsString,
-    fmt::{self},
-};
+use std::{collections::HashSet, ffi::OsString};
 /// Struct the store the result of the calculation (the "answer" :) )
 ///
 #[derive(Debug)]
@@ -112,43 +111,6 @@ pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
         None => Err(Error::NoVersionTag),
     }
 }
-
-/// The options for choosing the level of a forced change
-///
-/// The enum is used by the force method to define the level
-/// at which the forced change is made.
-///
-#[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Clone)]
-pub enum ForceLevel {
-    /// force change to the major component of semver
-    Major,
-    /// force change to the minor component of semver
-    Minor,
-    /// force change to the patch component of semver
-    Patch,
-    /// Force update of major version number from 0 to 1
-    First,
-}
-
-impl fmt::Display for ForceLevel {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ForceLevel::Major => write!(f, "major"),
-            ForceLevel::Minor => write!(f, "minor"),
-            ForceLevel::Patch => write!(f, "patch"),
-            ForceLevel::First => write!(f, "first"),
-        }
-    }
-}
-
-// #[derive(Debug)]
-// enum Lane {
-//     Start,
-//     Gather,
-//     Calculate,
-//     Report,
-//     Finish,
-// }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
 enum CalcRoute {

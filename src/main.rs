@@ -30,7 +30,7 @@ struct Cli {
     logging: clap_verbosity_flag::Verbosity,
     /// Force the calculation of the version number
     #[arg(short, long, value_enum)]
-    force: Option<ForceOptions>,
+    force: Option<ForceLevel>,
     /// Prefix string to identify version number tags
     #[arg(short, long, value_parser, default_value = "v")]
     prefix: String,
@@ -120,7 +120,7 @@ fn set_environment_variable(env_variable: Option<String>, value: OsString) {
 
 fn calculate(
     mut latest_version: VersionCalculator,
-    force: Option<ForceOptions>,
+    force: Option<ForceLevel>,
     files: Option<Vec<OsString>>,
     enforce_level: TypeHierarchy,
 ) -> Result<Answer, Error> {
@@ -132,20 +132,7 @@ fn calculate(
         latest_version.has_required(f, enforce_level)?;
     }
     let mut answer = if let Some(svc) = force {
-        match svc {
-            ForceOptions::Major => latest_version
-                .set_force(Some(ForceLevel::Major))
-                .next_version(),
-            ForceOptions::Minor => latest_version
-                .set_force(Some(ForceLevel::Minor))
-                .next_version(),
-            ForceOptions::Patch => latest_version
-                .set_force(Some(ForceLevel::Patch))
-                .next_version(),
-            ForceOptions::First => latest_version
-                .set_force(Some(ForceLevel::First))
-                .next_version(),
-        }
+        latest_version.set_force(Some(svc)).next_version()
     } else {
         latest_version.next_version()
     };

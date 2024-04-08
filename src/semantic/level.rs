@@ -53,6 +53,10 @@ impl From<ForceLevel> for Level {
             ForceLevel::Major => Level::Major,
             ForceLevel::Minor => Level::Minor,
             ForceLevel::Patch => Level::Patch,
+            ForceLevel::Alpha => Level::Alpha,
+            ForceLevel::Beta => Level::Beta,
+            ForceLevel::Rc => Level::Rc,
+            ForceLevel::Release => Level::Release,
         }
     }
 }
