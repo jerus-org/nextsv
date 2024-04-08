@@ -139,41 +139,51 @@ impl VersionTag {
 }
 
 fn version_number_valid(tag: &str, version_prefix: &str) -> Result<(), Error> {
-    log::debug!("Validating the tag {tag} with version identified by {version_prefix}");
-    let re = Regex::new(version_prefix).unwrap();
-    let m_res = re.find(tag);
+    log::debug!("Validating the tag `{tag}` with version identified by `{version_prefix}`");
+    let tag = tag.trim_start_matches("refs/tags/");
+    log::debug!("The tag after git prefix is stripped is `{tag}`");
 
-    // the tag string must start with the version_prefix
-    let Some(m) = m_res else {
-        return Err(Error::NotVersionTag(
-            version_prefix.to_string(),
-            tag.to_string(),
-        ));
+    let mut version = if !version_prefix.is_empty() {
+        let re = Regex::new(version_prefix).unwrap();
+        let m_res = re.find(tag);
+
+        // the tag string must start with the version_prefix
+        let Some(m) = m_res else {
+            return Err(Error::NotVersionTag(
+                version_prefix.to_string(),
+                tag.to_string(),
+            ));
+        };
+
+        log::debug!("The prefix was found: {m:?}");
+        let (_prefix, remainder) = tag.split_at(m.end());
+        remainder
+    } else {
+        tag
     };
-
-    log::debug!("The found: {m:?}");
-    let (_prefix, version) = tag.split_at(m.end());
     log::debug!("The version string is: {version}");
     // Remove any build data from the end
-    if let Some((version, _build)) = version.rsplit_once('+') {
-        log::debug!("The version after build is stripped is: {version}");
+    if let Some((v, _build)) = version.rsplit_once('+') {
+        log::debug!("The version after build is stripped is: {v}");
+        version = v;
     };
     // Remove any build data from the end
-    if let Some((version, _pre_release)) = version.rsplit_once('-') {
-        log::debug!("The version after pre release is stripped is: {version}");
+    if let Some((v, _pre_release)) = version.rsplit_once('-') {
+        log::debug!("The version after pre release is stripped is: {v}");
+        version = v;
     };
 
     let components: Vec<&str> = version.split('.').collect();
 
-    log::debug!("The components of the version string are {components:#?}");
+    log::debug!("The components of the version string are {components:?}");
 
-    let mut count_numbers = 0;
+    let mut count = 0;
     let mut numbers = vec![];
 
     for item in components {
-        count_numbers += 1;
-        if count_numbers > 3 {
-            return Err(Error::TooManyComponents(count_numbers));
+        count += 1;
+        if count > 3 {
+            return Err(Error::TooManyComponents(count));
         }
         numbers.push(match item.parse::<usize>() {
             Ok(n) => n,
@@ -181,8 +191,10 @@ fn version_number_valid(tag: &str, version_prefix: &str) -> Result<(), Error> {
         });
     }
 
-    if count_numbers < 3 {
-        return Err(Error::TooFewComponents(count_numbers));
+    log::debug!("count complete with {count} numbers found: {numbers:?}.");
+
+    if count < 3 {
+        return Err(Error::TooFewComponents(count));
     };
 
     Ok(())
@@ -290,7 +302,7 @@ mod tests {
     #[case::simple_version("refs/tags/v0.7.9", "v", true)]
     #[case::pre_release_version("refs/tags/ver1.0.0-alpha.1", "ver", true)]
     #[case::alpha_with_build("refs/tags/1.0.0-alpha.2+10", "", true)]
-    #[case::invalid_version_prefix("refs/tags/ver1.0.0-beta.1+30", "v", true)]
+    #[case::invalid_version_prefix("refs/tags/ver1.0.0-beta.1+30", "v", false)]
     #[case::invalid_version_number("refs/tags/v1.a.0-rc.1+40", "v", false)]
     #[case::first_version("refs/tags/v1.0.0", "v", true)]
     #[case::patched_first_version("refs/tags/v1.0.1", "v", true)]
@@ -308,24 +320,53 @@ mod tests {
     }
 
     #[rstest]
-    #[case::simple_version("refs/tags/v0.7.9", "v", true)]
-    #[case::pre_release_version("refs/tags/ver1.0.0-alpha.1", "ver", true)]
-    #[case::alpha_with_build("refs/tags/1.0.0-alpha.2+10", "", true)]
-    #[case::invalid_version_prefix("refs/tags/ver1.0.0-beta.1+30", "v", true)]
-    #[case::invalid_version_number("refs/tags/v1.a.0-rc.1+40", "v", false)]
-    #[case::first_version("refs/tags/v1.0.0", "v", true)]
-    #[case::patched_first_version("refs/tags/v1.0.1", "v", true)]
-    #[case::minor_update_first_version("refs/tags/v1.1.0", "v", true)]
-    #[case::custom_pre_release("refs/tags/v2.0.0-pre.1+circle.1", "v", true)]
-    #[case::alphanumeric_build("refs/tags/v2.0.0-pre.2+circle.14", "v", true)]
-    fn tag_validation(#[case] input: &str, #[case] version_prefix: &str, #[case] expected: bool) {
+    #[case::valid_alpha_with_build("refs/tags/v1.0.0-alpha.2+10", "v", "Ok(())", true)]
+    #[case::valid_simple_version("refs/tags/v0.7.9", "v", "Ok(())", true)]
+    #[case::valid_no_version_marker("refs/tags/1.0.0-alpha.1", "", "Ok(())", true)]
+    #[case::invalid_version_prefix(
+        "refs/tags/ver1.a.0-rc.1+40",
+        "var",
+        r#"Err(NotVersionTag("var", "ver1.a.0-rc.1+40"))"#,
+        false
+    )]
+    #[case::invalid_version_number(
+        "refs/tags/v1.a.0-rc.1+40",
+        "v",
+        r#"Err(MustBeNumber("a"))"#,
+        false
+    )]
+    #[case::invalid_version_prefix_incomplete(
+        "refs/tags/ver1.0.0-beta.1+30",
+        "v",
+        r#"Err(MustBeNumber("er1"))"#,
+        false
+    )]
+    #[case::invalid_too_many_components_in_version(
+        "refs/tags/v1.0.0.0",
+        "v",
+        r#"Err(TooManyComponents(4))"#,
+        false
+    )]
+    #[case::invalid_too_few_components_in_version(
+        "refs/tags/v1.0",
+        "v",
+        r#"Err(TooFewComponents(2))"#,
+        false
+    )]
+    fn version_number_validation(
+        #[case] input: &str,
+        #[case] version_prefix: &str,
+        #[case] expected_result: &str,
+        #[case] expected_pass: bool,
+    ) {
         use log::LevelFilter;
         use log4rs_test_utils::test_logging;
 
         test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
 
-        let result = VersionTag::parse(input, version_prefix);
-
-        assert_eq!(expected, result.is_ok());
+        let result = version_number_valid(input, version_prefix);
+        println!("result: {result:?}");
+        assert_eq!(expected_result, format!("{result:?}"));
+        assert_eq!(expected_pass, result.is_ok());
     }
 }
