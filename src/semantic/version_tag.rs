@@ -369,4 +369,31 @@ mod tests {
         assert_eq!(expected_result, format!("{result:?}"));
         assert_eq!(expected_pass, result.is_ok());
     }
+
+    #[test]
+    fn tag_broken_down_correctly() {
+        let tag = "refs/tags/hcaptcha-v2.3.1-Beta.3+20876.675";
+
+        let vt = VersionTag::parse(tag, "v").unwrap();
+
+        assert_eq!("refs/tags/", vt.refs);
+        assert_eq!("hcaptcha-", vt.tag_prefix);
+        assert_eq!("v", vt.version_prefix);
+        assert_eq!("2.3.1-Beta.3+20876.675", vt.version().to_string().as_str());
+        assert_eq!(2, vt.version().major);
+        assert_eq!(3, vt.version().minor);
+        assert_eq!(1, vt.version().patch);
+        assert_eq!(
+            "Beta.3",
+            vt.semantic_version
+                .pre_release
+                .unwrap()
+                .to_string()
+                .as_str()
+        );
+        assert_eq!(
+            "20876.675",
+            vt.semantic_version.build_meta_data.as_ref().unwrap()
+        );
+    }
 }

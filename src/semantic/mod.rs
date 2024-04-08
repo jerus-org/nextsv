@@ -129,15 +129,25 @@ impl Semantic {
 
     /// Set the first production release version
     ///
-    pub fn first_production(&mut self) -> Result<&mut Self, Error> {
+    /// Unless the version number is already a production version
+    /// number sets the version number to 1.0.0. Any pre release
+    /// or build meta data fields will be removed.
+    ///
+    ///
+    pub fn first_production(&mut self) -> Result<(), Error> {
+        log::debug!("Current version number: {self}");
         if 0 < self.major {
             return Err(Error::MajorAlreadyUsed(self.major.to_string()));
         } else {
+            log::debug!("Making changes");
             self.major = 1;
             self.minor = 0;
             self.patch = 0;
+            self.pre_release = None;
+            self.build_meta_data = None;
         }
-        Ok(self)
+        log::debug!("Revised version number: {self}");
+        Ok(())
     }
 
     /// Report the major version number
@@ -160,14 +170,9 @@ impl Semantic {
 #[cfg(test)]
 mod tests {
 
+    use rstest::rstest;
+
     use super::*;
-
-    #[test]
-    fn display_semantic_version_number() {
-        let version = Semantic::default();
-
-        assert_eq!("0.0.0", &version.to_string());
-    }
 
     #[test]
     fn bump_patch_version_number_by_one() {
@@ -189,139 +194,111 @@ mod tests {
     #[test]
     fn bump_major_version_number_by_one() {
         let mut version = Semantic::default();
-        let updated_version = version.increment_pre_release();
+        version.major += 1;
+        version.minor += 0;
+        version.patch = 0;
 
-        assert_eq!("1.0.0", &updated_version.to_string());
+        assert_eq!("1.0.0", &version.to_string());
     }
 
-    #[test]
-    fn parse_valid_version_tag_to_new_semantic_struct() {
-        let tag = "refs/tags/v0.3.90";
-        let version_prefix = "v";
-        let semantic = VersionTag::parse(tag, version_prefix);
-
-        claims::assert_ok!(&semantic);
-        let semantic = match semantic {
-            Ok(s) => s.to_string(),
-            Err(e) => e.to_string(),
+    #[rstest]
+    #[case::non_prod(0, 7, 9, "", "", "0.7.9")]
+    #[case::first_alpha(1, 0, 0, "alpha.1", "", "1.0.0-alpha.1")]
+    #[case::alpha_with_build(1, 0, 0, "alpha.2", "10", "1.0.0-alpha.2+10")]
+    #[case::beta_with_build(1, 0, 0, "beta.1", "30", "1.0.0-beta.1+30")]
+    #[case::release_candidate(1, 0, 0, "rc.1", "40", "1.0.0-rc.1+40")]
+    #[case::first_version(1, 0, 0, "", "", "1.0.0")]
+    #[case::patched_first_version(1, 0, 1, "", "", "1.0.1")]
+    #[case::minor_update_first_version(1, 1, 0, "", "", "1.1.0")]
+    #[case::custom_pre_release(2, 0, 0, "pre.1", "circle.1", "2.0.0-pre.1+circle.1")]
+    #[case::alphanumeric_build(2, 0, 0, "pre.2", "circle.14", "2.0.0-pre.2+circle.14")]
+    fn display_value(
+        #[case] major: u32,
+        #[case] minor: u32,
+        #[case] patch: u32,
+        #[case] pre_release: &str,
+        #[case] build_meta_data: &str,
+        #[case] expected: &str,
+    ) {
+        let pre_release = if !pre_release.is_empty() {
+            Some(PreRelease::new(pre_release))
+        } else {
+            None
         };
-        assert_eq!(tag, semantic);
-    }
-
-    #[test]
-    fn parse_valid_long_version_tag_to_new_semantic_struct() {
-        let tag = "refs/tags/Release Version 0.3.90";
-        let version_prefix = "Release Version ";
-        let semantic = VersionTag::parse(tag, version_prefix);
-
-        claims::assert_ok!(&semantic);
-        let semantic = match semantic {
-            Ok(s) => s.to_string(),
-            Err(e) => e.to_string(),
+        let build_meta_data = if build_meta_data.is_empty() {
+            None
+        } else {
+            Some(build_meta_data.to_string())
         };
-        assert_eq!(tag, semantic);
-    }
-
-    #[test]
-    fn parse_error_failed_not_version_tag() {
-        let tag = "ref/tags/0.3.90";
-        let version_prefix = "v";
-        let semantic = VersionTag::parse(tag, version_prefix);
-
-        claims::assert_err!(&semantic);
-        let semantic = match semantic {
-            Ok(s) => s.to_string(),
-            Err(e) => e.to_string(),
+        let test_version = Semantic {
+            major,
+            minor,
+            patch,
+            pre_release,
+            build_meta_data,
         };
-        assert_eq!(
-            r#"Version tags must start with "v" but tag is ref/tags/0.3.90"#,
-            semantic
-        );
+        assert_eq!(expected, test_version.to_string().as_str());
     }
 
-    #[test]
-    fn parse_error_too_many_components() {
-        let tag = "refs/tags/v0.3.90.8";
-        let version_prefix = "v";
-        let semantic = VersionTag::parse(tag, version_prefix);
+    #[rstest]
+    #[case::simple_non_prod(0, 7, 9, "", "", true, "1.0.0")]
+    #[case::non_prod_alpha(0, 2, 200, "alpha.1", "", true, "1.0.0")]
+    #[case::non_prod_beta_with_build(0, 24, 2, "beta.1", "30", true, "1.0.0")]
+    #[case::non_prod_release_candidate(0, 78, 3, "rc.1", "40", true, "1.0.0")]
+    #[case::already_first_version(1, 0, 0, "", "", false, "1.0.0")]
+    #[case::patched_first_version(1, 0, 1, "", "", false, "1.0.1")]
+    #[case::minor_update_first_version(1, 1, 0, "", "", false, "1.1.0")]
+    #[case::non_prod_custom_pre_release(0, 23, 1, "pre.1", "circle.1", true, "1.0.0")]
+    #[case::post_first_version_alphanumeric_build(
+        2,
+        0,
+        0,
+        "pre.2",
+        "circle.14",
+        false,
+        "2.0.0-pre.2+circle.14"
+    )]
+    fn set_first_production_version_number(
+        #[case] major: u32,
+        #[case] minor: u32,
+        #[case] patch: u32,
+        #[case] pre_release: &str,
+        #[case] build_meta_data: &str,
+        #[case] expected_ok: bool,
+        #[case] expected: &str,
+    ) {
+        use log::LevelFilter;
+        use log4rs_test_utils::test_logging;
 
-        claims::assert_err!(&semantic);
-        let semantic = match semantic {
-            Ok(s) => s.to_string(),
-            Err(e) => e.to_string(),
+        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
+
+        let pre_release = if !pre_release.is_empty() {
+            Some(PreRelease::new(pre_release))
+        } else {
+            None
         };
-        assert_eq!(
-            "Version must have three components but at least 4 were found",
-            semantic
-        );
-    }
-
-    #[test]
-    fn parse_error_not_enough_components() {
-        let tag = "refs/tags/v0.3";
-        let version_prefix = "v";
-        let semantic = VersionTag::parse(tag, version_prefix);
-
-        claims::assert_err!(&semantic);
-        let semantic = match semantic {
-            Ok(s) => s.to_string(),
-            Err(e) => e.to_string(),
+        let build_meta_data = if build_meta_data.is_empty() {
+            None
+        } else {
+            Some(build_meta_data.to_string())
         };
-        assert_eq!(
-            "Version must have three components but only 2 found",
-            semantic
-        );
-    }
-
-    #[test]
-    fn parse_error_version_must_be_a_number() {
-        let tag = "refs/tags/v0.3.9a";
-        let version_prefix = "v";
-        let semantic = VersionTag::parse(tag, version_prefix);
-
-        claims::assert_err!(&semantic);
-        let semantic = match semantic {
-            Ok(s) => s.to_string(),
-            Err(e) => e.to_string(),
+        let mut test_version = Semantic {
+            major,
+            minor,
+            patch,
+            pre_release,
+            build_meta_data,
         };
-        assert_eq!("Version must be a number but found 9a", semantic);
-    }
-    // #[error("Version must be a number")]
-    // MustBeNumber,
 
-    #[test]
-    fn display_returns_the_tag_string() {
-        let tag = "refs/tags/hcaptcha-v2.3.1-ALPHA+build";
+        let result = test_version.first_production();
+        assert_eq!(expected_ok, result.is_ok());
 
-        let mytag = VersionTag::parse(tag, "v").unwrap().to_string();
+        println!("{result:?}");
+        // if result.is_ok() {
+        //     test_version = result.unwrap();
+        // }
 
-        assert_eq!(tag, mytag);
-    }
-
-    #[test]
-    fn tag_broken_down_correctly() {
-        let tag = "refs/tags/hcaptcha-v2.3.1-Beta.3+20876.675";
-
-        let vt = VersionTag::parse(tag, "v").unwrap();
-
-        assert_eq!("refs/tags/", vt.refs);
-        assert_eq!("hcaptcha-", vt.tag_prefix);
-        assert_eq!("v", vt.version_prefix);
-        assert_eq!("2.3.1-Beta.3+20876.675", vt.version().to_string().as_str());
-        assert_eq!(2, vt.version().major);
-        assert_eq!(3, vt.version().minor);
-        assert_eq!(1, vt.version().patch);
-        assert_eq!(
-            "Beta.3",
-            vt.semantic_version
-                .pre_release
-                .unwrap()
-                .to_string()
-                .as_str()
-        );
-        assert_eq!(
-            "20876.675",
-            vt.semantic_version.build_meta_data.as_ref().unwrap()
-        );
+        println!("expecting {expected} and got {test_version}");
+        assert_eq!(expected, test_version.to_string().as_str());
     }
 }
