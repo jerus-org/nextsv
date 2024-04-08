@@ -14,10 +14,12 @@ use std::fmt;
 use crate::Error;
 
 mod level;
+mod pre_release;
 pub(crate) mod test_utils;
 mod version_tag;
 
 pub use level::Level;
+pub(crate) use pre_release::{PreRelease, PreReleaseType};
 pub use version_tag::VersionTag;
 
 macro_rules! some_or_none_string {
@@ -30,57 +32,6 @@ macro_rules! some_or_none_string {
     };
 }
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
-pub(crate) enum PreReleaseType {
-    Alpha,
-    Beta,
-    Rc,
-    Custom,
-}
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
-pub(crate) struct PreRelease {
-    pub(crate) label: String,
-    pub(crate) counter: Option<u32>,
-    pub(crate) pre_type: PreReleaseType,
-}
-
-impl fmt::Display for PreRelease {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if let Some(number) = self.counter {
-            write!(f, "{}.{}", self.label, number)
-        } else {
-            write!(f, "{}", self.label)
-        }
-    }
-}
-
-impl PreRelease {
-    pub(crate) fn new(pre_release: &str) -> PreRelease {
-        let (label, counter) = if let Some((label, number)) = pre_release.rsplit_once('.') {
-            match number.parse::<u32>() {
-                Ok(n) => (label.to_string(), Some(n)),
-                Err(_) => (format!("{}.{}", label, number), None),
-            }
-        } else {
-            (pre_release.to_string(), None)
-        };
-        let mut pre_type = PreReleaseType::Custom;
-        if label.to_ascii_lowercase() == "alpha" {
-            pre_type = PreReleaseType::Alpha;
-        }
-        if label.to_ascii_lowercase() == "beta" {
-            pre_type = PreReleaseType::Beta;
-        }
-        if label.to_ascii_lowercase() == "rc" {
-            pre_type = PreReleaseType::Rc;
-        }
-        PreRelease {
-            label,
-            counter,
-            pre_type,
-        }
-    }
-}
 /// The Semantic data structure represents a semantic version number.
 ///
 /// TODO: Implement support for pre-release and build
