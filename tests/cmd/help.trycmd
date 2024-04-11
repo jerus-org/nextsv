@@ -13,8 +13,16 @@ Options:
 
   -f, --force <FORCE>
           Force the calculation of the version number
-          
-          [possible values: major, minor, patch, first]
+
+          Possible values:
+          - major:   force change to major
+          - minor:   force change to minor
+          - patch:   force change to patch
+          - first:   Force update of first production release (1.0.0)
+          - release: Release current version
+          - alpha:   Alpha pre-release of current version
+          - beta:    Beta pre-release of current version
+          - rc:      Rc pre-release of current version
 
   -p, --prefix <PREFIX>
           Prefix string to identify version number tags
