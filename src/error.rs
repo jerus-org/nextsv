@@ -80,3 +80,17 @@ impl From<Error> for Exit {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_constants() {
+        assert_eq!(EXIT_UNEXPECTED_ERROR, 10);
+        assert_eq!(EXIT_NOT_CALCULATED_CODE, 12);
+        assert_eq!(EXIT_MISSING_REQUIRED_CODE, 13);
+        assert_eq!(EXIT_NOT_REQUIRED_LEVEL, 14);
+        assert_eq!(EXIT_NO_FILES_LISTED, 15);
+    }
+}
