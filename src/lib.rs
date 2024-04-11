@@ -39,8 +39,8 @@
 
 mod calculator;
 mod error;
-mod semantic;
+mod version;
 
 pub use calculator::{ForceLevel, LevelHierarchy, VersionCalculator};
 pub use error::Error;
-pub use semantic::{Level, VersionTag};
+pub use version::{Level, VersionTag};

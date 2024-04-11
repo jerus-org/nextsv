@@ -1,6 +1,6 @@
 use std::fmt;
 
-use super::super::semantic::Semantic;
+use super::super::version::Semantic;
 use crate::ForceLevel;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Default)]
@@ -38,7 +38,7 @@ impl fmt::Display for CalcRoute {
 #[cfg(test)]
 mod test {
 
-    use crate::{semantic::Semantic, ForceLevel};
+    use crate::{version::Semantic, ForceLevel};
 
     use super::CalcRoute;
     use rstest::rstest;

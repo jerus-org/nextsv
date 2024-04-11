@@ -21,7 +21,7 @@ use self::route::CalcRoute;
 use self::{conventional::ConventionalCommits, next_version::NextVersion};
 pub use level_hierarchy::LevelHierarchy;
 
-use crate::{semantic::PreReleaseType, Error, Level, VersionTag};
+use crate::{version::PreReleaseType, Error, Level, VersionTag};
 use colored::Colorize;
 use git2::Repository;
 use log::warn;
@@ -557,9 +557,9 @@ mod test {
     use rstest::rstest;
 
     use crate::calculator::CalcRoute;
-    use crate::semantic::PreRelease;
+    use crate::version::PreRelease;
     use crate::LevelHierarchy::Feature;
-    use crate::{semantic::Semantic, VersionCalculator, VersionTag};
+    use crate::{version::Semantic, VersionCalculator, VersionTag};
     use crate::{ForceLevel, LevelHierarchy};
 
     use super::conventional::ConventionalCommits;

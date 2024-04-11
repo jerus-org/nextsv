@@ -13,14 +13,7 @@ use std::fmt;
 
 use crate::Error;
 
-mod level;
-mod pre_release;
-pub(crate) mod test_utils;
-mod version_tag;
-
-pub use level::Level;
-pub(crate) use pre_release::{PreRelease, PreReleaseType};
-pub use version_tag::VersionTag;
+use super::PreRelease;
 
 macro_rules! some_or_none_string {
     ($i:ident) => {

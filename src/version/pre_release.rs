@@ -56,7 +56,7 @@ impl PreRelease {
 mod tests {
     use rstest::rstest;
 
-    use crate::semantic::PreRelease;
+    use crate::version::PreRelease;
 
     use super::PreReleaseType;
 
