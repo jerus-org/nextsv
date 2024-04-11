@@ -205,7 +205,8 @@ mod tests {
 
     use rstest::rstest;
 
-    use crate::version::{test_utils::gen_current_version, PreRelease};
+    use crate::test_utils::*;
+    use crate::version::PreRelease;
 
     use super::*;
 

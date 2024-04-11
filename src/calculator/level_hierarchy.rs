@@ -92,3 +92,79 @@ impl fmt::Display for LevelHierarchy {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::LevelHierarchy;
+
+    use rstest::rstest;
+
+    fn level_hierarchy_example_lowest() -> LevelHierarchy {
+        LevelHierarchy::Other
+    }
+    fn level_hierarchy_example_highest() -> LevelHierarchy {
+        LevelHierarchy::Breaking
+    }
+    fn level_hierarchy_example_mid() -> LevelHierarchy {
+        LevelHierarchy::Feature
+    }
+
+    #[test]
+    fn test_partial_eq() {
+        let one = level_hierarchy_example_highest();
+        let two = level_hierarchy_example_highest();
+        assert_eq!(one, two);
+    }
+
+    #[test]
+    fn test_eq() {
+        let one = level_hierarchy_example_lowest();
+        let two = level_hierarchy_example_lowest();
+        assert!(one == two);
+    }
+
+    #[test]
+    fn test_partial_ord() {
+        let one = level_hierarchy_example_highest();
+        let two = level_hierarchy_example_mid();
+        assert!(one > two);
+    }
+
+    #[test]
+    fn test_ord() {
+        let one = level_hierarchy_example_lowest();
+        let two = level_hierarchy_example_mid();
+        assert_eq!(two.cmp(&one), std::cmp::Ordering::Greater);
+    }
+
+    #[rstest]
+    #[case::breaking(LevelHierarchy::Breaking, "[Major]")]
+    #[case::non_production(LevelHierarchy::Feature, "[Minor]")]
+    #[case::production(LevelHierarchy::Fix, "[Patch]")]
+    #[case::release(LevelHierarchy::Other, "[Patch]")]
+    fn display_value(#[case] test: LevelHierarchy, #[case] expected: &str) {
+        assert_eq!(expected, test.to_string().as_str());
+    }
+
+    #[rstest]
+    #[case::feature("feat", LevelHierarchy::Feature)]
+    #[case::fix("fix", LevelHierarchy::Fix)]
+    #[case::revert("revert", LevelHierarchy::Fix)]
+    #[case::docs("docs", LevelHierarchy::Other)]
+    #[case::style("style", LevelHierarchy::Other)]
+    #[case::refactor("refactor", LevelHierarchy::Other)]
+    #[case::perf("perf", LevelHierarchy::Other)]
+    #[case::test("test", LevelHierarchy::Other)]
+    #[case::chore("chore", LevelHierarchy::Other)]
+    #[case::breaking("breaking", LevelHierarchy::Breaking)]
+    #[case::build("build", LevelHierarchy::Other)]
+    #[case::ci("ci", LevelHierarchy::Other)]
+    fn parse_conventional_commit_label_to_level_hierarchy(
+        #[case] label: &str,
+        #[case] expected: LevelHierarchy,
+    ) {
+        let test_level = LevelHierarchy::parse(label).unwrap();
+
+        assert_eq!(expected, test_level);
+    }
+}

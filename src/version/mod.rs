@@ -1,7 +1,6 @@
 mod level;
 mod pre_release;
 mod semantic;
-pub(crate) mod test_utils;
 mod version_tag;
 
 pub use level::Level;

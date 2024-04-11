@@ -39,6 +39,8 @@
 
 mod calculator;
 mod error;
+#[cfg(test)]
+mod test_utils;
 mod version;
 
 pub use calculator::{ForceLevel, LevelHierarchy, VersionCalculator};
