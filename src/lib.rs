@@ -26,11 +26,12 @@
 //!     use nextsv::VersionCalculator;
 //!     let version_prefix = "v"; // Identifies a version tag
 //!
-//!     let latest_version = VersionCalculator::new(version_prefix)?;
+//!     let mut latest_version = VersionCalculator::new(version_prefix)?;
 //!
-//!     let answer = latest_version.walk_commits()?.next_version();
+//!     latest_version.walk_commits()?;
+//!     latest_version.calculate();
 //!
-//!     println!("Next Version: {}\nNext Level: {}", answer.version_number, answer.bump_level);
+//!     println!("Next Version: {}\nNext Level: {}", latest_version.next_version_number(), latest_version.bump_level());
 //!
 //! #    Ok(())
 //! # }
@@ -41,8 +42,8 @@ mod conventional;
 mod error;
 mod semantic;
 
-pub use calculator::{Answer, ForceLevel, VersionCalculator};
+pub use calculator::{ForceLevel, VersionCalculator};
 pub(crate) use conventional::ConventionalCommits;
-pub use conventional::TypeHierarchy;
+pub use conventional::LevelHierarchy;
 pub use error::Error;
 pub use semantic::{Level, VersionTag};
