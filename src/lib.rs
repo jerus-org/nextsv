@@ -38,12 +38,9 @@
 //! ```
 
 mod calculator;
-mod conventional;
 mod error;
 mod semantic;
 
-pub use calculator::{ForceLevel, VersionCalculator};
-pub(crate) use conventional::ConventionalCommits;
-pub use conventional::LevelHierarchy;
+pub use calculator::{ForceLevel, LevelHierarchy, VersionCalculator};
 pub use error::Error;
 pub use semantic::{Level, VersionTag};

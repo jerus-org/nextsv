@@ -1,106 +1,16 @@
 //! Represents a vector of conventional commits
 //!
 
-use std::{cmp, collections::HashMap, fmt};
+use std::collections::HashMap;
 
-use clap::ValueEnum;
-use colored::Colorize;
+use super::LevelHierarchy;
 
-use crate::Error;
-
-/// TypeHierarchy maps the types identified by git_conventional to a hierarchy of levels
-///
-/// The enum provides an ordered list to identify the highest level type found in a set
-/// of conventional commits.
-///
-/// Types are mapped as follows:
-/// - FEAT: Feature
-/// - FIX: Fix
-/// - REVERT: Fix
-/// - DOCS: Other
-/// - STYLE: Other
-/// - REFACTOR: Other
-/// - PERF: Other
-/// - TEST: Other
-/// - CHORE: Other
-///
-/// If a breaking change is found it sets breaking hierarchy.
-///
-#[derive(Debug, PartialEq, Eq, Clone, ValueEnum)]
-pub enum TypeHierarchy {
-    /// enforce requirements for all types
-    Other = 1,
-    /// enforce requirements for fix, feature and breaking
-    Fix = 2,
-    /// enforce requirements for features and breaking
-    Feature = 3,
-    /// enforce requirements for breaking only
-    Breaking = 4,
-}
-
-impl Ord for TypeHierarchy {
-    fn cmp(&self, other: &Self) -> cmp::Ordering {
-        match (self, other) {
-            (TypeHierarchy::Breaking, TypeHierarchy::Breaking)
-            | (TypeHierarchy::Feature, TypeHierarchy::Feature)
-            | (TypeHierarchy::Fix, TypeHierarchy::Fix)
-            | (TypeHierarchy::Other, TypeHierarchy::Other) => cmp::Ordering::Equal,
-            (TypeHierarchy::Other, _) => cmp::Ordering::Less,
-            (TypeHierarchy::Breaking, _) => cmp::Ordering::Greater,
-            (TypeHierarchy::Fix, TypeHierarchy::Other) => cmp::Ordering::Greater,
-            (TypeHierarchy::Fix, TypeHierarchy::Feature)
-            | (TypeHierarchy::Fix, TypeHierarchy::Breaking) => cmp::Ordering::Less,
-            (TypeHierarchy::Feature, TypeHierarchy::Other)
-            | (TypeHierarchy::Feature, TypeHierarchy::Fix) => cmp::Ordering::Greater,
-            (TypeHierarchy::Feature, TypeHierarchy::Breaking) => cmp::Ordering::Less,
-        }
-    }
-}
-
-impl PartialOrd for TypeHierarchy {
-    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl TypeHierarchy {
-    /// Parse a string into a TypeHierarchy mapping the types or "breaking"
-    ///
-    pub fn parse(s: &str) -> Result<TypeHierarchy, Error> {
-        Ok(match s.to_lowercase().as_str() {
-            "feat" => TypeHierarchy::Feature,
-            "fix" => TypeHierarchy::Fix,
-            "revert" => TypeHierarchy::Fix,
-            "docs" => TypeHierarchy::Other,
-            "style" => TypeHierarchy::Other,
-            "refactor" => TypeHierarchy::Other,
-            "perf" => TypeHierarchy::Other,
-            "test" => TypeHierarchy::Other,
-            "chore" => TypeHierarchy::Other,
-            "breaking" => TypeHierarchy::Breaking,
-            "build" => TypeHierarchy::Other,
-            "ci" => TypeHierarchy::Other,
-            _ => return Err(Error::NotTypeHierachyName(s.to_string())),
-        })
-    }
-}
-
-impl fmt::Display for TypeHierarchy {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            TypeHierarchy::Breaking => write!(f, "{}", "[Major]".red()),
-            TypeHierarchy::Feature => write!(f, "{}", "[Minor]".yellow()),
-            TypeHierarchy::Fix => write!(f, "{}", "[Patch]".green()),
-            TypeHierarchy::Other => write!(f, "{}", "[Patch]".white()),
-        }
-    }
-}
 #[derive(Default, Debug, PartialEq, Eq, Clone)]
 pub struct ConventionalCommits {
     pub(crate) commits: Vec<String>,
     pub(crate) counts: HashMap<String, u32>,
     pub(crate) breaking: bool,
-    pub(crate) top_type: Option<TypeHierarchy>,
+    pub(crate) top_type: Option<LevelHierarchy>,
 }
 
 impl ConventionalCommits {
@@ -117,15 +27,15 @@ impl ConventionalCommits {
                     "Commit: ({}) {} {}",
                     conventional.type_(),
                     conventional.description(),
-                    TypeHierarchy::parse(&conventional.type_().to_string())
-                        .unwrap_or(TypeHierarchy::Other),
+                    LevelHierarchy::parse(&conventional.type_().to_string())
+                        .unwrap_or(LevelHierarchy::Other),
                 );
                 self.increment_counts(conventional.type_());
 
                 if !self.breaking {
                     if conventional.breaking() {
                         self.breaking = conventional.breaking();
-                        self.set_top_type(TypeHierarchy::Breaking);
+                        self.set_top_type(LevelHierarchy::Breaking);
                     } else {
                         self.set_top_type_if_higher(conventional.type_().as_str());
                     }
@@ -147,9 +57,9 @@ impl ConventionalCommits {
         *counter += 1;
     }
 
-    pub fn counts(&self) -> HashMap<String, u32> {
-        self.counts.clone()
-    }
+    // pub fn counts(&self) -> HashMap<String, u32> {
+    //     self.counts.clone()
+    // }
 
     pub fn commits_by_type(&self, commit_type: &str) -> u32 {
         self.counts.get(commit_type).unwrap_or(&0_u32).to_owned()
@@ -166,14 +76,14 @@ impl ConventionalCommits {
     /// Set the value of the top type to a valid TypeHierarchy value
     ///
 
-    fn set_top_type(&mut self, top_type: TypeHierarchy) -> &mut Self {
+    fn set_top_type(&mut self, top_type: LevelHierarchy) -> &mut Self {
         self.top_type = Some(top_type);
         self
     }
 
     fn set_top_type_if_higher(&mut self, type_: &str) -> &mut Self {
         log::trace!("Testing if {type_:?} is higher than {:?}", self.top_type);
-        let th = TypeHierarchy::parse(type_);
+        let th = LevelHierarchy::parse(type_);
         log::trace!("Result of parse to TypeHierarchy: {th:?}");
         if let Ok(th) = th {
             if self.top_type.is_some() {
@@ -192,7 +102,7 @@ impl ConventionalCommits {
     ///
     /// Returns the top type.
     ///
-    pub fn top_type(&self) -> Option<TypeHierarchy> {
+    pub fn top_type(&self) -> Option<LevelHierarchy> {
         self.top_type.clone()
     }
 }
@@ -201,7 +111,7 @@ impl ConventionalCommits {
 mod tests {
     use std::cmp::Ordering;
 
-    use crate::TypeHierarchy;
+    use crate::LevelHierarchy;
 
     use super::ConventionalCommits;
 
@@ -209,57 +119,73 @@ mod tests {
     fn type_hierarchy_ordering() {
         let tests = [
             (
-                TypeHierarchy::Breaking,
-                TypeHierarchy::Breaking,
+                LevelHierarchy::Breaking,
+                LevelHierarchy::Breaking,
                 Ordering::Equal,
             ),
             (
-                TypeHierarchy::Feature,
-                TypeHierarchy::Feature,
+                LevelHierarchy::Feature,
+                LevelHierarchy::Feature,
                 Ordering::Equal,
             ),
-            (TypeHierarchy::Fix, TypeHierarchy::Fix, Ordering::Equal),
-            (TypeHierarchy::Other, TypeHierarchy::Other, Ordering::Equal),
+            (LevelHierarchy::Fix, LevelHierarchy::Fix, Ordering::Equal),
             (
-                TypeHierarchy::Breaking,
-                TypeHierarchy::Feature,
+                LevelHierarchy::Other,
+                LevelHierarchy::Other,
+                Ordering::Equal,
+            ),
+            (
+                LevelHierarchy::Breaking,
+                LevelHierarchy::Feature,
                 Ordering::Greater,
             ),
             (
-                TypeHierarchy::Breaking,
-                TypeHierarchy::Fix,
+                LevelHierarchy::Breaking,
+                LevelHierarchy::Fix,
                 Ordering::Greater,
             ),
             (
-                TypeHierarchy::Breaking,
-                TypeHierarchy::Other,
+                LevelHierarchy::Breaking,
+                LevelHierarchy::Other,
                 Ordering::Greater,
             ),
             (
-                TypeHierarchy::Feature,
-                TypeHierarchy::Breaking,
+                LevelHierarchy::Feature,
+                LevelHierarchy::Breaking,
                 Ordering::Less,
             ),
             (
-                TypeHierarchy::Feature,
-                TypeHierarchy::Fix,
+                LevelHierarchy::Feature,
+                LevelHierarchy::Fix,
                 Ordering::Greater,
             ),
             (
-                TypeHierarchy::Feature,
-                TypeHierarchy::Other,
+                LevelHierarchy::Feature,
+                LevelHierarchy::Other,
                 Ordering::Greater,
             ),
-            (TypeHierarchy::Fix, TypeHierarchy::Breaking, Ordering::Less),
-            (TypeHierarchy::Fix, TypeHierarchy::Feature, Ordering::Less),
-            (TypeHierarchy::Fix, TypeHierarchy::Other, Ordering::Greater),
             (
-                TypeHierarchy::Other,
-                TypeHierarchy::Breaking,
+                LevelHierarchy::Fix,
+                LevelHierarchy::Breaking,
                 Ordering::Less,
             ),
-            (TypeHierarchy::Other, TypeHierarchy::Feature, Ordering::Less),
-            (TypeHierarchy::Other, TypeHierarchy::Fix, Ordering::Less),
+            (LevelHierarchy::Fix, LevelHierarchy::Feature, Ordering::Less),
+            (
+                LevelHierarchy::Fix,
+                LevelHierarchy::Other,
+                Ordering::Greater,
+            ),
+            (
+                LevelHierarchy::Other,
+                LevelHierarchy::Breaking,
+                Ordering::Less,
+            ),
+            (
+                LevelHierarchy::Other,
+                LevelHierarchy::Feature,
+                Ordering::Less,
+            ),
+            (LevelHierarchy::Other, LevelHierarchy::Fix, Ordering::Less),
         ];
 
         for test in tests {
@@ -273,10 +199,10 @@ mod tests {
     fn set_top_type_test_currently_breaking() {
         let mut value_under_test = ConventionalCommits::new();
 
-        let test_level = TypeHierarchy::Breaking;
+        let test_level = LevelHierarchy::Breaking;
 
         let tests = ["other", "fix", "feat", "breaking"];
-        const ARRAY_REPEAT_VALUE: crate::conventional::TypeHierarchy = TypeHierarchy::Breaking;
+        const ARRAY_REPEAT_VALUE: LevelHierarchy = LevelHierarchy::Breaking;
         let expected = [ARRAY_REPEAT_VALUE; 4];
 
         let test_result_pairs = tests.iter().zip(expected);
@@ -294,14 +220,14 @@ mod tests {
     fn set_top_type_test_currently_feature() {
         let mut value_under_test = ConventionalCommits::new();
 
-        let test_level = TypeHierarchy::Feature;
+        let test_level = LevelHierarchy::Feature;
 
         let tests = ["other", "fix", "feat", "breaking"];
         let expected = [
-            TypeHierarchy::Feature,
-            TypeHierarchy::Feature,
-            TypeHierarchy::Feature,
-            TypeHierarchy::Breaking,
+            LevelHierarchy::Feature,
+            LevelHierarchy::Feature,
+            LevelHierarchy::Feature,
+            LevelHierarchy::Breaking,
         ];
 
         let test_result_pairs = tests.iter().zip(expected);
@@ -319,14 +245,14 @@ mod tests {
     fn set_top_type_test_currently_fix() {
         let mut value_under_test = ConventionalCommits::new();
 
-        let test_level = TypeHierarchy::Fix;
+        let test_level = LevelHierarchy::Fix;
 
         let tests = ["other", "fix", "feat", "breaking"];
         let expected = [
-            TypeHierarchy::Fix,
-            TypeHierarchy::Fix,
-            TypeHierarchy::Feature,
-            TypeHierarchy::Breaking,
+            LevelHierarchy::Fix,
+            LevelHierarchy::Fix,
+            LevelHierarchy::Feature,
+            LevelHierarchy::Breaking,
         ];
 
         let test_result_pairs = tests.iter().zip(expected);
@@ -344,14 +270,14 @@ mod tests {
     fn set_top_type_test_currently_other() {
         let mut value_under_test = ConventionalCommits::new();
 
-        let test_level = TypeHierarchy::Other;
+        let test_level = LevelHierarchy::Other;
 
         let tests = ["other", "fix", "feat", "breaking"];
         let expected = [
-            TypeHierarchy::Other,
-            TypeHierarchy::Fix,
-            TypeHierarchy::Feature,
-            TypeHierarchy::Breaking,
+            LevelHierarchy::Other,
+            LevelHierarchy::Fix,
+            LevelHierarchy::Feature,
+            LevelHierarchy::Breaking,
         ];
 
         let test_result_pairs = tests.iter().zip(expected);

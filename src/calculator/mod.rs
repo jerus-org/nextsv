@@ -10,17 +10,18 @@
 //!
 use std::{collections::HashSet, ffi::OsString};
 
+mod conventional;
 mod force_level;
+mod level_hierarchy;
 mod next_version;
 mod route;
 
 pub use self::force_level::ForceLevel;
-use self::next_version::NextVersion;
 use self::route::CalcRoute;
+use self::{conventional::ConventionalCommits, next_version::NextVersion};
+pub use level_hierarchy::LevelHierarchy;
 
-use crate::{
-    semantic::PreReleaseType, ConventionalCommits, Error, Level, LevelHierarchy, VersionTag,
-};
+use crate::{semantic::PreReleaseType, Error, Level, VersionTag};
 use colored::Colorize;
 use git2::Repository;
 use log::warn;
@@ -558,8 +559,10 @@ mod test {
     use crate::calculator::CalcRoute;
     use crate::semantic::PreRelease;
     use crate::LevelHierarchy::Feature;
-    use crate::{semantic::Semantic, ConventionalCommits, VersionCalculator, VersionTag};
+    use crate::{semantic::Semantic, VersionCalculator, VersionTag};
     use crate::{ForceLevel, LevelHierarchy};
+
+    use super::conventional::ConventionalCommits;
 
     #[derive(Debug)]
     pub(crate) enum ConventionalType {
