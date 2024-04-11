@@ -8,132 +8,152 @@
 //!
 //!
 //!
-mod force_level;
+use std::{collections::HashSet, ffi::OsString};
 
-pub use force_level::ForceLevel;
+mod force_level;
+mod next_version;
+mod route;
+
+pub use self::force_level::ForceLevel;
+use self::next_version::NextVersion;
+use self::route::CalcRoute;
 
 use crate::{
-    semantic::PreReleaseType, ConventionalCommits, Error, Level, TypeHierarchy, VersionTag,
+    semantic::PreReleaseType, ConventionalCommits, Error, Level, LevelHierarchy, VersionTag,
 };
+use colored::Colorize;
 use git2::Repository;
+use log::warn;
 use regex::Regex;
 
-use std::{collections::HashSet, ffi::OsString};
-/// Struct the store the result of the calculation (the "answer" :) )
-///
-#[derive(Debug)]
-pub struct Answer {
-    /// the semantic level bump calcuated based on conventional commits
-    pub bump_level: Level,
-    /// the next version number calculated by applying the bump level to the
-    /// current version number
-    pub version_number: VersionTag,
-    /// the change level calculated during the review of conventional commits
-    pub change_level: Option<TypeHierarchy>,
-}
+// /// Struct the store the result of the calculation (the "answer" :) )
+// ///
+// #[derive(Debug)]
+// pub struct Answer {
+//     /// the semantic level bump calcuated based on conventional commits
+//     pub bump_level: Level,
+//     /// the next version number calculated by applying the bump level to the
+//     /// current version number
+//     pub version_number: VersionTag,
+//     /// the change level calculated during the review of conventional commits
+//     pub change_level: Option<LevelHierarchy>,
+// }
 
-impl Answer {
-    /// Create a calculation
-    ///
-    pub fn new(
-        bump_level: Level,
-        version_number: VersionTag,
-        change_level: Option<TypeHierarchy>,
-    ) -> Answer {
-        Answer {
-            bump_level,
-            version_number,
-            change_level,
-        }
-    }
-    /// Unwrap the change_level
-    ///
-    /// ## Error Handling
-    ///
-    /// If the option is None the lowest level TypeHierarchy will be returned
-    ///
-    pub fn change_level(&self) -> TypeHierarchy {
-        self.change_level.clone().unwrap_or(TypeHierarchy::Other)
-    }
-}
+// impl Answer {
+//     /// Create a calculation
+//     ///
+//     pub fn new(
+//         bump_level: Level,
+//         version_number: VersionTag,
+//         change_level: Option<LevelHierarchy>,
+//     ) -> Answer {
+//         Answer {
+//             bump_level,
+//             version_number,
+//             change_level,
+//         }
+//     }
+//     /// Unwrap the change_level
+//     ///
+//     /// ## Error Handling
+//     ///
+//     /// If the option is None the lowest level TypeHierarchy will be returned
+//     ///
+//     pub fn change_level(&self) -> LevelHierarchy {
+//         self.change_level.clone().unwrap_or(LevelHierarchy::Other)
+//     }
+// }
 
-/// The latest semantic version tag (vx.y.z)
-///
-pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
-    let repo = Repository::open(".")?;
-    log::debug!("repo opened to find latest");
+// /// The latest semantic version tag (vx.y.z)
+// ///
+// pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
+//     fn trace_items(versions: Vec<VersionTag>, prefix: &str) {
+//         log::trace!(
+//             "Tags with semantic version numbers prefixed with `{}`",
+//             prefix
+//         );
 
-    let re_version = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
+//         versions.iter().map(|ver| log::trace!("\t{}", ver));
+//     }
 
-    log::debug!("The version regex is: {}", re_version);
+//     let repo = Repository::open(".")?;
+//     log::debug!("repo opened to find latest");
+//     let re_version = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
+//     log::debug!("Regex to search for version tags is: {}", re_version);
 
-    let re = match Regex::new(&re_version) {
-        Ok(r) => r,
-        Err(e) => return Err(Error::CorruptVersionRegex(e)),
-    };
+//     let re = match Regex::new(&re_version) {
+//         Ok(r) => r,
+//         Err(e) => return Err(Error::CorruptVersionRegex(e)),
+//     };
 
-    let mut versions = vec![];
-    repo.tag_foreach(|_id, tag| {
-        if let Ok(tag) = String::from_utf8(tag.to_owned()) {
-            log::trace!("Is git tag `{tag}` a version tag?");
-            if let Some(version) = re.captures(&tag) {
-                log::trace!("Captured version: {:?}", version);
-                let version = VersionTag::parse(&tag, version_prefix).unwrap();
+//     let mut versions = vec![];
+//     repo.tag_foreach(|_id, tag| {
+//         if let Ok(tag) = String::from_utf8(tag.to_owned()) {
+//             log::trace!("Is git tag `{tag}` a version tag?");
+//             if let Some(version) = re.captures(&tag) {
+//                 log::trace!("Captured version: {:?}", version);
+//                 let version = VersionTag::parse(&tag, version_prefix).unwrap();
 
-                versions.push(version);
-            }
-        }
-        true
-    })?;
+//                 versions.push(version);
+//             }
+//         }
+//         true
+//     })?;
 
-    macro_rules! log_items {
-        ($versions:ident,$prefix_version:ident) => {
-            log::trace!(
-                "Tags with semantic version numbers prefixed with `{}`",
-                version_prefix
-            );
-            for ver in &versions {
-                log::trace!("\t{}", ver);
-            }
-        };
-    }
+//     trace_items(versions.clone(), version_prefix);
+//     versions.sort();
+//     log::debug!("Version tags have been sorted");
+//     trace_items(versions.clone(), version_prefix);
 
-    log_items!(versions, prefix_version);
-    versions.sort();
-    log::debug!("Version tags have been sorted");
-    log_items!(versions, prefix_version);
-
-    match versions.last().cloned() {
-        Some(v) => {
-            log::trace!("latest version found is {:#?}", &v);
-            Ok(v)
-        }
-        None => Err(Error::NoVersionTag),
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
-enum CalcRoute {
-    NonProd,
-    PreRelease,
-    Prod,
-    Forced(ForceLevel),
-}
+//     match versions.last().cloned() {
+//         Some(v) => {
+//             log::trace!("latest version found is {:#?}", &v);
+//             Ok(v)
+//         }
+//         None => Err(Error::NoVersionTag),
+//     }
+// }
 
 /// VersionCalculator
 ///
 /// Builds up data about the current version to calculate the next version
 /// number and change level
 ///
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct VersionCalculator {
+    version_prefix: String,
+    route: CalcRoute,
     current_version: VersionTag,
     conventional: Option<ConventionalCommits>,
     files: Option<HashSet<OsString>>,
-    route: CalcRoute,
+    /// the semantic level bump calcuated based on conventional commits
+    bump_level: Level,
+    /// the next version number calculated by applying `bump_level` to the
+    /// current version number
+    next_version: NextVersion,
+    /// the change level calculated based on conventional commits
+    change_level: Option<LevelHierarchy>,
 }
 
 impl VersionCalculator {
+    /// Report the bump level
+    ///
+    pub fn bump_level(&self) -> Level {
+        self.bump_level.clone()
+    }
+
+    /// Report the change level
+    ///
+    pub fn change_level(&self) -> Option<LevelHierarchy> {
+        self.change_level.clone()
+    }
+
+    /// Report the change level
+    ///
+    pub fn next_version_number(&self) -> String {
+        self.next_version.version_number()
+    }
+
     /// Create a new VersionCalculator struct
     ///
     /// ## Parameters
@@ -141,26 +161,73 @@ impl VersionCalculator {
     ///  - version_prefix - identifies version tags
     ///
     pub fn new(version_prefix: &str) -> Result<VersionCalculator, Error> {
-        let current_version = latest(version_prefix)?;
-        let route = calculation_route(&current_version);
+        fn trace_items(versions: Vec<VersionTag>, prefix: &str) {
+            log::trace!(
+                "Tags with semantic version numbers prefixed with `{}`",
+                prefix
+            );
+            for ver in &versions {
+                log::trace!("\t{}", ver);
+            }
+        }
+
+        let repo = Repository::open(".")?;
+        log::debug!("Repo opened to find latest version tag.");
+
+        // Setup regex to test the tag for a version number: major.minor,patch
+        let re_version = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
+        log::debug!("Regex to search for version tags is: `{}`.", re_version);
+        let re = match Regex::new(&re_version) {
+            Ok(r) => r,
+            Err(e) => return Err(Error::CorruptVersionRegex(e)),
+        };
+
+        let mut versions = vec![];
+        repo.tag_foreach(|_id, tag| {
+            if let Ok(tag) = String::from_utf8(tag.to_owned()) {
+                log::trace!("Is git tag `{tag}` a version tag?");
+                if let Some(version) = re.captures(&tag) {
+                    log::trace!("Captured version: {:?}", version);
+                    let version = VersionTag::parse(&tag, version_prefix).unwrap();
+                    versions.push(version);
+                }
+            }
+            true
+        })?;
+
+        trace_items(versions.clone(), version_prefix);
+        log::trace!("Original last version: {:?}", versions.last());
+        versions.sort();
+        log::debug!("Version tags have been sorted");
+        trace_items(versions.clone(), version_prefix);
+
+        let current_version = match versions.last().cloned() {
+            Some(v) => {
+                log::trace!("latest version found is {:?}", &v);
+                v
+            }
+            None => return Err(Error::NoVersionTag),
+        };
+
+        let route = CalcRoute::new(&current_version.semantic_version);
 
         Ok(VersionCalculator {
+            version_prefix: version_prefix.to_string(),
             current_version,
-            conventional: None,
-            files: None,
             route,
+            ..Default::default()
         })
     }
 
     /// Report the current_version
     ///
-    pub fn name(&self) -> VersionTag {
-        self.current_version.clone()
-    }
+    // pub fn name(&self) -> VersionTag {
+    //     self.current_version.clone()
+    // }
 
     /// Report top level
     ///
-    pub fn top_level(&self) -> Option<TypeHierarchy> {
+    pub fn top_level(&self) -> Option<LevelHierarchy> {
         if self.conventional.is_none() {
             None
         } else {
@@ -179,16 +246,16 @@ impl VersionCalculator {
     /// If there are no conventional commits it returns 0.
     /// If conventional is None returns 0.
     ///
-    pub fn count_commits_by_type(&self, commit_type: &str) -> u32 {
-        match self.conventional.clone() {
-            Some(conventional) => conventional
-                .counts()
-                .get(commit_type)
-                .unwrap_or(&0_u32)
-                .to_owned(),
-            None => 0_u32,
-        }
-    }
+    // pub fn count_commits_by_type(&self, commit_type: &str) -> u32 {
+    //     match self.conventional.clone() {
+    //         Some(conventional) => conventional
+    //             .counts()
+    //             .get(commit_type)
+    //             .unwrap_or(&0_u32)
+    //             .to_owned(),
+    //         None => 0_u32,
+    //     }
+    // }
 
     /// Report the status of the breaking flag in the conventional commits
     ///
@@ -196,12 +263,12 @@ impl VersionCalculator {
     ///
     /// If the conventional is None returns false
     ///
-    pub fn breaking(&self) -> bool {
-        match self.conventional.clone() {
-            Some(conventional) => conventional.breaking(),
-            None => false,
-        }
-    }
+    // pub fn breaking(&self) -> bool {
+    //     match self.conventional.clone() {
+    //         Some(conventional) => conventional.breaking(),
+    //         None => false,
+    //     }
+    // }
 
     /// Force update next_version to return a specific result
     ///
@@ -223,7 +290,7 @@ impl VersionCalculator {
     ///
     /// Errors from 'git2' are returned.
     ///
-    pub fn walk_commits(mut self) -> Result<Self, Error> {
+    pub fn walk_commits(&mut self) -> Result<(), Error> {
         let repo = git2::Repository::open(".")?;
         log::debug!("repo opened to find conventional commits");
         let mut revwalk = repo.revwalk()?;
@@ -280,37 +347,46 @@ impl VersionCalculator {
         log::debug!("Files found: {:?}", &files);
         self.files = Some(files);
 
-        Ok(self)
+        Ok(())
     }
 
     /// Calculate the next version and report the version number
     /// and level at which the change is made.
-    pub fn next_version(&mut self) -> Answer {
+    pub fn calculate(&mut self) {
+        log::debug!(
+            "Calculating according to the `{:?}` route: ",
+            &self.route.to_string().blue()
+        );
         // check the conventional commits. No conventional commits; no change.
         #[cfg(let_else)]
         let Some(conventional) = self.conventional.clone() else {
-            return Answer::new(Level::None, self.current_version.clone(), None);
+            self.bump_level = Level::None;
+            self.next_version = NextVersion::Updated(self.current_version.clone());
+            self.change_level = None;
+            warn!("Returning early from calculate as no conventional commits found.");
+            return;
         };
         #[cfg(not(let_else))]
         let conventional = match self.conventional.clone() {
             Some(c) => c,
-            None => return Answer::new(Level::None, self.current_version.clone(), None),
+            None => {
+                self.bump_level = Level::None;
+                self.next_version = NextVersion::Updated(self.current_version.clone());
+                self.change_level = None;
+                warn!("Returning early from calculate as no conventional commits found.");
+                return;
+            }
         };
-
-        log::debug!(
-            "Calculating according to the route data provided: {:?}",
-            &self.route
-        );
 
         let mut bump = Level::None;
         log::debug!("Starting calculation with bump level of {bump:?}");
         match &self.route {
             CalcRoute::Forced(forced_level) => {
                 log::debug!("Forcing the bump level output to `{forced_level}`");
-                let mut final_bump = forced_level.clone().into();
-                let next_version =
-                    next_version_calculator(self.current_version.clone(), &mut final_bump);
-                return Answer::new(final_bump, next_version, None);
+                self.bump_level = forced_level.clone().into();
+                self.change_level = None;
+                self.calculate_next_version();
+                return;
             }
             CalcRoute::NonProd => {
                 bump = if conventional.breaking() {
@@ -369,14 +445,8 @@ impl VersionCalculator {
                 };
             }
         };
-
-        let next_version = next_version_calculator(self.current_version.clone(), &mut bump);
-
-        // if let Level::Custom(_) = bump {
-        //     bump = Level::Custom(next_version.to_string())
-        // };
-
-        Answer::new(bump, next_version, None)
+        self.bump_level = bump;
+        self.calculate_next_version();
     }
 
     /// Check for required files
@@ -392,7 +462,7 @@ impl VersionCalculator {
     pub fn has_required(
         &self,
         files_required: Vec<OsString>,
-        level: TypeHierarchy,
+        level: LevelHierarchy,
     ) -> Result<(), Error> {
         // How to use level to ensure that the rule is only applied
         // when required levels of commits are included
@@ -402,7 +472,7 @@ impl VersionCalculator {
             .as_ref()
             .unwrap()
             .top_type()
-            .unwrap_or(TypeHierarchy::Other)
+            .unwrap_or(LevelHierarchy::Other)
             >= level
         {
             let files = self.files.clone();
@@ -425,63 +495,53 @@ impl VersionCalculator {
 
         Ok(())
     }
-}
 
-fn calculation_route(current_version: &VersionTag) -> CalcRoute {
-    if current_version
-        .semantic_version
-        .clone()
-        .pre_release
-        .is_some()
-    {
-        return CalcRoute::PreRelease;
-    };
-    if current_version.semantic_version.major == 0 {
-        return CalcRoute::NonProd;
-    };
-    CalcRoute::Prod
-}
+    fn calculate_next_version(&mut self) {
+        let mut next_version = self.current_version.clone();
+        log::debug!(
+            "Starting version: `{}`; bump level `{}`",
+            next_version,
+            self.bump_level
+        );
 
-fn next_version_calculator(mut version: VersionTag, bump: &mut Level) -> VersionTag {
-    log::debug!("Starting version is: {version}");
-    let mut new_bump = bump.clone();
-    let next_version = match bump {
-        Level::Major => {
-            version.version_mut().major += 1;
-            version.version_mut().minor = 0;
-            version.version_mut().patch = 0;
-            version
-        }
-        Level::Minor => {
-            version.version_mut().minor += 1;
-            version.version_mut().patch = 0;
-            version
-        }
-        Level::Patch => {
-            version.version_mut().patch += 1;
-            version
-        }
-        Level::First => {
-            version.version_mut().major = 1;
-            version.version_mut().minor = 0;
-            version.version_mut().patch = 0;
-            version
-        }
-        Level::Alpha | Level::Beta | Level::Rc => {
-            version.version_mut().increment_pre_release();
-            version
-        }
-        Level::Custom(_s) => {
-            version.version_mut().increment_pre_release();
-            new_bump = Level::Custom(version.to_string());
-            version
-        }
-        _ => version,
-    };
-    log::debug!("Next version is: {next_version}");
-    *bump = new_bump;
+        // let mut new_bump = bump.clone();
+        let next_version = match &self.bump_level {
+            Level::Major => {
+                next_version.version_mut().major += 1;
+                next_version.version_mut().minor = 0;
+                next_version.version_mut().patch = 0;
+                next_version
+            }
+            Level::Minor => {
+                next_version.version_mut().minor += 1;
+                next_version.version_mut().patch = 0;
+                next_version
+            }
+            Level::Patch => {
+                next_version.version_mut().patch += 1;
+                next_version
+            }
+            Level::First => {
+                next_version.version_mut().major = 1;
+                next_version.version_mut().minor = 0;
+                next_version.version_mut().patch = 0;
+                next_version
+            }
+            Level::Alpha | Level::Beta | Level::Rc => {
+                next_version.version_mut().increment_pre_release();
+                next_version
+            }
+            Level::Custom(_s) => {
+                next_version.version_mut().increment_pre_release();
+                self.bump_level = Level::Custom(next_version.to_string());
+                next_version
+            }
+            _ => next_version,
+        };
+        log::debug!("Next version is: {next_version}");
 
-    next_version
+        self.next_version = NextVersion::Updated(next_version);
+    }
 }
 
 #[cfg(test)]
@@ -497,9 +557,9 @@ mod test {
 
     use crate::calculator::CalcRoute;
     use crate::semantic::PreRelease;
-    use crate::TypeHierarchy::Feature;
+    use crate::LevelHierarchy::Feature;
     use crate::{semantic::Semantic, ConventionalCommits, VersionCalculator, VersionTag};
-    use crate::{ForceLevel, TypeHierarchy};
+    use crate::{ForceLevel, LevelHierarchy};
 
     #[derive(Debug)]
     pub(crate) enum ConventionalType {
@@ -628,7 +688,7 @@ mod test {
             breaking
         )];
 
-        let top_type = Some(TypeHierarchy::parse(&commit_type.to_string()).unwrap());
+        let top_type = Some(LevelHierarchy::parse(&commit_type.to_string()).unwrap());
 
         Some(ConventionalCommits {
             commits,
@@ -658,70 +718,70 @@ mod test {
     }
 
     #[rstest]
+    #[case::feature("feat", "minor", "0.8.0")]
+    #[case::fix("fix", "patch", "0.7.10")]
+    #[case::docs("docs", "patch", "0.7.10")]
+    #[case::style("style", "patch", "0.7.10")]
+    #[case::refactor("refactor", "patch", "0.7.10")]
+    #[case::perf("perf", "patch", "0.7.10")]
+    #[case::test("test", "patch", "0.7.10")]
+    #[case::build("build", "patch", "0.7.10")]
+    #[case::chore("chore", "patch", "0.7.10")]
+    #[case::ci("ci", "patch", "0.7.10")]
+    #[case::revert("revert", "patch", "0.7.10")]
     fn bump_result_for_nonprod_current_version_and_nonbreaking(
-        #[values(
-            "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci",
-            "revert"
-        )]
-        commit: ConventionalType,
+        #[case] commit: ConventionalType,
+        #[case] expected_level: &str,
+        #[case] expected_version: &str,
     ) {
         let current_version = gen_current_version("v", 0, 7, 9, None, None);
         let conventional = gen_conventional_commit(commit, false);
         let files = gen_files();
 
-        let mut this_version = VersionCalculator {
+        let mut calculator = VersionCalculator {
             current_version,
             conventional,
             files,
             route: CalcRoute::NonProd,
+            ..Default::default()
         };
 
-        let new_version = this_version.next_version();
+        calculator.calculate();
 
-        assert_eq!("patch", new_version.bump_level.to_string().as_str());
-
-        let version_number = format!(
-            "{}.{}.{}",
-            new_version.version_number.semantic_version.major,
-            new_version.version_number.semantic_version.minor,
-            new_version.version_number.semantic_version.patch
-        );
-
-        assert_eq!("0.7.10", version_number)
+        assert_eq!(expected_level, calculator.bump_level.to_string().as_str());
+        assert_eq!(expected_version, calculator.next_version_number())
     }
 
     #[rstest]
+    #[case::feature("feat")]
+    #[case::fix("fix")]
+    #[case::docs("docs")]
+    #[case::style("style")]
+    #[case::refactor("refactor")]
+    #[case::perf("perf")]
+    #[case::test("test")]
+    #[case::build("build")]
+    #[case::chore("chore")]
+    #[case::ci("ci")]
+    #[case::revert("revert")]
     // #[trace]
-    fn bump_result_for_nonprod_current_version_and_breaking(
-        #[values(
-            "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "chore", "ci",
-            "revert"
-        )]
-        commit: ConventionalType,
-    ) {
+    fn bump_result_for_nonprod_current_version_and_breaking(#[case] commit: ConventionalType) {
         let current_version = gen_current_version("v", 0, 7, 9, None, None);
         let conventional = gen_conventional_commit(commit, true);
         let files = gen_files();
 
-        let mut this_version = VersionCalculator {
+        let mut calculator = VersionCalculator {
             current_version,
             conventional,
             files,
             route: CalcRoute::NonProd,
+            ..Default::default()
         };
 
-        let new_version = this_version.next_version();
+        calculator.calculate();
 
-        assert_eq!("minor", new_version.bump_level.to_string().as_str());
-
-        let version_number = format!(
-            "{}.{}.{}",
-            new_version.version_number.semantic_version.major,
-            new_version.version_number.semantic_version.minor,
-            new_version.version_number.semantic_version.patch
-        );
-
-        assert_eq!("0.8.0", version_number)
+        assert_eq!("minor", calculator.bump_level.to_string().as_str());
+        assert_eq!("0.8.0", calculator.next_version_number());
     }
 
     #[rstest]
@@ -745,25 +805,18 @@ mod test {
         let conventional = gen_conventional_commit(commit, false);
         let files = gen_files();
 
-        let mut this_version = VersionCalculator {
+        let mut calculator = VersionCalculator {
             current_version,
             conventional,
             files,
             route: CalcRoute::Prod,
+            ..Default::default()
         };
 
-        let new_version = this_version.next_version();
+        calculator.calculate();
 
-        assert_eq!(expected_bump, new_version.bump_level.to_string());
-
-        let version_number = format!(
-            "{}.{}.{}",
-            new_version.version_number.semantic_version.major,
-            new_version.version_number.semantic_version.minor,
-            new_version.version_number.semantic_version.patch
-        );
-
-        assert_eq!(expected_version, version_number)
+        assert_eq!(expected_bump, calculator.bump_level.to_string());
+        assert_eq!(expected_version, calculator.next_version_number())
     }
 
     #[rstest]
@@ -781,25 +834,22 @@ mod test {
         let conventional = gen_conventional_commit(commit, false);
         let files = gen_files();
 
-        let mut this_version = VersionCalculator {
+        let route = CalcRoute::new(&current_version.semantic_version);
+
+        let mut calculator = VersionCalculator {
             current_version,
             conventional,
             files,
-            route: CalcRoute::NonProd,
+            route,
+            ..Default::default()
         };
 
-        let new_version = this_version.next_version();
+        calculator.calculate();
 
-        assert_eq!("alpha", new_version.bump_level.to_string().as_str());
+        println!("Version: {:?}", calculator);
 
-        let version_number = format!(
-            "{}.{}.{}",
-            new_version.version_number.semantic_version.major,
-            new_version.version_number.semantic_version.minor,
-            new_version.version_number.semantic_version.patch
-        );
-
-        assert_eq!("0.7.9-alpha.2", version_number)
+        assert_eq!("alpha", calculator.bump_level.to_string().as_str());
+        assert_eq!("0.7.9-alpha.2", calculator.next_version_number())
     }
 
     #[rstest]
@@ -811,55 +861,43 @@ mod test {
         )]
         commit: ConventionalType,
     ) {
+        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
         let current_version = gen_current_version("v", 1, 7, 9, None, None);
         let conventional = gen_conventional_commit(commit, true);
         let files = gen_files();
 
-        let mut this_version = VersionCalculator {
+        let mut calculator = VersionCalculator {
             current_version,
             conventional,
             files,
             route: CalcRoute::Prod,
+            ..Default::default()
         };
 
-        let new_version = this_version.next_version();
+        calculator.calculate();
 
-        assert_eq!("major", new_version.bump_level.to_string().as_str());
-
-        let version_number = format!(
-            "{}.{}.{}",
-            new_version.version_number.semantic_version.major,
-            new_version.version_number.semantic_version.minor,
-            new_version.version_number.semantic_version.patch
-        );
-
-        assert_eq!("2.0.0", version_number)
+        assert_eq!("major", calculator.bump_level.to_string().as_str());
+        assert_eq!("2.0.0", calculator.next_version_number())
     }
 
     #[test]
     fn promote_to_version_one() {
+        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
         let current_version = gen_current_version("v", 0, 7, 9, None, None);
         let conventional = gen_conventional_commits();
         let files = gen_files();
 
-        let mut this_version = VersionCalculator {
+        let mut calculator = VersionCalculator {
             current_version,
             conventional,
             files,
             route: CalcRoute::Forced(ForceLevel::First),
+            ..Default::default()
         };
 
-        let new_version = this_version.next_version();
+        calculator.calculate();
 
-        assert_eq!("1.0.0", new_version.bump_level.to_string().as_str());
-
-        let version_number = format!(
-            "{}.{}.{}",
-            new_version.version_number.semantic_version.major,
-            new_version.version_number.semantic_version.minor,
-            new_version.version_number.semantic_version.patch
-        );
-
-        assert_eq!("1.0.0", version_number)
+        assert_eq!("1.0.0", calculator.bump_level.to_string().as_str());
+        assert_eq!("1.0.0", calculator.next_version_number())
     }
 }

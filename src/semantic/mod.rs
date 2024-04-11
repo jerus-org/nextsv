@@ -60,7 +60,7 @@ impl fmt::Display for Semantic {
 
 impl Semantic {
     // Create a new struct specifying each of the semantic version components.
-    fn new(
+    pub(crate) fn new(
         major: &str,
         minor: &str,
         patch: &str,

@@ -9,21 +9,21 @@ use clap::ValueEnum;
 ///
 #[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Clone, ValueEnum)]
 pub enum ForceLevel {
-    /// force change to the major component of semver
+    /// force change to major
     Major,
-    /// force change to the minor component of semver
+    /// force change to minor
     Minor,
-    /// force change to the patch component of semver
+    /// force change to patch
     Patch,
-    /// Force update of major version number from 0 to 1
+    /// Force update of first production release (1.0.0)
     First,
-    /// Release update of current version
+    /// Release current version
     Release,
-    /// Alpha pre-release version
+    /// Alpha pre-release of current version
     Alpha,
-    /// Beta pre-release version
+    /// Beta pre-release of current version
     Beta,
-    /// Rc pre-release version
+    /// Rc pre-release of current version
     Rc,
 }
 
@@ -33,7 +33,7 @@ impl fmt::Display for ForceLevel {
             ForceLevel::Major => write!(f, "major"),
             ForceLevel::Minor => write!(f, "minor"),
             ForceLevel::Patch => write!(f, "patch"),
-            ForceLevel::First => write!(f, "first"),
+            ForceLevel::First => write!(f, "1.0.0"),
             ForceLevel::Alpha => write!(f, "alpha"),
             ForceLevel::Beta => write!(f, "beta"),
             ForceLevel::Rc => write!(f, "rc"),

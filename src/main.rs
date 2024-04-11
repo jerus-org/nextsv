@@ -2,7 +2,7 @@ use std::ffi::OsString;
 use std::fmt;
 
 use clap::{Parser, ValueEnum};
-use nextsv::{Answer, Error, ForceLevel, TypeHierarchy, VersionCalculator};
+use nextsv::{Error, ForceLevel, LevelHierarchy, VersionCalculator};
 use proc_exit::{Code, ExitResult};
 
 #[derive(ValueEnum, Debug, Clone)]
@@ -45,14 +45,14 @@ struct Cli {
     require: Vec<OsString>,
     /// Level at which required files should be enforced
     #[clap(short, long, default_value = "feature")]
-    enforce_level: TypeHierarchy,
+    enforce_level: LevelHierarchy,
     /// Check level meets minimum for setting
     ///
     /// This option can be used to check the calculated level
     /// meets a minimum before applying an update. The program
     /// exits with an error if the threshold is not met.
     #[clap(short, long)]
-    check: Option<TypeHierarchy>,
+    check: Option<LevelHierarchy>,
     /// add output to environment variable
     #[clap(long, default_value = "NEXTSV_LEVEL")]
     set_env: Option<String>,
@@ -76,7 +76,7 @@ fn run() -> ExitResult {
         (true, true) => log::info!("Calculating the next version number and level"),
     };
 
-    let latest_version = VersionCalculator::new(&args.prefix)?;
+    let mut latest_version = VersionCalculator::new(&args.prefix)?;
 
     log::trace!("require: {:#?}", args.require);
 
@@ -87,17 +87,25 @@ fn run() -> ExitResult {
         Option::Some(args.require)
     };
 
-    let resp = calculate(latest_version, args.force, files, args.enforce_level)?;
+    calculate(&mut latest_version, args.force, files, args.enforce_level)?;
 
-    set_environment_variable(args.set_env, resp.bump_level.to_string().into());
-    check_level(args.check, resp.change_level())?;
+    set_environment_variable(args.set_env, latest_version.bump_level().to_string().into());
+    check_level(
+        args.check,
+        latest_version
+            .change_level()
+            .unwrap_or(LevelHierarchy::Other),
+    )?;
     log::debug!("not checking so print the output");
-    print_output(args.number, args.level, resp);
+    print_output(args.number, args.level, &latest_version);
 
     Code::SUCCESS.ok()
 }
 
-fn check_level(threshold: Option<TypeHierarchy>, change_level: TypeHierarchy) -> Result<(), Error> {
+fn check_level(
+    threshold: Option<LevelHierarchy>,
+    change_level: LevelHierarchy,
+) -> Result<(), Error> {
     if let Some(minimum_level) = threshold {
         log::debug!("level expected is {:?}", &minimum_level);
         log::debug!("level reported is {:?}", &change_level);
@@ -119,27 +127,25 @@ fn set_environment_variable(env_variable: Option<String>, value: OsString) {
 }
 
 fn calculate(
-    mut latest_version: VersionCalculator,
+    latest_version: &mut VersionCalculator,
     force: Option<ForceLevel>,
     files: Option<Vec<OsString>>,
-    enforce_level: TypeHierarchy,
-) -> Result<Answer, Error> {
+    enforce_level: LevelHierarchy,
+) -> Result<(), Error> {
     if let Some(f) = &force {
         log::debug!("Force option set to {}", f);
     };
-    latest_version = latest_version.walk_commits()?;
+    latest_version.walk_commits()?;
     if let Some(f) = files {
         latest_version.has_required(f, enforce_level)?;
     }
-    let mut answer = if let Some(svc) = force {
-        latest_version.set_force(Some(svc)).next_version()
-    } else {
-        latest_version.next_version()
+    if let Some(svc) = force {
+        latest_version.set_force(Some(svc));
     };
 
-    answer.change_level = latest_version.top_level();
+    latest_version.calculate();
 
-    Ok(answer)
+    Ok(())
 }
 
 pub fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
@@ -154,11 +160,15 @@ pub fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
 
 /// Print the output from the calculation
 ///
-fn print_output(number: bool, level: bool, response: Answer) {
+fn print_output(number: bool, level: bool, response: &VersionCalculator) {
     match (number, level) {
-        (false, false) => println!("{}", response.bump_level),
-        (false, true) => println!("{}", response.bump_level),
-        (true, false) => println!("{}", response.version_number),
-        (true, true) => println!("{}\n{}", response.version_number, response.bump_level),
+        (false, false) => println!("{}", response.bump_level()),
+        (false, true) => println!("{}", response.bump_level()),
+        (true, false) => println!("{}", response.next_version_number()),
+        (true, true) => println!(
+            "{}\n{}",
+            response.next_version_number(),
+            response.bump_level()
+        ),
     }
 }
