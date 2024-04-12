@@ -58,6 +58,9 @@ pub enum Error {
     /// Error passed up from git2
     #[error("0:?")]
     Git2(#[from] git2::Error),
+    /// Error passed up from convert TryFrom
+    #[error("0:?")]
+    TryFromIntError(#[from] std::num::TryFromIntError),
 }
 
 impl From<Error> for Exit {

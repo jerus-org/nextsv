@@ -23,9 +23,10 @@ use crate::Error;
 ///
 /// If a breaking change is found it sets breaking hierarchy.
 ///
-#[derive(Debug, PartialEq, Eq, Clone, ValueEnum)]
+#[derive(Debug, PartialEq, Eq, Clone, ValueEnum, Default)]
 pub enum LevelHierarchy {
     /// enforce requirements for all types
+    #[default]
     Other = 1,
     /// enforce requirements for fix, feature and breaking
     Fix = 2,

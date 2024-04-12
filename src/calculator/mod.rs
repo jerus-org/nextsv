@@ -10,11 +10,14 @@
 //!
 use std::{collections::HashSet, ffi::OsString};
 
+mod config;
 mod conventional;
 mod force_level;
 mod level_hierarchy;
 mod next_version;
 mod route;
+
+pub use self::config::CalculatorConfig;
 
 pub use self::force_level::ForceLevel;
 use self::route::CalcRoute;
@@ -27,94 +30,6 @@ use git2::Repository;
 use log::warn;
 use regex::Regex;
 
-// /// Struct the store the result of the calculation (the "answer" :) )
-// ///
-// #[derive(Debug)]
-// pub struct Answer {
-//     /// the semantic level bump calcuated based on conventional commits
-//     pub bump_level: Level,
-//     /// the next version number calculated by applying the bump level to the
-//     /// current version number
-//     pub version_number: VersionTag,
-//     /// the change level calculated during the review of conventional commits
-//     pub change_level: Option<LevelHierarchy>,
-// }
-
-// impl Answer {
-//     /// Create a calculation
-//     ///
-//     pub fn new(
-//         bump_level: Level,
-//         version_number: VersionTag,
-//         change_level: Option<LevelHierarchy>,
-//     ) -> Answer {
-//         Answer {
-//             bump_level,
-//             version_number,
-//             change_level,
-//         }
-//     }
-//     /// Unwrap the change_level
-//     ///
-//     /// ## Error Handling
-//     ///
-//     /// If the option is None the lowest level TypeHierarchy will be returned
-//     ///
-//     pub fn change_level(&self) -> LevelHierarchy {
-//         self.change_level.clone().unwrap_or(LevelHierarchy::Other)
-//     }
-// }
-
-// /// The latest semantic version tag (vx.y.z)
-// ///
-// pub fn latest(version_prefix: &str) -> Result<VersionTag, Error> {
-//     fn trace_items(versions: Vec<VersionTag>, prefix: &str) {
-//         log::trace!(
-//             "Tags with semantic version numbers prefixed with `{}`",
-//             prefix
-//         );
-
-//         versions.iter().map(|ver| log::trace!("\t{}", ver));
-//     }
-
-//     let repo = Repository::open(".")?;
-//     log::debug!("repo opened to find latest");
-//     let re_version = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
-//     log::debug!("Regex to search for version tags is: {}", re_version);
-
-//     let re = match Regex::new(&re_version) {
-//         Ok(r) => r,
-//         Err(e) => return Err(Error::CorruptVersionRegex(e)),
-//     };
-
-//     let mut versions = vec![];
-//     repo.tag_foreach(|_id, tag| {
-//         if let Ok(tag) = String::from_utf8(tag.to_owned()) {
-//             log::trace!("Is git tag `{tag}` a version tag?");
-//             if let Some(version) = re.captures(&tag) {
-//                 log::trace!("Captured version: {:?}", version);
-//                 let version = VersionTag::parse(&tag, version_prefix).unwrap();
-
-//                 versions.push(version);
-//             }
-//         }
-//         true
-//     })?;
-
-//     trace_items(versions.clone(), version_prefix);
-//     versions.sort();
-//     log::debug!("Version tags have been sorted");
-//     trace_items(versions.clone(), version_prefix);
-
-//     match versions.last().cloned() {
-//         Some(v) => {
-//             log::trace!("latest version found is {:#?}", &v);
-//             Ok(v)
-//         }
-//         None => Err(Error::NoVersionTag),
-//     }
-// }
-
 /// VersionCalculator
 ///
 /// Builds up data about the current version to calculate the next version
@@ -122,6 +37,7 @@ use regex::Regex;
 ///
 #[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct VersionCalculator {
+    // config: CalculatorConfig;
     version_prefix: String,
     route: CalcRoute,
     current_version: VersionTag,
@@ -137,6 +53,12 @@ pub struct VersionCalculator {
 }
 
 impl VersionCalculator {
+    /// Initialize the version calculator
+    ///
+    pub(crate) fn init(config: CalculatorConfig) -> Self {
+        VersionCalculator::new("version_prefix").unwrap()
+    }
+
     /// Report the bump level
     ///
     pub fn bump_level(&self) -> Level {
