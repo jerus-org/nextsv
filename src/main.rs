@@ -97,7 +97,7 @@ fn run() -> ExitResult {
         std::env::set_var::<OsString, OsString>(key.into(), calculator.bump().into())
     }
 
-    println!("{}", calculator.report()?);
+    println!("{}", calculator.report());
 
     Code::SUCCESS.ok()
 }

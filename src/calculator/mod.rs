@@ -69,8 +69,11 @@ impl Calculator {
             );
             let bump = Bump::None;
             let next_version = NextVersion::None;
+            let mut new_config = config;
+            new_config.report_bump = true;
+            new_config.report_number = false;
             return Ok(Calculator {
-                config,
+                config: new_config,
                 current_version,
                 route,
                 conventional,
@@ -98,18 +101,13 @@ impl Calculator {
         self.bump.clone()
     }
 
-    pub fn report(&self) -> Result<String, Error> {
-        Ok(if self.conventional.top_type >= self.config.threshold {
-            match (self.config.report_bump, self.config.report_number) {
-                (true, true) => format!("{}\n{}", self.bump, self.next_version.version_number()),
-                (false, true) => self.next_version.version_number(),
-                (true, false) => self.bump().to_string(),
-                (false, false) => String::from(""),
-            }
-        } else {
-            log::info!("the minimum level is not met");
-            return Err(Error::MinimumChangeLevelNotMet);
-        })
+    pub fn report(&self) -> String {
+        match (self.config.report_bump, self.config.report_number) {
+            (true, true) => format!("{}\n{}", self.bump, self.next_version.version_number()),
+            (false, true) => self.next_version.version_number(),
+            (true, false) => self.bump().to_string(),
+            (false, false) => String::from(""),
+        }
     }
 
     /// Report the change level
