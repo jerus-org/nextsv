@@ -1,5 +1,6 @@
 use std::{cmp::Ordering, fmt};
 
+use git2::Repository;
 use regex::Regex;
 
 use crate::Error;
@@ -135,6 +136,58 @@ impl VersionTag {
     ///
     pub fn version_mut(&mut self) -> &mut Semantic {
         &mut self.semantic_version
+    }
+
+    /// Find the latest version tag in a repo
+    ///
+    pub(crate) fn find_in_repo(repo: &Repository, version_prefix: &str) -> Result<Self, Error> {
+        log::debug!("Repository opened to find latest version tag.");
+
+        // Setup regex to test the tag for a version number: major.minor,patch
+        let re_version = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
+        log::debug!("Regex to search for version tags is: `{}`.", re_version);
+        let re = match Regex::new(&re_version) {
+            Ok(r) => r,
+            Err(e) => return Err(Error::CorruptVersionRegex(e)),
+        };
+
+        let mut versions = vec![];
+        repo.tag_foreach(|_id, tag| {
+            if let Ok(tag) = String::from_utf8(tag.to_owned()) {
+                log::trace!("Is git tag `{tag}` a version tag?");
+                if let Some(version) = re.captures(&tag) {
+                    log::trace!("Captured version: {:?}", version);
+                    let version = VersionTag::parse(&tag, version_prefix).unwrap();
+                    versions.push(version);
+                }
+            }
+            true
+        })?;
+
+        trace_items(versions.clone(), version_prefix);
+        log::trace!("Original last version: {:?}", versions.last());
+        versions.sort();
+        log::debug!("Version tags have been sorted");
+        trace_items(versions.clone(), version_prefix);
+
+        let current_version = match versions.last().cloned() {
+            Some(v) => {
+                log::trace!("latest version found is {:?}", &v);
+                v
+            }
+            None => return Err(Error::NoVersionTag),
+        };
+        Ok(current_version)
+    }
+}
+
+fn trace_items(versions: Vec<VersionTag>, prefix: &str) {
+    log::trace!(
+        "Tags with semantic version numbers prefixed with `{}`",
+        prefix
+    );
+    for ver in &versions {
+        log::trace!("\t{}", ver);
     }
 }
 

@@ -8,7 +8,7 @@ use clap::ValueEnum;
 /// at which the forced change is made.
 ///
 #[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Clone, ValueEnum)]
-pub enum ForceLevel {
+pub enum ForceBump {
     /// force change to major
     Major,
     /// force change to minor
@@ -27,17 +27,17 @@ pub enum ForceLevel {
     Rc,
 }
 
-impl fmt::Display for ForceLevel {
+impl fmt::Display for ForceBump {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ForceLevel::Major => write!(f, "major"),
-            ForceLevel::Minor => write!(f, "minor"),
-            ForceLevel::Patch => write!(f, "patch"),
-            ForceLevel::First => write!(f, "1.0.0"),
-            ForceLevel::Alpha => write!(f, "alpha"),
-            ForceLevel::Beta => write!(f, "beta"),
-            ForceLevel::Rc => write!(f, "rc"),
-            ForceLevel::Release => write!(f, "release"),
+            ForceBump::Major => write!(f, "major"),
+            ForceBump::Minor => write!(f, "minor"),
+            ForceBump::Patch => write!(f, "patch"),
+            ForceBump::First => write!(f, "1.0.0"),
+            ForceBump::Alpha => write!(f, "alpha"),
+            ForceBump::Beta => write!(f, "beta"),
+            ForceBump::Rc => write!(f, "rc"),
+            ForceBump::Release => write!(f, "release"),
         }
     }
 }
@@ -45,19 +45,19 @@ impl fmt::Display for ForceLevel {
 #[cfg(test)]
 mod test {
 
-    use super::ForceLevel;
+    use super::ForceBump;
     use rstest::rstest;
 
     #[rstest]
-    #[case::patch(ForceLevel::Patch, "patch")]
-    #[case::minor(ForceLevel::Minor, "minor")]
-    #[case::major(ForceLevel::Major, "major")]
-    #[case::release(ForceLevel::Release, "release")]
-    #[case::alpha(ForceLevel::Alpha, "alpha")]
-    #[case::beta(ForceLevel::Beta, "beta")]
-    #[case::rc(ForceLevel::Rc, "rc")]
-    #[case::first(ForceLevel::First, "1.0.0")]
-    fn display_value(#[case] test: ForceLevel, #[case] expected: &str) {
+    #[case::patch(ForceBump::Patch, "patch")]
+    #[case::minor(ForceBump::Minor, "minor")]
+    #[case::major(ForceBump::Major, "major")]
+    #[case::release(ForceBump::Release, "release")]
+    #[case::alpha(ForceBump::Alpha, "alpha")]
+    #[case::beta(ForceBump::Beta, "beta")]
+    #[case::rc(ForceBump::Rc, "rc")]
+    #[case::first(ForceBump::First, "1.0.0")]
+    fn display_value(#[case] test: ForceBump, #[case] expected: &str) {
         assert_eq!(expected, test.to_string().as_str());
     }
 }

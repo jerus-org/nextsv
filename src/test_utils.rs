@@ -6,7 +6,7 @@ use std::{
 };
 
 use crate::{calculator::ConventionalCommits, version::PreRelease, VersionTag};
-use crate::{version::Semantic, LevelHierarchy};
+use crate::{version::Semantic, Hierarchy};
 
 #[derive(Debug)]
 pub(crate) enum ConventionalType {
@@ -65,7 +65,7 @@ impl FromStr for ConventionalType {
 
 // use crate::calculator::
 
-pub(crate) fn gen_conventional_commits() -> Option<ConventionalCommits> {
+pub(crate) fn gen_conventional_commits() -> ConventionalCommits {
     let mut counts = HashMap::new();
     let values = [
         ("chore".to_string(), 1),
@@ -81,7 +81,9 @@ pub(crate) fn gen_conventional_commits() -> Option<ConventionalCommits> {
         counts.insert(val.0, val.1);
     }
 
-    Some(ConventionalCommits {
+    let files = gen_files();
+
+    ConventionalCommits {
         commits: vec![
             "fix: spelling of output in description of set_env".to_string(),
             "Merge branch 'main' of github.com:jerusdp/nextsv into fix/version-level-assessment"
@@ -94,15 +96,16 @@ pub(crate) fn gen_conventional_commits() -> Option<ConventionalCommits> {
             "docs: Updated tests in docs.".to_string(),
         ],
         counts,
+        files,
         breaking: false,
-        top_type: Some(LevelHierarchy::Feature),
-    })
+        top_type: Hierarchy::Feature,
+    }
 }
 
 pub(crate) fn gen_conventional_commit(
     commit_type: ConventionalType,
     breaking: bool,
-) -> Option<ConventionalCommits> {
+) -> ConventionalCommits {
     let mut counts = HashMap::new();
     counts.insert(format!("{}", commit_type), 1);
 
@@ -112,17 +115,20 @@ pub(crate) fn gen_conventional_commit(
         breaking
     )];
 
-    let top_type = Some(LevelHierarchy::parse(&commit_type.to_string()).unwrap());
+    let files = gen_files();
 
-    Some(ConventionalCommits {
+    let top_type = Hierarchy::parse(&commit_type.to_string()).unwrap();
+
+    ConventionalCommits {
         commits,
         counts,
         breaking,
+        files,
         top_type,
-    })
+    }
 }
 
-pub(crate) fn gen_files() -> Option<HashSet<OsString>> {
+pub(crate) fn gen_files() -> HashSet<OsString> {
     let file_list = [
         "calculator.rs",
         "help.trycmd",
@@ -138,7 +144,7 @@ pub(crate) fn gen_files() -> Option<HashSet<OsString>> {
         files.insert(OsString::from(file));
     }
 
-    Some(files)
+    files
 }
 
 #[allow(dead_code)]

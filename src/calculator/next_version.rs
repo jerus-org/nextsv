@@ -1,5 +1,7 @@
 use crate::VersionTag;
 
+use super::bump::Bump;
+
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Default)]
 pub(crate) enum NextVersion {
     #[default]
@@ -13,6 +15,52 @@ impl NextVersion {
             NextVersion::Updated(version) => version.semantic_version.to_string(),
             NextVersion::None => String::from("0.0.0"),
         }
+    }
+
+    pub(crate) fn calculate(current_version: &VersionTag, mut bump: Bump) -> (Self, Bump) {
+        let mut next_version = current_version.clone();
+        log::debug!(
+            "Starting version: `{}`; bump level `{}`",
+            next_version,
+            bump
+        );
+
+        let next_version = match bump {
+            Bump::Major => {
+                next_version.version_mut().major += 1;
+                next_version.version_mut().minor = 0;
+                next_version.version_mut().patch = 0;
+                next_version
+            }
+            Bump::Minor => {
+                next_version.version_mut().minor += 1;
+                next_version.version_mut().patch = 0;
+                next_version
+            }
+            Bump::Patch => {
+                next_version.version_mut().patch += 1;
+                next_version
+            }
+            Bump::First => {
+                next_version.version_mut().major = 1;
+                next_version.version_mut().minor = 0;
+                next_version.version_mut().patch = 0;
+                next_version
+            }
+            Bump::Alpha | Bump::Beta | Bump::Rc => {
+                next_version.version_mut().increment_pre_release();
+                next_version
+            }
+            Bump::Custom(_s) => {
+                next_version.version_mut().increment_pre_release();
+                bump = Bump::Custom(next_version.to_string());
+                next_version
+            }
+            _ => next_version,
+        };
+        log::debug!("Next version is: {next_version}");
+
+        (NextVersion::Updated(next_version), bump)
     }
 }
 

@@ -7,6 +7,17 @@ pub(crate) enum PreReleaseType {
     Rc,
     Custom,
 }
+
+impl fmt::Display for PreReleaseType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PreReleaseType::Alpha => write!(f, "Alpha"),
+            PreReleaseType::Beta => write!(f, "Beta"),
+            PreReleaseType::Rc => write!(f, "RC"),
+            PreReleaseType::Custom => write!(f, "Custom"),
+        }
+    }
+}
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub(crate) struct PreRelease {
     pub(crate) label: String,

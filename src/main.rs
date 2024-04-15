@@ -2,7 +2,7 @@ use std::ffi::OsString;
 use std::fmt;
 
 use clap::{Parser, ValueEnum};
-use nextsv::{Error, ForceLevel, LevelHierarchy, VersionCalculator};
+use nextsv::{Calculator, CalculatorConfig, Error, ForceBump, Hierarchy};
 use proc_exit::{Code, ExitResult};
 
 #[derive(ValueEnum, Debug, Clone)]
@@ -30,7 +30,7 @@ struct Cli {
     logging: clap_verbosity_flag::Verbosity,
     /// Force the calculation of the version number
     #[arg(short, long, value_enum)]
-    force: Option<ForceLevel>,
+    force: Option<ForceBump>,
     /// Prefix string to identify version number tags
     #[arg(short, long, value_parser, default_value = "v")]
     prefix: String,
@@ -45,14 +45,14 @@ struct Cli {
     require: Vec<OsString>,
     /// Level at which required files should be enforced
     #[clap(short, long, default_value = "feature")]
-    enforce_level: LevelHierarchy,
+    enforce_level: Hierarchy,
     /// Check level meets minimum for setting
     ///
     /// This option can be used to check the calculated level
     /// meets a minimum before applying an update. The program
     /// exits with an error if the threshold is not met.
     #[clap(short, long)]
-    check: Option<LevelHierarchy>,
+    check: Option<Hierarchy>,
     /// add output to environment variable
     #[clap(long, default_value = "NEXTSV_LEVEL")]
     set_env: Option<String>,
@@ -64,7 +64,7 @@ fn main() {
 }
 
 fn run() -> ExitResult {
-    let args = Cli::parse();
+    let mut args = Cli::parse();
 
     let mut builder = get_logging(args.logging.log_level_filter());
     builder.init();
@@ -76,36 +76,33 @@ fn run() -> ExitResult {
         (true, true) => log::info!("Calculating the next version number and level"),
     };
 
-    let mut latest_version = VersionCalculator::new(&args.prefix)?;
-
+    let mut calculator_config = CalculatorConfig::new(&args.prefix);
     log::trace!("require: {:#?}", args.require);
-
-    // Encapsulate the list of required files in an option
-    let files = if args.require.is_empty() {
-        Option::None
-    } else {
-        Option::Some(args.require)
+    calculator_config.set_print_level(args.level);
+    calculator_config.set_print_version_number(args.number);
+    if let Some(force) = args.force {
+        calculator_config.set_force_level(force);
     };
+    if !args.require.is_empty() {
+        calculator_config.add_required_files(&mut args.require);
+        calculator_config.set_file_requirement_enforcement_level(args.enforce_level);
+    };
+    if let Some(check_level) = args.check {
+        calculator_config.set_threshold(check_level);
+    }
+    let calculator = calculator_config.build_calculator()?;
 
-    calculate(&mut latest_version, args.force, files, args.enforce_level)?;
+    // Set the environment variable if required
+    if let Some(key) = args.set_env {
+        std::env::set_var::<OsString, OsString>(key.into(), calculator.bump().into())
+    }
 
-    set_environment_variable(args.set_env, latest_version.bump_level().to_string().into());
-    check_level(
-        args.check,
-        latest_version
-            .change_level()
-            .unwrap_or(LevelHierarchy::Other),
-    )?;
-    log::debug!("not checking so print the output");
-    print_output(args.number, args.level, &latest_version);
+    println!("{}", calculator.report()?);
 
     Code::SUCCESS.ok()
 }
 
-fn check_level(
-    threshold: Option<LevelHierarchy>,
-    change_level: LevelHierarchy,
-) -> Result<(), Error> {
+fn check_level(threshold: Option<Hierarchy>, change_level: Hierarchy) -> Result<(), Error> {
     if let Some(minimum_level) = threshold {
         log::debug!("level expected is {:?}", &minimum_level);
         log::debug!("level reported is {:?}", &change_level);
@@ -127,10 +124,10 @@ fn set_environment_variable(env_variable: Option<String>, value: OsString) {
 }
 
 fn calculate(
-    latest_version: &mut VersionCalculator,
-    force: Option<ForceLevel>,
+    latest_version: &mut Calculator,
+    force: Option<ForceBump>,
     files: Option<Vec<OsString>>,
-    enforce_level: LevelHierarchy,
+    enforce_level: Hierarchy,
 ) -> Result<(), Error> {
     if let Some(f) = &force {
         log::debug!("Force option set to {}", f);
@@ -160,15 +157,11 @@ pub fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
 
 /// Print the output from the calculation
 ///
-fn print_output(number: bool, level: bool, response: &VersionCalculator) {
+fn print_output(number: bool, level: bool, response: &Calculator) {
     match (number, level) {
-        (false, false) => println!("{}", response.bump_level()),
-        (false, true) => println!("{}", response.bump_level()),
+        (false, false) => println!("{}", response.bump()),
+        (false, true) => println!("{}", response.bump()),
         (true, false) => println!("{}", response.next_version_number()),
-        (true, true) => println!(
-            "{}\n{}",
-            response.next_version_number(),
-            response.bump_level()
-        ),
+        (true, true) => println!("{}\n{}", response.next_version_number(), response.bump()),
     }
 }

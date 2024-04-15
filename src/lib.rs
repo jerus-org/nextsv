@@ -43,6 +43,6 @@ mod error;
 mod test_utils;
 mod version;
 
-pub use calculator::{CalculatorConfig, ForceLevel, LevelHierarchy, VersionCalculator};
+pub use calculator::{Calculator, CalculatorConfig, ForceBump, Hierarchy};
 pub use error::Error;
-pub use version::{Level, VersionTag};
+pub use version::VersionTag;
