@@ -78,7 +78,7 @@ fn run() -> ExitResult {
 
     let mut calculator_config = CalculatorConfig::new(&args.prefix);
     log::trace!("require: {:#?}", args.require);
-    calculator_config.set_print_level(args.level);
+    calculator_config.set_print_bump(args.level);
     calculator_config.set_print_version_number(args.number);
     if let Some(force) = args.force {
         calculator_config.set_force_level(force);

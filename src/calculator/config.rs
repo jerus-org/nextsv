@@ -2,6 +2,11 @@ use std::ffi::OsString;
 
 use crate::{Calculator, Error, ForceBump, Hierarchy};
 
+/// ### Configuration structure for calcuation.
+///
+/// CaclculatorConfig captures the user configuration set for the bump and
+/// version number calculation
+///
 #[derive(Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub struct CalculatorConfig {
     /// Required: version number prefix
@@ -22,6 +27,11 @@ pub struct CalculatorConfig {
 }
 
 impl CalculatorConfig {
+    /// ### new calculator config
+    ///
+    /// Initialise a new calculator config by providing the version prefix.
+    /// The version prefix identifies the start of the version string in the tag.
+    ///  
     pub fn new(version_prefix: &str) -> CalculatorConfig {
         CalculatorConfig {
             prefix: version_prefix.to_string(),
@@ -30,21 +40,44 @@ impl CalculatorConfig {
         }
     }
 
-    pub fn set_print_level(&mut self, report_level: bool) -> &mut Self {
-        self.report_bump = report_level;
+    /// ### set the bump to print (or not)
+    ///
+    /// Set true to report the bump value (default)
+    /// Set false to not report the bump value
+    ///
+    pub fn set_print_bump(&mut self, bump_report_switch: bool) -> &mut Self {
+        self.report_bump = bump_report_switch;
         self
     }
 
+    /// ### set the calculated next version number to print (or not)
+    ///
+    /// Set true to report the calculated next version number
+    /// Set false to not report the calculated next version number (default)
+    ///
     pub fn set_print_version_number(&mut self, report_number: bool) -> &mut Self {
         self.report_number = report_number;
         self
     }
 
+    /// ### force the bump result to report
+    ///
+    /// The forced bump result will be reported and the next vesion will be calculated
+    /// based on the forced bump level.
+    ///
     pub fn set_force_level(&mut self, force_level: ForceBump) -> &mut Self {
         self.force = Some(force_level);
         self
     }
 
+    /// ### add files that may be required to be updated
+    ///
+    /// Add a list of files that should be updated if the calculated level of the
+    /// conventional commits analysed meets or exceeds the enforcement level set
+    /// by `set_file_requirement_enforcement_level`.
+    ///
+    /// Typical files that may be list could include the README.md and/or CHANGELOG.md
+    ///
     pub fn add_required_files(&mut self, file_name: &mut Vec<OsString>) -> &mut Self {
         if file_name.is_empty() {
             return self;
@@ -59,6 +92,31 @@ impl CalculatorConfig {
         self
     }
 
+    /// ### set the enforcement level for mandatory files
+    ///
+    /// set the enforcement level for the files submitted in `add_required_files`
+    ///
+    /// ## Levels
+    ///
+    /// The highest level is set depending on types of commits found in the analysis
+    /// mapped as follows:
+    /// - Breaking
+    ///     - breaking
+    /// - Feature
+    ///     - feat
+    /// - Fix
+    ///     - fix
+    ///     - revert
+    /// - Other
+    ///     - docs
+    ///     - style
+    ///     - refactor
+    ///     - perf
+    ///     - test
+    ///     - chore
+    ///     - build
+    ///     - ci
+    ///
     pub fn set_file_requirement_enforcement_level(
         &mut self,
         level_hierarchy: Hierarchy,
@@ -67,11 +125,25 @@ impl CalculatorConfig {
         self
     }
 
+    /// ### Set a threshold for reporting bump value
+    ///
+    /// Set a threshold that must be met before the calculated bump level would be reported.
+    ///
+    /// The levels are calculated based on the commits that are analysed as
+    /// described in `set_file_requirement_enforcement_level`.
+    ///
+    /// If the threshold is not me the value returned will be "none" and no version number
+    /// will be reported (even if requested by `set_print_version_number`.)
+    ///
     pub fn set_threshold(&mut self, threshold: Hierarchy) -> &mut Self {
         self.threshold = threshold;
         self
     }
 
+    /// ### build calculator
+    ///
+    /// Concludes the configuration of the calculation and initialises the calculator.
+    ///
     pub fn build_calculator(self) -> Result<Calculator, Error> {
         Calculator::init(self)
     }
