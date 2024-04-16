@@ -30,7 +30,6 @@ use crate::{version::PreReleaseType, Error, VersionTag};
 use colored::Colorize;
 use git2::Repository;
 use log::warn;
-use regex::Regex;
 
 /// VersionCalculator
 ///
@@ -101,6 +100,11 @@ impl Calculator {
         self.bump.clone()
     }
 
+    /// ### Report the results of the calculation
+    ///
+    /// Depending on the config settings for bump and version number report either or both.
+    /// If both are reported they are reported on two lines.
+    ///
     pub fn report(&self) -> String {
         match (self.config.report_bump, self.config.report_number) {
             (true, true) => format!("{}\n{}", self.bump, self.next_version.version_number()),
@@ -110,7 +114,7 @@ impl Calculator {
         }
     }
 
-    /// Report the change level
+    /// ### Report the next version number
     ///
     pub fn next_version_number(&self) -> String {
         if let NextVersion::Updated(version) = &self.next_version {
@@ -118,185 +122,6 @@ impl Calculator {
         } else {
             String::from("")
         }
-    }
-
-    /// Create a new VersionCalculator struct
-    ///
-    /// ## Parameters
-    ///
-    ///  - version_prefix - identifies version tags
-    ///
-    fn new(version_prefix: &str) -> Result<Calculator, Error> {
-        let repo = Repository::open(".")?;
-        log::debug!("Repo opened to find latest version tag.");
-
-        // Setup regex to test the tag for a version number: major.minor,patch
-        let re_version = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
-        log::debug!("Regex to search for version tags is: `{}`.", re_version);
-        let re = match Regex::new(&re_version) {
-            Ok(r) => r,
-            Err(e) => return Err(Error::CorruptVersionRegex(e)),
-        };
-
-        let mut versions = vec![];
-        repo.tag_foreach(|_id, tag| {
-            if let Ok(tag) = String::from_utf8(tag.to_owned()) {
-                log::trace!("Is git tag `{tag}` a version tag?");
-                if let Some(version) = re.captures(&tag) {
-                    log::trace!("Captured version: {:?}", version);
-                    let version = VersionTag::parse(&tag, version_prefix).unwrap();
-                    versions.push(version);
-                }
-            }
-            true
-        })?;
-
-        // trace_items(versions.clone(), version_prefix);
-        log::trace!("Original last version: {:?}", versions.last());
-        versions.sort();
-        log::debug!("Version tags have been sorted");
-        // trace_items(versions.clone(), version_prefix);
-
-        let current_version = match versions.last().cloned() {
-            Some(v) => {
-                log::trace!("latest version found is {:?}", &v);
-                v
-            }
-            None => return Err(Error::NoVersionTag),
-        };
-
-        let route = Route::new(&current_version.semantic_version);
-
-        Ok(Calculator {
-            current_version,
-            route,
-            ..Default::default()
-        })
-    }
-
-    /// Report the current_version
-    ///
-    // pub fn name(&self) -> VersionTag {
-    //     self.current_version.clone()
-    // }
-
-    /// Report top level
-    ///
-    pub fn top_level(&self) -> Hierarchy {
-        self.conventional.clone().top_type()
-    }
-
-    /// The count of commits of a type in the conventional commits field
-    ///
-    /// ## Parameters
-    ///
-    /// - commit_type - identifies the type of commit e.g. "feat"
-    ///
-    /// ## Error handling
-    ///
-    /// If there are no conventional commits it returns 0.
-    /// If conventional is None returns 0.
-    ///
-    // pub fn count_commits_by_type(&self, commit_type: &str) -> u32 {
-    //     match self.conventional.clone() {
-    //         Some(conventional) => conventional
-    //             .counts()
-    //             .get(commit_type)
-    //             .unwrap_or(&0_u32)
-    //             .to_owned(),
-    //         None => 0_u32,
-    //     }
-    // }
-
-    /// Report the status of the breaking flag in the conventional commits
-    ///
-    /// ## Error Handling
-    ///
-    /// If the conventional is None returns false
-    ///
-    // pub fn breaking(&self) -> bool {
-    //     match self.conventional.clone() {
-    //         Some(conventional) => conventional.breaking(),
-    //         None => false,
-    //     }
-    // }
-
-    /// Force update next_version to return a specific result
-    ///
-    /// Options are defined in `ForceLevel`
-    ///
-    pub fn set_force(&mut self, level: Option<ForceBump>) -> Self {
-        if let Some(level) = level {
-            self.route = Route::Forced(level)
-        }
-        self.clone()
-    }
-
-    /// Get the conventional commits created since the tag was created
-    ///
-    /// Uses `git2` to open the repository and walk back to the
-    /// latest version tag collecting the conventional commits.
-    ///
-    /// ## Error Handling
-    ///
-    /// Errors from 'git2' are returned.
-    ///
-    pub fn walk_commits(&mut self) -> Result<(), Error> {
-        let repo = git2::Repository::open(".")?;
-        log::debug!("repo opened to find conventional commits");
-        let mut revwalk = repo.revwalk()?;
-        revwalk.set_sorting(git2::Sort::NONE)?;
-        revwalk.push_head()?;
-        log::debug!("starting the walk from the HEAD");
-        let glob = &self.current_version.to_string();
-        log::debug!(
-            "the glob for revwalk is {glob} based on current version of {:?}",
-            self.current_version
-        );
-        revwalk.hide_ref(glob)?;
-        log::debug!("hide commits from {}", &self.current_version);
-
-        macro_rules! filter_try {
-            ($e:expr) => {
-                match $e {
-                    Ok(t) => t,
-                    Err(e) => return Some(Err(e)),
-                }
-            };
-        }
-
-        #[allow(clippy::unnecessary_filter_map)]
-        let revwalk = revwalk.filter_map(|id| {
-            let id = filter_try!(id);
-            let commit = repo.find_commit(id);
-            let commit = filter_try!(commit);
-            Some(Ok(commit))
-        });
-
-        let mut conventional_commits = ConventionalCommits::new();
-
-        // Walk back through the commits
-        let mut files = HashSet::new();
-        for commit in revwalk.flatten() {
-            // Get the summary for the conventional commits vec
-            log::trace!("commit found: {}", &commit.summary().unwrap_or_default());
-            conventional_commits.push(&commit);
-            // Get the files for the files vec
-            let tree = commit.tree()?;
-            let diff = repo.diff_tree_to_workdir(Some(&tree), None).unwrap();
-
-            diff.print(git2::DiffFormat::NameOnly, |delta, _hunk, _line| {
-                let file = delta.new_file().path().unwrap().file_name().unwrap();
-                log::trace!("file found: {:?}", file);
-                files.insert(file.to_os_string());
-                true
-            })
-            .unwrap();
-        }
-
-        self.conventional = conventional_commits;
-
-        Ok(())
     }
 
     /// Calculate the next version and report the version number
@@ -325,20 +150,20 @@ impl Calculator {
                 return;
             }
             Route::NonProd => {
-                bump = if self.conventional.breaking() {
+                bump = if self.conventional.breaking {
                     // Breaking change found in commits
                     log::debug!("breaking change found");
                     Bump::Minor
-                } else if 0 < self.conventional.commits_by_type("feat") {
+                } else if 0 < *self.conventional.counts.get("feat").unwrap_or(&0_u32) {
                     log::debug!(
                         "{} feature commit(s) found requiring increment of minor number",
-                        &self.conventional.commits_by_type("feat")
+                        self.conventional.counts.get("feat").unwrap_or(&0_u32)
                     );
                     Bump::Minor
                 } else {
                     log::debug!(
                         "{} conventional commit(s) found requiring increment of patch number",
-                        &self.conventional.commits_all_types()
+                        &self.conventional.counts.values().sum::<u32>()
                     );
                     Bump::Patch
                 };
@@ -356,19 +181,19 @@ impl Calculator {
             }
             Route::Prod => {
                 log::debug!("Calculting the prod version change bump");
-                bump = if self.conventional.breaking() {
+                bump = if self.conventional.breaking {
                     log::debug!("breaking change found");
                     Bump::Major
-                } else if 0 < self.conventional.commits_by_type("feat") {
+                } else if 0 < *self.conventional.counts.get("feat").unwrap_or(&0_u32) {
                     log::debug!(
                         "{} feature commit(s) found requiring increment of minor number",
-                        &self.conventional.commits_by_type("feat")
+                        self.conventional.counts.get("feat").unwrap_or(&0_u32)
                     );
                     Bump::Minor
                 } else {
                     log::debug!(
                         "{} conventional commit(s) found requiring increment of patch number",
-                        &self.conventional.commits_all_types()
+                        &self.conventional.counts.values().sum::<u32>()
                     );
                     Bump::Patch
                 };
@@ -498,7 +323,6 @@ mod test {
     ) {
         let current_version = test_utils::gen_current_version("v", 0, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, false);
-        let files = test_utils::gen_files();
 
         let mut calculator = Calculator {
             current_version,
@@ -529,7 +353,6 @@ mod test {
     fn bump_result_for_nonprod_current_version_and_breaking(#[case] commit: ConventionalType) {
         let current_version = test_utils::gen_current_version("v", 0, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, true);
-        let files = test_utils::gen_files();
 
         let mut calculator = Calculator {
             current_version,
@@ -563,7 +386,6 @@ mod test {
     ) {
         let current_version = test_utils::gen_current_version("v", 1, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, false);
-        let files = test_utils::gen_files();
 
         let mut calculator = Calculator {
             current_version,

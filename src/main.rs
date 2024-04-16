@@ -2,7 +2,7 @@ use std::ffi::OsString;
 use std::fmt;
 
 use clap::{Parser, ValueEnum};
-use nextsv::{Calculator, CalculatorConfig, Error, ForceBump, Hierarchy};
+use nextsv::{CalculatorConfig, ForceBump, Hierarchy};
 use proc_exit::{Code, ExitResult};
 
 #[derive(ValueEnum, Debug, Clone)]
@@ -102,49 +102,6 @@ fn run() -> ExitResult {
     Code::SUCCESS.ok()
 }
 
-fn check_level(threshold: Option<Hierarchy>, change_level: Hierarchy) -> Result<(), Error> {
-    if let Some(minimum_level) = threshold {
-        log::debug!("level expected is {:?}", &minimum_level);
-        log::debug!("level reported is {:?}", &change_level);
-        if change_level >= minimum_level {
-            log::info!("the minimum level is met");
-            return Err(Error::MinimumChangeLevelMet);
-        } else {
-            log::info!("the minimum level is not met");
-            return Err(Error::MinimumChangeLevelNotMet);
-        };
-    }
-    Ok(())
-}
-
-fn set_environment_variable(env_variable: Option<String>, value: OsString) {
-    if let Some(key) = env_variable {
-        std::env::set_var(key, value)
-    }
-}
-
-fn calculate(
-    latest_version: &mut Calculator,
-    force: Option<ForceBump>,
-    files: Option<Vec<OsString>>,
-    enforce_level: Hierarchy,
-) -> Result<(), Error> {
-    if let Some(f) = &force {
-        log::debug!("Force option set to {}", f);
-    };
-    latest_version.walk_commits()?;
-    if let Some(f) = files {
-        latest_version.has_required(f, enforce_level)?;
-    }
-    if let Some(svc) = force {
-        latest_version.set_force(Some(svc));
-    };
-
-    latest_version.calculate();
-
-    Ok(())
-}
-
 pub fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
     let mut builder = env_logger::Builder::new();
 
@@ -153,15 +110,4 @@ pub fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
     builder.format_timestamp_secs().format_module_path(false);
 
     builder
-}
-
-/// Print the output from the calculation
-///
-fn print_output(number: bool, level: bool, response: &Calculator) {
-    match (number, level) {
-        (false, false) => println!("{}", response.bump()),
-        (false, true) => println!("{}", response.bump()),
-        (true, false) => println!("{}", response.next_version_number()),
-        (true, true) => println!("{}\n{}", response.next_version_number(), response.bump()),
-    }
 }

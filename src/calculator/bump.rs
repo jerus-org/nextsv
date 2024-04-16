@@ -105,20 +105,20 @@ impl Bump {
                 return bump;
             }
             Route::NonProd => {
-                bump = if conventional.breaking() {
+                bump = if conventional.breaking {
                     // Breaking change found in commits
                     log::info!("Non production breaking change found.");
                     Bump::Minor
-                } else if 0 < conventional.commits_by_type("feat") {
+                } else if 0 < *conventional.counts.get("feat").unwrap_or(&0_u32) {
                     log::debug!(
                         "{} feature commit(s) found requiring increment of minor number",
-                        &conventional.commits_by_type("feat")
+                        conventional.counts.get("feat").unwrap_or(&0_u32).to_owned()
                     );
                     Bump::Minor
                 } else {
                     log::debug!(
                         "{} conventional commit(s) found requiring increment of patch number",
-                        &conventional.commits_all_types()
+                        &conventional.counts.values().sum::<u32>()
                     );
                     Bump::Patch
                 };
@@ -134,19 +134,19 @@ impl Bump {
             }
             Route::Prod => {
                 log::debug!("Calculating the prod version change bump");
-                bump = if conventional.breaking() {
+                bump = if conventional.breaking {
                     log::debug!("breaking change found");
                     Bump::Major
-                } else if 0 < conventional.commits_by_type("feat") {
+                } else if 0 < *conventional.counts.get("feat").unwrap_or(&0_u32) {
                     log::debug!(
                         "{} feature commit(s) found requiring increment of minor number",
-                        &conventional.commits_by_type("feat")
+                        conventional.counts.get("feat").unwrap_or(&0_u32)
                     );
                     Bump::Minor
                 } else {
                     log::debug!(
                         "{} conventional commit(s) found requiring increment of patch number",
-                        &conventional.commits_all_types()
+                        &conventional.counts.values().sum::<u32>()
                     );
                     Bump::Patch
                 };
