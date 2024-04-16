@@ -8,7 +8,6 @@
 //!
 //!
 //!
-use std::{collections::HashSet, ffi::OsString};
 
 mod bump;
 mod config;
@@ -26,10 +25,8 @@ pub(crate) use self::route::Route;
 pub(crate) use self::{conventional::ConventionalCommits, next_version::NextVersion};
 pub use hierarchy::Hierarchy;
 
-use crate::{version::PreReleaseType, Error, VersionTag};
-use colored::Colorize;
+use crate::{Error, VersionTag};
 use git2::Repository;
-use log::warn;
 
 /// VersionCalculator
 ///
@@ -54,7 +51,12 @@ impl Calculator {
         let repo = Repository::open(".")?;
 
         let current_version = VersionTag::find_in_repo(&repo, config.prefix.as_str())?;
-        let route = Route::new(&current_version.semantic_version);
+        let route = if let Some(ref force_level) = config.force {
+            Route::Forced(force_level.clone())
+        } else {
+            Route::calculate(&current_version.semantic_version)
+        };
+
         let conventional = ConventionalCommits::walk_back_commits_to_tag_reference(
             &repo,
             current_version.to_string().as_str(),
@@ -123,172 +125,6 @@ impl Calculator {
             String::from("")
         }
     }
-
-    /// Calculate the next version and report the version number
-    /// and level at which the change is made.
-    pub fn calculate(&mut self) {
-        log::debug!(
-            "Calculating according to the `{:?}` route: ",
-            &self.route.to_string().blue()
-        );
-        // check the conventional commits. No conventional commits; no change.
-        #[cfg(let_else)]
-        if self.conventional.commits.is_empty() {
-            self.bump = Bump::None;
-            self.next_version = NextVersion::Updated(self.current_version.clone());
-            warn!("Returning early from calculate as no conventional commits found.");
-            return;
-        };
-
-        let mut bump = Bump::None;
-        log::debug!("Starting calculation with bump level of {bump:?}");
-        match &self.route {
-            Route::Forced(forced_level) => {
-                log::debug!("Forcing the bump level output to `{forced_level}`");
-                self.bump = forced_level.clone().into();
-                self.calculate_next_version();
-                return;
-            }
-            Route::NonProd => {
-                bump = if self.conventional.breaking {
-                    // Breaking change found in commits
-                    log::debug!("breaking change found");
-                    Bump::Minor
-                } else if 0 < *self.conventional.counts.get("feat").unwrap_or(&0_u32) {
-                    log::debug!(
-                        "{} feature commit(s) found requiring increment of minor number",
-                        self.conventional.counts.get("feat").unwrap_or(&0_u32)
-                    );
-                    Bump::Minor
-                } else {
-                    log::debug!(
-                        "{} conventional commit(s) found requiring increment of patch number",
-                        &self.conventional.counts.values().sum::<u32>()
-                    );
-                    Bump::Patch
-                };
-
-                log::debug!("Calculting the non-prod version change bump");
-            }
-            Route::PreRelease(pre_type) => {
-                bump = match pre_type {
-                    PreReleaseType::Alpha => Bump::Alpha,
-                    PreReleaseType::Beta => Bump::Beta,
-                    PreReleaseType::Rc => Bump::Rc,
-                    PreReleaseType::Custom => Bump::Custom(String::new()),
-                };
-                log::debug!("Calculting the pre-release version change bump");
-            }
-            Route::Prod => {
-                log::debug!("Calculting the prod version change bump");
-                bump = if self.conventional.breaking {
-                    log::debug!("breaking change found");
-                    Bump::Major
-                } else if 0 < *self.conventional.counts.get("feat").unwrap_or(&0_u32) {
-                    log::debug!(
-                        "{} feature commit(s) found requiring increment of minor number",
-                        self.conventional.counts.get("feat").unwrap_or(&0_u32)
-                    );
-                    Bump::Minor
-                } else {
-                    log::debug!(
-                        "{} conventional commit(s) found requiring increment of patch number",
-                        &self.conventional.counts.values().sum::<u32>()
-                    );
-                    Bump::Patch
-                };
-            }
-        };
-        self.bump = bump;
-        self.calculate_next_version();
-    }
-
-    /// Check for required files
-    ///
-    /// ## Parameters
-    ///
-    /// - files - a list of the required files or None
-    ///
-    /// ## Error
-    ///
-    /// Report error if one of the files are not found.
-    /// Exits on the first failure.
-    pub fn has_required(
-        &self,
-        files_required: Vec<OsString>,
-        level: Hierarchy,
-    ) -> Result<(), Error> {
-        // How to use level to ensure that the rule is only applied
-        // when required levels of commits are included
-
-        if self.conventional.top_type >= level {
-            let files = self.conventional.files.clone();
-            if !files.is_empty() {
-                let mut missing_files = vec![];
-
-                for file in files_required {
-                    if !files.contains(&file) {
-                        missing_files.push(file.clone());
-                    }
-                }
-
-                if !missing_files.is_empty() {
-                    return Err(Error::MissingRequiredFile(missing_files));
-                }
-            } else {
-                return Err(Error::NoFilesListed);
-            }
-        }
-
-        Ok(())
-    }
-
-    fn calculate_next_version(&mut self) {
-        let mut next_version = self.current_version.clone();
-        log::debug!(
-            "Starting version: `{}`; bump level `{}`",
-            next_version,
-            self.bump
-        );
-
-        // let mut new_bump = bump.clone();
-        let next_version = match &self.bump {
-            Bump::Major => {
-                next_version.version_mut().major += 1;
-                next_version.version_mut().minor = 0;
-                next_version.version_mut().patch = 0;
-                next_version
-            }
-            Bump::Minor => {
-                next_version.version_mut().minor += 1;
-                next_version.version_mut().patch = 0;
-                next_version
-            }
-            Bump::Patch => {
-                next_version.version_mut().patch += 1;
-                next_version
-            }
-            Bump::First => {
-                next_version.version_mut().major = 1;
-                next_version.version_mut().minor = 0;
-                next_version.version_mut().patch = 0;
-                next_version
-            }
-            Bump::Alpha | Bump::Beta | Bump::Rc => {
-                next_version.version_mut().increment_pre_release();
-                next_version
-            }
-            Bump::Custom(_s) => {
-                next_version.version_mut().increment_pre_release();
-                self.bump = Bump::Custom(next_version.to_string());
-                next_version
-            }
-            _ => next_version,
-        };
-        log::debug!("Next version is: {next_version}");
-
-        self.next_version = NextVersion::Updated(next_version);
-    }
 }
 
 #[cfg(test)]
@@ -297,8 +133,7 @@ mod test {
     use log4rs_test_utils::test_logging;
     use rstest::rstest;
 
-    use super::Calculator;
-    use crate::calculator::Route;
+    use crate::calculator::{bump::Bump, NextVersion, Route};
     use crate::test_utils;
     use crate::test_utils::*;
     use crate::version::PreRelease;
@@ -318,23 +153,17 @@ mod test {
     #[case::revert("revert", "patch", "0.7.10")]
     fn bump_result_for_nonprod_current_version_and_nonbreaking(
         #[case] commit: ConventionalType,
-        #[case] expected_level: &str,
+        #[case] expected_bump: &str,
         #[case] expected_version: &str,
     ) {
         let current_version = test_utils::gen_current_version("v", 0, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, false);
 
-        let mut calculator = Calculator {
-            current_version,
-            conventional,
-            route: Route::NonProd,
-            ..Default::default()
-        };
+        let bump = Bump::calculate(&Route::NonProd, &conventional);
+        let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
-        calculator.calculate();
-
-        assert_eq!(expected_level, calculator.bump.to_string().as_str());
-        assert_eq!(expected_version, calculator.next_version_number())
+        assert_eq!(expected_bump, bump.to_string().as_str());
+        assert_eq!(expected_version, next_version.version_number());
     }
 
     #[rstest]
@@ -354,17 +183,11 @@ mod test {
         let current_version = test_utils::gen_current_version("v", 0, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, true);
 
-        let mut calculator = Calculator {
-            current_version,
-            conventional,
-            route: Route::NonProd,
-            ..Default::default()
-        };
+        let bump = Bump::calculate(&Route::NonProd, &conventional);
+        let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
-        calculator.calculate();
-
-        assert_eq!("minor", calculator.bump.to_string().as_str());
-        assert_eq!("0.8.0", calculator.next_version_number());
+        assert_eq!("minor", bump.to_string().as_str());
+        assert_eq!("0.8.0", next_version.version_number());
     }
 
     #[rstest]
@@ -387,17 +210,11 @@ mod test {
         let current_version = test_utils::gen_current_version("v", 1, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, false);
 
-        let mut calculator = Calculator {
-            current_version,
-            conventional,
-            route: Route::Prod,
-            ..Default::default()
-        };
+        let bump = Bump::calculate(&Route::Prod, &conventional);
+        let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
-        calculator.calculate();
-
-        assert_eq!(expected_bump, calculator.bump.to_string());
-        assert_eq!(expected_version, calculator.next_version_number())
+        assert_eq!(expected_bump, bump.to_string().as_str());
+        assert_eq!(expected_version, next_version.version_number());
     }
 
     #[rstest]
@@ -414,21 +231,13 @@ mod test {
             test_utils::gen_current_version("v", 0, 7, 9, Some(PreRelease::new("alpha.1")), None);
         let conventional = test_utils::gen_conventional_commit(commit, false);
 
-        let route = Route::new(&current_version.semantic_version);
+        let route = Route::calculate(&current_version.semantic_version);
 
-        let mut calculator = Calculator {
-            current_version,
-            conventional,
-            route,
-            ..Default::default()
-        };
+        let bump = Bump::calculate(&route, &conventional);
+        let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
-        calculator.calculate();
-
-        println!("Version: {:?}", calculator);
-
-        assert_eq!("alpha", calculator.bump.to_string().as_str());
-        assert_eq!("0.7.9-alpha.2", calculator.next_version_number())
+        assert_eq!("alpha", bump.to_string().as_str());
+        assert_eq!("0.7.9-alpha.2", next_version.version_number());
     }
 
     #[rstest]
@@ -444,17 +253,11 @@ mod test {
         let current_version = test_utils::gen_current_version("v", 1, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, true);
 
-        let mut calculator = Calculator {
-            current_version,
-            conventional,
-            route: Route::Prod,
-            ..Default::default()
-        };
+        let bump = Bump::calculate(&Route::Prod, &conventional);
+        let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
-        calculator.calculate();
-
-        assert_eq!("major", calculator.bump.to_string().as_str());
-        assert_eq!("2.0.0", calculator.next_version_number())
+        assert_eq!("major", bump.to_string().as_str());
+        assert_eq!("2.0.0", next_version.version_number());
     }
 
     #[test]
@@ -463,16 +266,10 @@ mod test {
         let current_version = test_utils::gen_current_version("v", 0, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commits();
 
-        let mut calculator = Calculator {
-            current_version,
-            conventional,
-            route: Route::Forced(ForceBump::First),
-            ..Default::default()
-        };
+        let bump = Bump::calculate(&Route::Forced(ForceBump::First), &conventional);
+        let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
-        calculator.calculate();
-
-        assert_eq!("1.0.0", calculator.bump.to_string().as_str());
-        assert_eq!("1.0.0", calculator.next_version_number())
+        assert_eq!("1.0.0", bump.to_string().as_str());
+        assert_eq!("1.0.0", next_version.version_number());
     }
 }

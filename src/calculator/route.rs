@@ -13,7 +13,7 @@ pub(crate) enum Route {
 }
 
 impl Route {
-    pub(crate) fn new(version: &Semantic) -> Route {
+    pub(crate) fn calculate(version: &Semantic) -> Route {
         if let Some(pre_release) = &version.pre_release {
             return Route::PreRelease(pre_release.pre_type.clone());
         };
@@ -47,7 +47,7 @@ mod test {
     use rstest::rstest;
 
     #[rstest]
-    #[case::pre_release(Route::PreRelease(PreReleaseType::Alpha), "pre release")]
+    #[case::pre_release(Route::PreRelease(PreReleaseType::Alpha), "Alpha pre release")]
     #[case::non_production(Route::NonProd, "non production")]
     #[case::production(Route::Prod, "production")]
     #[case::release(Route::Forced(ForceBump::Minor), "Force to `minor`")]
@@ -68,7 +68,7 @@ mod test {
     ) {
         let version = Semantic::new(major, minor, patch, pre_release, "");
 
-        let test = Route::new(&version);
+        let test = Route::calculate(&version);
 
         assert_eq!(expected, test);
     }
