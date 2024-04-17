@@ -94,7 +94,7 @@ impl VersionTag {
     /// the tag name can be parsed
     pub fn parse(tag: &str, version_prefix: &str) -> Result<Self, Error> {
         let re_tag = format!(
-            r"(?<refs>refs\/tags\/)(?<tag_prefix>.*)(?<version_prefix>{})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$",
+            r"(?<refs>(refs/tags/)*)(?<tag_prefix>.*)(?<version_prefix>{})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$",
             version_prefix
         );
 
@@ -328,7 +328,7 @@ mod tests {
         "circle.14",
         "refs/tags/v2.0.0-pre.2+circle.14"
     )]
-    fn display_value(
+    fn test_display_value(
         #[case] prefix: &str,
         #[case] major: u32,
         #[case] minor: u32,
@@ -363,7 +363,8 @@ mod tests {
     #[case::minor_update_first_version("refs/tags/v1.1.0", "v", true)]
     #[case::custom_pre_release("refs/tags/v2.0.0-pre.1+circle.1", "v", true)]
     #[case::alphanumeric_build("refs/tags/v2.0.0-pre.2+circle.14", "v", true)]
-    fn parse_value(#[case] input: &str, #[case] version_prefix: &str, #[case] expected: bool) {
+    #[case::no_refs("v2.0.0-pre.2+circle.14", "v", true)]
+    fn test_parse_value(#[case] input: &str, #[case] version_prefix: &str, #[case] expected: bool) {
         use log::LevelFilter;
         use log4rs_test_utils::test_logging;
 
@@ -407,7 +408,7 @@ mod tests {
         r#"Err(TooFewComponents(2))"#,
         false
     )]
-    fn version_number_validation(
+    fn test_version_number_validation(
         #[case] input: &str,
         #[case] version_prefix: &str,
         #[case] expected_result: &str,
