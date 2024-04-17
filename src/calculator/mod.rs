@@ -61,6 +61,16 @@ impl Calculator {
             &repo,
             current_version.to_string().as_str(),
         )?;
+        if !config.files.is_subset(&conventional.files) {
+            let mut missing_files = vec![];
+            for file in config.files {
+                if !&conventional.files.contains(&file) {
+                    missing_files.push(file)
+                }
+            }
+            return Err(Error::MissingRequiredFile(missing_files));
+        };
+
         // Check the threshold and exit early if it has not been met.
         if config.threshold > conventional.top_type {
             log::info!(

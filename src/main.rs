@@ -64,7 +64,7 @@ fn main() {
 }
 
 fn run() -> ExitResult {
-    let mut args = Cli::parse();
+    let args = Cli::parse();
 
     let mut builder = get_logging(args.logging.log_level_filter());
     builder.init();
@@ -84,7 +84,7 @@ fn run() -> ExitResult {
         calculator_config.set_force_level(force);
     };
     if !args.require.is_empty() {
-        calculator_config.add_required_files(&mut args.require);
+        calculator_config.add_required_files(args.require);
         calculator_config.set_file_requirement_enforcement_level(args.enforce_level);
     };
     if let Some(check_level) = args.check {

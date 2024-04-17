@@ -22,16 +22,59 @@
 //! ```
 //!
 //! ```no_run
-//! # fn main() -> Result<(), nextsv::Error> {
-//!     use nextsv::VersionCalculator;
-//!     let version_prefix = "v"; // Identifies a version tag
+//! #   use nextsv::{CalculatorConfig, ForceBump, Hierarchy};
+//! #   use std::ffi::OsString;
+//! #
+//! #   fn main() -> Result<(), nextsv::Error> {
+//! #   struct Args {
+//! #       prefix: String,
+//! #       level: bool,
+//! #       number: bool,
+//! #       force: Option<ForceBump>,
+//! #       require: Vec<OsString>,
+//! #       enforce_level: Hierarchy,
+//! #       check: Option<Hierarchy>,
+//! #       
+//! #   };
+//!     
 //!
-//!     let mut latest_version = VersionCalculator::new(version_prefix)?;
+//!     // get arguments from CLI
+//!     let args = Args {
+//!         prefix: String::from("v"),
+//!         level: true,
+//!         number: true,
+//!         force: None,
+//!         require: vec![OsString::from("README.md"), OsString::from("CHANGES.md"), ],
+//!         enforce_level: Hierarchy::Feature,
+//!         check: None,
+//!     };
 //!
-//!     latest_version.walk_commits()?;
-//!     latest_version.calculate();
+//!     let mut calculator_config = CalculatorConfig::new(&args.prefix);
 //!
-//!     println!("Next Version: {}\nNext Level: {}", latest_version.next_version_number(), latest_version.bump_level());
+//!     // What do we want to output?    
+//!     calculator_config.set_print_bump(args.level);
+//!     calculator_config.set_print_version_number(args.number);
+//!
+//!     // Is the bump level being forced?
+//!     if let Some(force) = args.force {
+//!         calculator_config.set_force_level(force);
+//!     };
+//!
+//!     // Are there files that must be updated? What change level should they be enforced at?
+//!     if !args.require.is_empty() {
+//!         calculator_config.add_required_files(args.require);
+//!         calculator_config.set_file_requirement_enforcement_level(args.enforce_level);
+//!     };
+//!
+//!     // Is three a threshold set that must be met before proceeding with a change?
+//!     if let Some(check_level) = args.check {
+//!         calculator_config.set_threshold(check_level);
+//!     }
+//!
+//!     // Apply the config and create a calculator
+//!     let calculator = calculator_config.build_calculator()?;
+//!     
+//!     println!("{}", calculator.report());
 //!
 //! #    Ok(())
 //! # }

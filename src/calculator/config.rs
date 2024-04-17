@@ -1,4 +1,4 @@
-use std::ffi::OsString;
+use std::{collections::HashSet, ffi::OsString};
 
 use crate::{Calculator, Error, ForceBump, Hierarchy};
 
@@ -7,7 +7,7 @@ use crate::{Calculator, Error, ForceBump, Hierarchy};
 /// CaclculatorConfig captures the user configuration set for the bump and
 /// version number calculation
 ///
-#[derive(Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone)]
+#[derive(Debug, Default, PartialEq, Eq, Clone)]
 pub struct CalculatorConfig {
     /// Required: version number prefix
     pub(crate) prefix: String,
@@ -18,7 +18,7 @@ pub struct CalculatorConfig {
     /// Report the calculated next version number  [default: false]
     pub(crate) report_number: bool,
     /// Optional: Files that must be updated before making the release
-    pub(crate) files: Vec<OsString>,
+    pub(crate) files: HashSet<OsString>,
     /// Level at which file updates should be enforced [default: feature]
     pub(crate) enforce_level: Hierarchy,
     /// Threshold level at which release should proceed [default: Other]
@@ -78,16 +78,12 @@ impl CalculatorConfig {
     ///
     /// Typical files that may be list could include the README.md and/or CHANGELOG.md
     ///
-    pub fn add_required_files(&mut self, file_name: &mut Vec<OsString>) -> &mut Self {
-        if file_name.is_empty() {
-            return self;
+    pub fn add_required_files(&mut self, files: Vec<OsString>) -> &mut Self {
+        if !files.is_empty() {
+            for file in files {
+                self.files.insert(file);
+            }
         }
-        let _new_length: isize = (self.files.len() + file_name.len())
-            .try_into()
-            .expect("sum of array lenghts exceeds maximum array size");
-        self.files.append(file_name);
-        self.files.sort();
-        self.files.dedup();
 
         self
     }
@@ -153,7 +149,9 @@ impl CalculatorConfig {
 mod test {
     use std::ffi::OsString;
 
+    use map_macro::hash_set;
     use rstest::{fixture, rstest};
+    use std::collections::HashSet;
 
     use super::CalculatorConfig;
     use crate::{ForceBump, Hierarchy};
@@ -164,7 +162,7 @@ mod test {
             force: None,
             report_bump: true,
             report_number: false,
-            files: vec![],
+            files: hash_set![],
             enforce_level: Hierarchy::Other,
             threshold: Hierarchy::Other,
         }
@@ -212,7 +210,7 @@ mod test {
 
     #[fixture]
     fn readme_config() -> CalculatorConfig {
-        let files = vec![OsString::from("README.md")];
+        let files = hash_set![OsString::from("README.md")];
 
         CalculatorConfig {
             prefix: String::from("v"),
@@ -223,27 +221,27 @@ mod test {
     }
 
     #[fixture]
-    fn readme_and_changes() -> Vec<OsString> {
+    fn readme_and_changes_input() -> Vec<OsString> {
         vec![OsString::from("CHANGES.md"), OsString::from("README.md")]
     }
 
     #[fixture]
-    fn readme_file() -> Vec<OsString> {
+    fn readme_file_input() -> Vec<OsString> {
         vec![OsString::from("README.md")]
     }
 
     #[fixture]
-    fn changes_file() -> Vec<OsString> {
+    fn changes_file_input() -> Vec<OsString> {
         vec![OsString::from("CHANGES.md")]
     }
 
     #[fixture]
-    fn multiple_files_not_readme() -> Vec<OsString> {
+    fn multiple_files_not_readme_input() -> Vec<OsString> {
         vec![OsString::from("CHANGELOG.md"), OsString::from("CHANGES.md")]
     }
 
     #[fixture]
-    fn multiple_files_including_readme() -> Vec<OsString> {
+    fn multiple_files_including_readme_input() -> Vec<OsString> {
         vec![
             OsString::from("CHANGELOG.md"),
             OsString::from("CHANGES.md"),
@@ -251,35 +249,72 @@ mod test {
         ]
     }
 
+    #[fixture]
+    fn readme_and_changes_expected() -> HashSet<OsString> {
+        hash_set![OsString::from("CHANGES.md"), OsString::from("README.md")]
+    }
+
+    #[fixture]
+    fn readme_file_expected() -> HashSet<OsString> {
+        hash_set![OsString::from("README.md")]
+    }
+
+    #[fixture]
+    fn changes_file_expected() -> HashSet<OsString> {
+        hash_set![OsString::from("CHANGES.md")]
+    }
+
+    #[fixture]
+    fn multiple_files_not_readme_expected() -> HashSet<OsString> {
+        hash_set![OsString::from("CHANGELOG.md"), OsString::from("CHANGES.md")]
+    }
+
+    #[fixture]
+    fn multiple_files_including_readme_expected() -> HashSet<OsString> {
+        hash_set![
+            OsString::from("CHANGELOG.md"),
+            OsString::from("CHANGES.md"),
+            OsString::from("README.md"),
+        ]
+    }
+
     #[rstest]
-    #[case::add_readme_file_to_empty_list(default_config(), readme_file(), readme_file())]
+    #[case::add_readme_file_to_empty_list(
+        default_config(),
+        readme_file_input(),
+        readme_file_expected()
+    )]
     #[case::add_changes_file_to_list_with_readme(
         readme_config(),
-        changes_file(),
-        readme_and_changes()
+        changes_file_input(),
+        readme_and_changes_expected()
     )]
     #[case::add_multiple_files_to_empty_list(
         default_config(),
-        multiple_files_including_readme(),
-        multiple_files_including_readme()
+        multiple_files_including_readme_input(),
+        multiple_files_including_readme_expected()
     )]
-    #[case::add_readme_file_to_list_with_readme(readme_config(), readme_file(), readme_file())]
+    #[case::add_readme_file_to_list_with_readme(
+        readme_config(),
+        readme_file_input(),
+        readme_file_expected()
+    )]
     #[case::add_multiple_files_to_list_with_readme(
         readme_config(),
-        multiple_files_not_readme(),
-        multiple_files_including_readme()
+        multiple_files_not_readme_input(),
+        multiple_files_including_readme_expected()
     )]
     #[case::add_multiple_files_including_readme_to_list_with_readme(
         readme_config(),
-        multiple_files_including_readme(),
-        multiple_files_including_readme()
+        multiple_files_including_readme_input(),
+        multiple_files_including_readme_expected()
     )]
     fn test_add_required_files(
         #[case] mut initial_config: CalculatorConfig,
-        #[case] mut additional_files: Vec<OsString>,
-        #[case] expected_files: Vec<OsString>,
+        #[case] additional_files: Vec<OsString>,
+        #[case] expected_files: HashSet<OsString>,
     ) {
-        let test = initial_config.add_required_files(&mut additional_files);
+        let test = initial_config.add_required_files(additional_files);
 
         let expected = CalculatorConfig {
             prefix: String::from("v"),
