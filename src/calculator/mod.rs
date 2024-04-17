@@ -12,20 +12,23 @@
 mod bump;
 mod config;
 mod conventional;
-mod force_level;
+mod force_bump;
 mod hierarchy;
 mod next_version;
 mod route;
 
+use std::ffi::OsString;
+
 use self::bump::Bump;
 pub use self::config::CalculatorConfig;
 
-pub use self::force_level::ForceBump;
+pub use self::force_bump::ForceBump;
 pub(crate) use self::route::Route;
 pub(crate) use self::{conventional::ConventionalCommits, next_version::NextVersion};
 pub use hierarchy::Hierarchy;
 
-use crate::{Error, VersionTag};
+use crate::version::VersionTag;
+use crate::Error;
 use git2::Repository;
 
 /// VersionCalculator
@@ -108,8 +111,8 @@ impl Calculator {
 
     /// Report the bump level
     ///
-    pub fn bump(&self) -> Bump {
-        self.bump.clone()
+    pub fn bump_as_os_string(&self) -> OsString {
+        self.bump.clone().into()
     }
 
     /// ### Report the results of the calculation
@@ -121,7 +124,7 @@ impl Calculator {
         match (self.config.report_bump, self.config.report_number) {
             (true, true) => format!("{}\n{}", self.bump, self.next_version.version_number()),
             (false, true) => self.next_version.version_number(),
-            (true, false) => self.bump().to_string(),
+            (true, false) => self.bump.to_string(),
             (false, false) => String::from(""),
         }
     }

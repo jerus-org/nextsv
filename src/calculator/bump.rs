@@ -7,7 +7,7 @@ use super::{ConventionalCommits, Route};
 /// Bump at which the next increment will be made
 ///
 #[derive(Debug, PartialOrd, PartialEq, Eq, Ord, Clone, Default)]
-pub enum Bump {
+pub(crate) enum Bump {
     /// When no update has been detected the level is set to none
     #[default]
     None,

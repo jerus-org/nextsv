@@ -88,4 +88,4 @@ mod version;
 
 pub use calculator::{Calculator, CalculatorConfig, ForceBump, Hierarchy};
 pub use error::Error;
-pub use version::VersionTag;
+// pub use version::VersionTag;

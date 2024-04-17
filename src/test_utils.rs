@@ -5,7 +5,10 @@ use std::{
     str::FromStr,
 };
 
-use crate::{calculator::ConventionalCommits, version::PreRelease, VersionTag};
+use crate::{
+    calculator::ConventionalCommits,
+    version::{PreRelease, VersionTag},
+};
 use crate::{version::Semantic, Hierarchy};
 
 #[derive(Debug)]

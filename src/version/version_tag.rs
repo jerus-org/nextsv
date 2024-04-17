@@ -11,7 +11,7 @@ use super::Semantic;
 /// semantic version number.
 ///
 #[derive(Debug, Default, Clone)]
-pub struct VersionTag {
+pub(crate) struct VersionTag {
     pub(crate) refs: String,
     pub(crate) tag_prefix: String,
     pub(crate) version_prefix: String,
@@ -92,7 +92,7 @@ impl VersionTag {
     /// ```
     /// to identify tags with semantic version numbers
     /// the tag name can be parsed
-    pub fn parse(tag: &str, version_prefix: &str) -> Result<Self, Error> {
+    pub(crate) fn parse(tag: &str, version_prefix: &str) -> Result<Self, Error> {
         let re_tag = format!(
             r"(?<refs>(refs/tags/)*)(?<tag_prefix>.*)(?<version_prefix>{})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$",
             version_prefix
@@ -128,13 +128,13 @@ impl VersionTag {
 
     /// Provide a reference to the semantic version
     ///
-    pub fn version(&self) -> &Semantic {
-        &self.semantic_version
-    }
+    // pub(crate) fn version(&self) -> &Semantic {
+    //     &self.semantic_version
+    // }
 
     /// Provide a mutable reference to the semantic version
     ///
-    pub fn version_mut(&mut self) -> &mut Semantic {
+    pub(crate) fn version_mut(&mut self) -> &mut Semantic {
         &mut self.semantic_version
     }
 
@@ -429,18 +429,22 @@ mod tests {
     fn tag_broken_down_correctly() {
         let tag = "refs/tags/hcaptcha-v2.3.1-Beta.3+20876.675";
 
-        let vt = VersionTag::parse(tag, "v").unwrap();
+        let test_version = VersionTag::parse(tag, "v").unwrap();
 
-        assert_eq!("refs/tags/", vt.refs);
-        assert_eq!("hcaptcha-", vt.tag_prefix);
-        assert_eq!("v", vt.version_prefix);
-        assert_eq!("2.3.1-Beta.3+20876.675", vt.version().to_string().as_str());
-        assert_eq!(2, vt.version().major);
-        assert_eq!(3, vt.version().minor);
-        assert_eq!(1, vt.version().patch);
+        assert_eq!("refs/tags/", test_version.refs);
+        assert_eq!("hcaptcha-", test_version.tag_prefix);
+        assert_eq!("v", test_version.version_prefix);
+        assert_eq!(
+            "2.3.1-Beta.3+20876.675",
+            test_version.semantic_version.to_string().as_str()
+        );
+        assert_eq!(2, test_version.semantic_version.major);
+        assert_eq!(3, test_version.semantic_version.minor);
+        assert_eq!(1, test_version.semantic_version.patch);
         assert_eq!(
             "Beta.3",
-            vt.semantic_version
+            test_version
+                .semantic_version
                 .pre_release
                 .unwrap()
                 .to_string()
@@ -448,7 +452,11 @@ mod tests {
         );
         assert_eq!(
             "20876.675",
-            vt.semantic_version.build_meta_data.as_ref().unwrap()
+            test_version
+                .semantic_version
+                .build_meta_data
+                .as_ref()
+                .unwrap()
         );
     }
 }

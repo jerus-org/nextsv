@@ -94,7 +94,7 @@ fn run() -> ExitResult {
 
     // Set the environment variable if required
     if let Some(key) = args.set_env {
-        std::env::set_var::<OsString, OsString>(key.into(), calculator.bump().into())
+        std::env::set_var::<OsString, OsString>(key.into(), calculator.bump_as_os_string())
     }
 
     println!("{}", calculator.report());
@@ -102,7 +102,7 @@ fn run() -> ExitResult {
     Code::SUCCESS.ok()
 }
 
-pub fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
+fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
     let mut builder = env_logger::Builder::new();
 
     builder.filter(None, level);

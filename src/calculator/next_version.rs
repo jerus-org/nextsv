@@ -1,4 +1,4 @@
-use crate::{version::PreReleaseType, VersionTag};
+use crate::version::{PreReleaseType, VersionTag};
 
 use super::bump::Bump;
 
@@ -113,7 +113,9 @@ impl NextVersion {
 mod test {
     use super::NextVersion;
 
-    use crate::{calculator::bump::Bump, test_utils::gen_current_version, VersionTag};
+    use crate::calculator::bump::Bump;
+    use crate::test_utils::*;
+    use crate::version::{PreRelease, VersionTag};
 
     use rstest::rstest;
 
@@ -129,8 +131,6 @@ mod test {
         #[case] pre_release: &str,
         #[case] expected: &str,
     ) {
-        use crate::version::PreRelease;
-
         let pre_release = if pre_release.is_empty() {
             None
         } else {

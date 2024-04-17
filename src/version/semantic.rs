@@ -11,8 +11,6 @@
 
 use std::fmt;
 
-use crate::Error;
-
 use super::PreRelease;
 
 macro_rules! some_or_none_string {
@@ -30,7 +28,7 @@ macro_rules! some_or_none_string {
 /// TODO: Implement support for pre-release and build
 ///
 #[derive(Debug, Default, PartialEq, PartialOrd, Eq, Ord, Clone)]
-pub struct Semantic {
+pub(crate) struct Semantic {
     pub(crate) major: u32,
     pub(crate) minor: u32,
     pub(crate) patch: u32,
@@ -79,84 +77,19 @@ impl Semantic {
         }
     }
 
-    /// Increment the version based on a breaking change
-    /// When the major number is 0 increment the minor
-    /// number else increment the major number
-    ///
-    pub fn breaking_increment(&mut self) -> &mut Self {
-        if self.major == 0 {
-            self.minor += 1;
-            self.patch = 0;
-        } else {
-            self.major += 1;
-            self.minor = 0;
-            self.patch = 0;
-        }
-        self
-    }
+    pub(crate) fn increment_pre_release(&mut self) -> &mut Self {
+        if let Some(mut pre_release) = self.pre_release.clone() {
+            let new_count = if let Some(mut c) = pre_release.counter {
+                c += 1;
+                c
+            } else {
+                1
+            };
+            pre_release.counter = Some(new_count);
 
-    /// Increment the patch component of the version number by 1
-    ///
-    pub fn increment_patch(&mut self) -> &mut Self {
-        self.patch += 1;
-        self
-    }
-
-    /// Increment the pre_release component of the version number by 1
-    /// If no counter exists a counter will be added with an iniital
-    /// count of 1.
-    ///
-    pub fn increment_pre_release(&mut self) -> &mut Self {
-        let mut pre_release = self.pre_release.clone().unwrap();
-        let new_count = if let Some(mut c) = pre_release.counter {
-            c += 1;
-            c
-        } else {
-            1
+            self.pre_release = Some(pre_release);
         };
-        pre_release.counter = Some(new_count);
-
-        self.pre_release = Some(pre_release);
         self
-    }
-
-    /// Set the first production release version
-    ///
-    /// Unless the version number is already a production version
-    /// number sets the version number to 1.0.0. Any pre release
-    /// or build meta data fields will be removed.
-    ///
-    ///
-    pub fn first_production(&mut self) -> Result<(), Error> {
-        log::debug!("Current version number: {self}");
-        if 0 < self.major {
-            return Err(Error::MajorAlreadyUsed(self.major.to_string()));
-        } else {
-            log::debug!("Making changes");
-            self.major = 1;
-            self.minor = 0;
-            self.patch = 0;
-            self.pre_release = None;
-            self.build_meta_data = None;
-        }
-        log::debug!("Revised version number: {self}");
-        Ok(())
-    }
-
-    /// Report the major version number
-    ///
-    pub fn major(&self) -> u32 {
-        self.major
-    }
-    /// Report the minor version number
-    pub fn minor(&self) -> u32 {
-        self.minor
-    }
-
-    /// Report the patch version number
-    ///
-    pub fn patch(&self) -> u32 {
-        self.patch
     }
 }
 
@@ -169,8 +102,9 @@ mod tests {
 
     #[test]
     fn bump_patch_version_number_by_one() {
-        let mut version = Semantic::default();
-        let updated_version = version.increment_patch();
+        let version = Semantic::default();
+        let mut updated_version = version;
+        updated_version.patch += 1;
 
         assert_eq!("0.0.1", &updated_version.to_string());
     }
@@ -234,21 +168,20 @@ mod tests {
     }
 
     #[rstest]
-    #[case::simple_non_prod(0, 7, 9, "", "", true, "1.0.0")]
-    #[case::non_prod_alpha(0, 2, 200, "alpha.1", "", true, "1.0.0")]
-    #[case::non_prod_beta_with_build(0, 24, 2, "beta.1", "30", true, "1.0.0")]
-    #[case::non_prod_release_candidate(0, 78, 3, "rc.1", "40", true, "1.0.0")]
-    #[case::already_first_version(1, 0, 0, "", "", false, "1.0.0")]
-    #[case::patched_first_version(1, 0, 1, "", "", false, "1.0.1")]
-    #[case::minor_update_first_version(1, 1, 0, "", "", false, "1.1.0")]
-    #[case::non_prod_custom_pre_release(0, 23, 1, "pre.1", "circle.1", true, "1.0.0")]
+    #[case::simple_non_prod(0, 7, 9, "", "", "1.0.0")]
+    #[case::non_prod_alpha(0, 2, 200, "alpha.1", "", "1.0.0")]
+    #[case::non_prod_beta_with_build(0, 24, 2, "beta.1", "30", "1.0.0")]
+    #[case::non_prod_release_candidate(0, 78, 3, "rc.1", "40", "1.0.0")]
+    #[case::already_first_version(1, 0, 0, "", "", "1.0.0")]
+    #[case::patched_first_version(1, 0, 1, "", "", "1.0.1")]
+    #[case::minor_update_first_version(1, 1, 0, "", "", "1.1.0")]
+    #[case::non_prod_custom_pre_release(0, 23, 1, "pre.1", "circle.1", "1.0.0")]
     #[case::post_first_version_alphanumeric_build(
         2,
         0,
         0,
         "pre.2",
         "circle.14",
-        false,
         "2.0.0-pre.2+circle.14"
     )]
     fn set_first_production_version_number(
@@ -257,7 +190,6 @@ mod tests {
         #[case] patch: u32,
         #[case] pre_release: &str,
         #[case] build_meta_data: &str,
-        #[case] expected_ok: bool,
         #[case] expected: &str,
     ) {
         use log::LevelFilter;
@@ -283,15 +215,13 @@ mod tests {
             build_meta_data,
         };
 
-        let result = test_version.first_production();
-        assert_eq!(expected_ok, result.is_ok());
-
-        println!("{result:?}");
-        // if result.is_ok() {
-        //     test_version = result.unwrap();
-        // }
-
-        println!("expecting {expected} and got {test_version}");
+        if test_version.major == 0 {
+            test_version.major = 1;
+            test_version.minor = 0;
+            test_version.patch = 0;
+            test_version.pre_release = None;
+            test_version.build_meta_data = None;
+        };
         assert_eq!(expected, test_version.to_string().as_str());
     }
 }
