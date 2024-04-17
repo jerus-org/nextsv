@@ -27,6 +27,7 @@ thiserror = "1.0"
 [dev-dependencies]
 claims = "0.7"
 log4rs_test_utils = { version = "0.2.3", default-features = false, features = ["test_logging"] }
+map-macro = "0.3.0"
 rstest = "0.18.2"
 trycmd = "0.15.0"
 

@@ -100,6 +100,7 @@ impl fmt::Display for Hierarchy {
 mod test {
     use super::Hierarchy;
 
+    use colored::Colorize;
     use rstest::rstest;
 
     fn level_hierarchy_example_lowest() -> Hierarchy {
@@ -141,12 +142,12 @@ mod test {
     }
 
     #[rstest]
-    #[case::breaking(Hierarchy::Breaking, "[Major]")]
-    #[case::non_production(Hierarchy::Feature, "[Minor]")]
-    #[case::production(Hierarchy::Fix, "[Patch]")]
-    #[case::release(Hierarchy::Other, "[Patch]")]
-    fn display_value(#[case] test: Hierarchy, #[case] expected: &str) {
-        assert_eq!(expected, test.to_string().as_str());
+    #[case::breaking(Hierarchy::Breaking, format!("{}","[Major]".red()))]
+    #[case::non_production(Hierarchy::Feature, format!("{}","[Minor]".yellow()))]
+    #[case::production(Hierarchy::Fix, format!("{}","[Patch]".green()))]
+    #[case::release(Hierarchy::Other, format!("{}","[Patch]".white()))]
+    fn display_value(#[case] test: Hierarchy, #[case] expected: String) {
+        assert_eq!(expected, test.to_string());
     }
 
     #[rstest]

@@ -63,6 +63,17 @@ impl From<ForceBump> for Bump {
     }
 }
 
+impl From<PreReleaseType> for Bump {
+    fn from(pre_release_type: PreReleaseType) -> Self {
+        match pre_release_type {
+            PreReleaseType::Alpha => Bump::Alpha,
+            PreReleaseType::Beta => Bump::Beta,
+            PreReleaseType::Rc => Bump::Rc,
+            PreReleaseType::Custom => Bump::Custom(String::new()),
+        }
+    }
+}
+
 use std::ffi::OsString;
 
 impl From<Bump> for OsString {
@@ -125,12 +136,7 @@ impl Bump {
             }
             Route::PreRelease(pre_type) => {
                 log::debug!("Calculating the pre-release version change bump");
-                bump = match pre_type {
-                    PreReleaseType::Alpha => Bump::Alpha,
-                    PreReleaseType::Beta => Bump::Beta,
-                    PreReleaseType::Rc => Bump::Rc,
-                    PreReleaseType::Custom => Bump::Custom(String::new()),
-                };
+                bump = pre_type.clone().into();
             }
             Route::Prod => {
                 log::debug!("Calculating the prod version change bump");
@@ -158,10 +164,16 @@ impl Bump {
 
 #[cfg(test)]
 mod test {
-    use crate::ForceBump;
+    use map_macro::hash_map;
+
+    use crate::{
+        calculator::{ConventionalCommits, Route},
+        version::PreReleaseType,
+        ForceBump, Hierarchy,
+    };
 
     use super::Bump;
-    use rstest::rstest;
+    use rstest::{fixture, rstest};
 
     #[rstest]
     #[case::none(Bump::None, "none")]
@@ -185,5 +197,104 @@ mod test {
     #[case::patch(ForceBump::Patch, Bump::Patch)]
     fn from_forcelevel(#[case] from: ForceBump, #[case] expected: Bump) {
         assert_eq!(expected, from.into());
+    }
+
+    #[fixture]
+    fn other() -> ConventionalCommits {
+        ConventionalCommits {
+            commits: vec!["chore: Updated minium rust version references".to_string()],
+            counts: hash_map! {"chore".to_string() => 1},
+            breaking: false,
+            top_type: Hierarchy::Other,
+            ..Default::default()
+        }
+    }
+
+    #[fixture]
+    fn fix() -> ConventionalCommits {
+        ConventionalCommits {
+            commits: vec!["fix: spelling of output in description of set_env".to_string()],
+            counts: hash_map! {"fix".to_string() => 1},
+            breaking: false,
+            top_type: Hierarchy::Fix,
+            ..Default::default()
+        }
+    }
+
+    #[fixture]
+    fn feature() -> ConventionalCommits {
+        ConventionalCommits {
+            commits: vec!["feat: Regex implemented to extract version string".to_string()],
+            counts: hash_map! {"feat".to_string() => 1},
+            breaking: false,
+            top_type: Hierarchy::Feature,
+            ..Default::default()
+        }
+    }
+
+    #[fixture]
+    fn breaking() -> ConventionalCommits {
+        ConventionalCommits {
+            commits: vec!["feat: Regex implemented to extract version string".to_string()],
+            counts: hash_map! {"feat".to_string() => 1},
+            breaking: true,
+            top_type: Hierarchy::Breaking,
+            ..Default::default()
+        }
+    }
+
+    #[rstest]
+    fn test_calculate(
+        #[values(
+            Route::NonProd,
+            Route::PreRelease(PreReleaseType::Alpha),
+            Route::PreRelease(PreReleaseType::Beta),
+            Route::PreRelease(PreReleaseType::Rc),
+            Route::PreRelease(PreReleaseType::Custom),
+            Route::Prod,
+            Route::Forced(ForceBump::Major),
+            Route::Forced(ForceBump::Major),
+            Route::Forced(ForceBump::Minor),
+            Route::Forced(ForceBump::Patch),
+            Route::Forced(ForceBump::Alpha),
+            Route::Forced(ForceBump::Beta),
+            Route::Forced(ForceBump::Rc),
+            Route::Forced(ForceBump::Release)
+        )]
+        route: Route,
+        #[values(other(), fix(), feature(), breaking())] conventional: ConventionalCommits,
+    ) {
+        println!("Route: {route}");
+        println!("Conventional: {conventional:?}");
+        let test = Bump::calculate(&route, &conventional);
+
+        let expected = match route {
+            Route::NonProd => match conventional.top_type {
+                crate::Hierarchy::Other => Bump::Patch,
+                crate::Hierarchy::Fix => Bump::Patch,
+                crate::Hierarchy::Feature => Bump::Minor,
+                crate::Hierarchy::Breaking => Bump::Minor,
+            },
+            Route::PreRelease(pre_type) => match conventional.top_type {
+                crate::Hierarchy::Other => pre_type.into(),
+                crate::Hierarchy::Fix => pre_type.into(),
+                crate::Hierarchy::Feature => pre_type.into(),
+                crate::Hierarchy::Breaking => pre_type.into(),
+            },
+            Route::Prod => match conventional.top_type {
+                crate::Hierarchy::Other => Bump::Patch,
+                crate::Hierarchy::Fix => Bump::Patch,
+                crate::Hierarchy::Feature => Bump::Minor,
+                crate::Hierarchy::Breaking => Bump::Major,
+            },
+            Route::Forced(bump) => match conventional.top_type {
+                crate::Hierarchy::Other => bump.into(),
+                crate::Hierarchy::Fix => bump.into(),
+                crate::Hierarchy::Feature => bump.into(),
+                crate::Hierarchy::Breaking => bump.into(),
+            },
+        };
+
+        assert_eq!(expected, test);
     }
 }
