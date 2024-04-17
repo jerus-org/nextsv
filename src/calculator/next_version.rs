@@ -1,4 +1,4 @@
-use crate::VersionTag;
+use crate::{version::PreReleaseType, VersionTag};
 
 use super::bump::Bump;
 
@@ -25,35 +25,80 @@ impl NextVersion {
             bump
         );
 
+        let pre_release_flag = current_version.semantic_version.pre_release.is_some();
+
         let next_version = match bump {
             Bump::Major => {
-                next_version.version_mut().major += 1;
-                next_version.version_mut().minor = 0;
-                next_version.version_mut().patch = 0;
+                if !pre_release_flag {
+                    next_version.version_mut().major += 1;
+                    next_version.version_mut().minor = 0;
+                    next_version.version_mut().patch = 0;
+                } else {
+                    next_version.version_mut().increment_pre_release();
+                }
                 next_version
             }
             Bump::Minor => {
-                next_version.version_mut().minor += 1;
-                next_version.version_mut().patch = 0;
+                if !pre_release_flag {
+                    next_version.version_mut().minor += 1;
+                    next_version.version_mut().patch = 0;
+                } else {
+                    next_version.version_mut().increment_pre_release();
+                }
                 next_version
             }
             Bump::Patch => {
-                next_version.version_mut().patch += 1;
+                if !pre_release_flag {
+                    next_version.version_mut().patch += 1;
+                } else {
+                    next_version.version_mut().increment_pre_release();
+                }
                 next_version
             }
             Bump::First => {
-                next_version.version_mut().major = 1;
-                next_version.version_mut().minor = 0;
-                next_version.version_mut().patch = 0;
+                if next_version.version_mut().major == 0 {
+                    next_version.version_mut().major = 1;
+                    next_version.version_mut().minor = 0;
+                    next_version.version_mut().patch = 0;
+                    next_version.version_mut().pre_release = None;
+                }
                 next_version
             }
-            Bump::Alpha | Bump::Beta | Bump::Rc => {
-                next_version.version_mut().increment_pre_release();
+            Bump::Alpha => {
+                if let Some(pre_release) = next_version.semantic_version.pre_release.as_ref() {
+                    if pre_release.pre_type == PreReleaseType::Alpha {
+                        next_version.version_mut().increment_pre_release();
+                    }
+                }
+                next_version
+            }
+            Bump::Beta => {
+                if let Some(pre_release) = next_version.semantic_version.pre_release.as_ref() {
+                    if pre_release.pre_type == PreReleaseType::Beta {
+                        next_version.version_mut().increment_pre_release();
+                    }
+                }
+                next_version
+            }
+            Bump::Rc => {
+                if let Some(pre_release) = next_version.semantic_version.pre_release.as_ref() {
+                    if pre_release.pre_type == PreReleaseType::Rc {
+                        next_version.version_mut().increment_pre_release();
+                    }
+                }
                 next_version
             }
             Bump::Custom(_s) => {
-                next_version.version_mut().increment_pre_release();
+                if let Some(pre_release) = next_version.semantic_version.pre_release.as_ref() {
+                    if pre_release.pre_type == PreReleaseType::Custom {
+                        next_version.version_mut().increment_pre_release();
+                    }
+                }
                 bump = Bump::Custom(next_version.to_string());
+                next_version
+            }
+            Bump::Release => {
+                next_version.version_mut().pre_release = None;
                 next_version
             }
             _ => next_version,
@@ -68,7 +113,7 @@ impl NextVersion {
 mod test {
     use super::NextVersion;
 
-    use crate::test_utils::gen_current_version;
+    use crate::{calculator::bump::Bump, test_utils::gen_current_version, VersionTag};
 
     use rstest::rstest;
 
@@ -77,7 +122,7 @@ mod test {
     #[case::non_production(0, 7, 10, "", "0.7.10")]
     #[case::production(1, 0, 2, "", "1.0.2")]
     #[case::pre_release(1, 1, 0, "beta.2", "1.1.0-beta.2")]
-    fn version_number(
+    fn test_updated_version_number(
         #[case] major: u32,
         #[case] minor: u32,
         #[case] patch: u32,
@@ -97,5 +142,98 @@ mod test {
         let test = NextVersion::Updated(next_version);
 
         assert_eq!(expected, test.version_number());
+    }
+
+    #[rstest]
+    fn test_calculation_of_next_version(
+        #[values(
+            "v0.7.9",
+            "v0.7.9-alpha.1",
+            "v0.7.9-beta.1",
+            "v0.7.9-rc.1",
+            "v0.7.9-pre.1",
+            "v1.7.9"
+        )]
+        tag: &str,
+        #[values(Bump::None, Bump::Patch, Bump::Minor, Bump::Major, Bump::Alpha, Bump::Beta, Bump::Rc, Bump::Release, Bump::Custom("".to_string()), Bump::First) ]
+        bump: Bump,
+    ) {
+        let current_version = VersionTag::parse(tag, "v").unwrap();
+        let (test, _updated_bump) = NextVersion::calculate(&current_version, bump.clone());
+
+        let expected = match tag {
+            "v0.7.9" => match bump {
+                Bump::None
+                | Bump::Alpha
+                | Bump::Beta
+                | Bump::Rc
+                | Bump::Release
+                | Bump::Custom(_) => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap())
+                }
+                Bump::Patch => NextVersion::Updated(VersionTag::parse("v0.7.10", "v").unwrap()),
+                Bump::Minor => NextVersion::Updated(VersionTag::parse("v0.8.0", "v").unwrap()),
+                Bump::Major | Bump::First => {
+                    NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap())
+                }
+            },
+            "v1.7.9" => match bump {
+                Bump::None
+                | Bump::Alpha
+                | Bump::Beta
+                | Bump::Rc
+                | Bump::Release
+                | Bump::First
+                | Bump::Custom(_) => {
+                    NextVersion::Updated(VersionTag::parse("v1.7.9", "v").unwrap())
+                }
+                Bump::Patch => NextVersion::Updated(VersionTag::parse("v1.7.10", "v").unwrap()),
+                Bump::Minor => NextVersion::Updated(VersionTag::parse("v1.8.0", "v").unwrap()),
+                Bump::Major => NextVersion::Updated(VersionTag::parse("v2.0.0", "v").unwrap()),
+            },
+            "v0.7.9-alpha.1" => match bump {
+                Bump::None | Bump::Beta | Bump::Rc | Bump::Custom(_) => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-alpha.1", "v").unwrap())
+                }
+                Bump::Alpha | Bump::Patch | Bump::Minor | Bump::Major => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-alpha.2", "v").unwrap())
+                }
+                Bump::Release => NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap()),
+                Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
+            },
+            "v0.7.9-beta.1" => match bump {
+                Bump::None | Bump::Alpha | Bump::Rc | Bump::Custom(_) => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-beta.1", "v").unwrap())
+                }
+                Bump::Beta | Bump::Patch | Bump::Minor | Bump::Major => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-beta.2", "v").unwrap())
+                }
+                Bump::Release => NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap()),
+                Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
+            },
+            "v0.7.9-rc.1" => match bump {
+                Bump::None | Bump::Alpha | Bump::Beta | Bump::Custom(_) => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-rc.1", "v").unwrap())
+                }
+                Bump::Rc | Bump::Patch | Bump::Minor | Bump::Major => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-rc.2", "v").unwrap())
+                }
+                Bump::Release => NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap()),
+                Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
+            },
+            "v0.7.9-pre.1" => match bump {
+                Bump::None | Bump::Alpha | Bump::Rc | Bump::Beta => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-pre.1", "v").unwrap())
+                }
+                Bump::Custom(_) | Bump::Patch | Bump::Minor | Bump::Major => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-pre.2", "v").unwrap())
+                }
+                Bump::Release => NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap()),
+                Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
+            },
+            _ => unreachable!(),
+        };
+
+        assert_eq!(expected.version_number(), test.version_number());
     }
 }
