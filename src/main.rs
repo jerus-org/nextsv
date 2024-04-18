@@ -35,10 +35,10 @@ struct Cli {
     #[arg(short, long, value_parser, default_value = "v")]
     prefix: String,
     /// Report the level of the version number change
-    #[arg(long)]
-    level: bool,
+    #[arg(short = 'b', long)]
+    no_bump: bool,
     /// Report the version number
-    #[arg(long)]
+    #[arg(short = 'n', long)]
     number: bool,
     /// Require changes to these file before building release
     #[arg(short, long)]
@@ -69,7 +69,7 @@ fn run() -> ExitResult {
     let mut builder = get_logging(args.logging.log_level_filter());
     builder.init();
 
-    match (args.number, args.level) {
+    match (args.number, args.no_bump) {
         (false, false) => log::info!("Calculating the next version level"),
         (false, true) => log::info!("Calculating the next version level"),
         (true, false) => log::info!("Calculating the next version number"),
@@ -78,7 +78,7 @@ fn run() -> ExitResult {
 
     let mut calculator_config = CalculatorConfig::new(&args.prefix);
     log::trace!("require: {:#?}", args.require);
-    calculator_config.set_print_bump(args.level);
+    calculator_config.set_print_bump(!args.no_bump);
     calculator_config.set_print_version_number(args.number);
     if let Some(force) = args.force {
         calculator_config.set_force_level(force);
@@ -90,11 +90,11 @@ fn run() -> ExitResult {
     if let Some(check_level) = args.check {
         calculator_config.set_threshold(check_level);
     }
-    let calculator = calculator_config.build_calculator()?;
+    let calculator = calculator_config.build()?;
 
     // Set the environment variable if required
     if let Some(key) = args.set_env {
-        std::env::set_var::<OsString, OsString>(key.into(), calculator.bump_as_os_string())
+        std::env::set_var::<OsString, OsString>(key.into(), calculator.bump().into())
     }
 
     println!("{}", calculator.report());
