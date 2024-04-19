@@ -1,6 +1,6 @@
 [package]
 name = "nextsv"
-version = "0.7.9"
+version = "0.7.9-rc.0"
 edition = "2021"
 authors = ["jerusdp <jrussell@jerus.ie>"]
 rust-version = "1.74"
@@ -16,20 +16,26 @@ include = ["**/*.rs", "Cargo.toml", "README.md", "LICENSE", "CHANGES.md"]
 clap = { version = "4.0.30", features = ["derive"] }
 clap-verbosity-flag = "2.0.0"
 colored = "2.1.0"
+copy_dir = "0.1.3"
 env_logger = "0.11.1"
 git-conventional = "0.12.0"
 git2 = "0.18.1"
 log = "0.4.17"
+outdir-tempdir = "0.2.0"
 proc-exit = "2.0.0"
 regex = "1.10.4"
 thiserror = "1.0"
 
 [dev-dependencies]
+chrono = "0.4.38"
 claims = "0.7"
-log4rs_test_utils = { version = "0.2.3", default-features = false, features = ["test_logging"] }
+log4rs_test_utils = { version = "0.2.3", default-features = false, features = [
+    "test_logging",
+] }
 map-macro = "0.3.0"
 rstest = "0.18.2"
 trycmd = "0.15.0"
+uuid = { version = "1.8.0", features = ["v4"] }
 
 [lib]
 name = "nextsv"
