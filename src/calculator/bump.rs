@@ -96,9 +96,9 @@ impl From<Bump> for OsString {
 use colored::Colorize;
 
 impl Bump {
-    pub(crate) fn calculate(route: &Route, conventional: &ConventionalCommits) -> Bump {
+    pub(crate) fn calculate(route: Route, conventional: &ConventionalCommits) -> Bump {
         log::debug!(
-            "Calculating according to the `{:?}` route: ",
+            "Calculating according to the `{}` route: ",
             route.to_string().blue()
         );
         let mut bump = Bump::None;
@@ -108,7 +108,7 @@ impl Bump {
             return bump;
         };
 
-        log::debug!("Starting calculation with bump level of {bump:?}");
+        log::debug!("Starting calculation with bump level of {bump}");
         match route {
             Route::Forced(forced_level) => {
                 log::debug!("Forcing the bump level output to `{forced_level}`");
@@ -266,7 +266,7 @@ mod test {
     ) {
         println!("Route: {route}");
         println!("Conventional: {conventional:?}");
-        let test = Bump::calculate(&route, &conventional);
+        let test = Bump::calculate(route.clone(), &conventional);
 
         let expected = match route {
             Route::NonProd => match conventional.top_type {

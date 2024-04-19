@@ -1,12 +1,18 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![warn(missing_docs)]
+#![warn(
+    missing_docs,
+    rustdoc::broken_intra_doc_links,
+    rustdoc::private_intra_doc_links,
+    rustdoc::invalid_rust_codeblocks,
+    rustdoc::invalid_codeblock_attributes
+)]
 #![cfg_attr(docsrs, feature(rustdoc_missing_doc_code_examples))]
 #![cfg_attr(docsrs, warn(rustdoc::missing_doc_code_examples))]
 #![cfg_attr(docsrs, warn(rustdoc::invalid_codeblock_attributes))]
 
-//! Semantic Versioning Management
+//! # Calculate next semantic bump and/or version number
 //!
-//! Calculates the next semantic version number and level based on
+//! Calculates the next semantic bump and/or version number based on
 //! the current version number and the conventional commits made
 //! since the last version has been released.
 //!
@@ -15,13 +21,18 @@
 //! Add the dependency to Cargo.toml
 //!
 //! ```toml
-//!
 //! [dependencies]
 //! nextsv = "0.7.9"
-//!
 //! ```
 //!
-//! ```no_run
+//! Calculation workflow:
+//! 1. Create the configuration
+//! 2. Build the calculator
+//! 3. Report the calculation
+//!
+//! Report the results from the calculator
+//!
+//! ```rust
 //! #   use nextsv::{CalculatorConfig, ForceBump, Hierarchy};
 //! #   use std::ffi::OsString;
 //! #
@@ -36,9 +47,7 @@
 //! #       check: Option<Hierarchy>,
 //! #       
 //! #   };
-//!     
-//!
-//!     // get arguments from CLI
+//!     // arguments collected from CLI
 //!     let args = Args {
 //!         prefix: String::from("v"),
 //!         level: true,
@@ -49,31 +58,38 @@
 //!         check: None,
 //!     };
 //!
-//!     let mut calculator_config = CalculatorConfig::new(&args.prefix);
+//!     // 1. Create the configuration
+//!
+//!     let mut calculator_config = CalculatorConfig::new();
+//!
+//!     // Set the version number prefix
+//!     calculator_config = calculator_config.set_prefix(&args.prefix);
 //!
 //!     // What do we want to output?    
-//!     calculator_config.set_print_bump(args.level);
-//!     calculator_config.set_print_version_number(args.number);
+//!     calculator_config = calculator_config.set_bump_report(args.level);
+//!     calculator_config = calculator_config.set_version_report(args.number);
 //!
 //!     // Is the bump level being forced?
 //!     if let Some(force) = args.force {
-//!         calculator_config.set_force_level(force);
+//!         calculator_config = calculator_config.set_force_bump(force);
 //!     };
 //!
 //!     // Are there files that must be updated? What change level should they be enforced at?
 //!     if !args.require.is_empty() {
-//!         calculator_config.add_required_files(args.require);
-//!         calculator_config.set_file_requirement_enforcement_level(args.enforce_level);
+//!         calculator_config = calculator_config.add_required_files(args.require);
+//!         calculator_config = calculator_config.set_required_enforcement(args.enforce_level);
 //!     };
 //!
 //!     // Is three a threshold set that must be met before proceeding with a change?
 //!     if let Some(check_level) = args.check {
-//!         calculator_config.set_threshold(check_level);
+//!         calculator_config = calculator_config.set_reporting_threshold(check_level);
 //!     }
 //!
+//!     // 2. Build the calculator
 //!     // Apply the config and create a calculator
-//!     let calculator = calculator_config.build_calculator()?;
+//!     let calculator = calculator_config.build()?;
 //!     
+//!     // 3. Report the calculations
 //!     println!("{}", calculator.report());
 //!
 //! #    Ok(())

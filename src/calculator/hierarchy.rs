@@ -5,35 +5,30 @@ use colored::Colorize;
 
 use crate::Error;
 
-/// LevelHierarchy maps the types identified by git_conventional to a hierarchy of levels
+/// The `Hierarchy` enum provides a hieracchy for commit types that maps to the levels
+/// of Major, Minor and Patch levels of semver. The top level is for breaking
+/// commits and would be mapped to a Major version change for a new
+/// production release.
 ///
-/// The enum provides an ordered list to identify the highest level type found in a set
-/// of conventional commits.
+/// | Hierarchy | Conventional Commit Type | Prod Semver | Non-Prod Semver |
+/// |-----------|--------------------------|-------------|-----------------|
+/// | Breaking  | breaking                 | Major       | Minor           |
+/// | Feature   | feat                     | Minor       | Minor           |
+/// | Fix       | fix, revert              | Patch       | Patch           |
+/// | Other     | docs, style, refactor, perf, test, chore, build, ci, etc. | Patch       | Patch           |
 ///
-/// Types are mapped as follows:
-/// - FEAT: Feature
-/// - FIX: Fix
-/// - REVERT: Fix
-/// - DOCS: Other
-/// - STYLE: Other
-/// - REFACTOR: Other
-/// - PERF: Other
-/// - TEST: Other
-/// - CHORE: Other
-///
-/// If a breaking change is found it sets breaking hierarchy.
-///
+/// The hierachy is listed in order of importance.
 #[derive(Debug, PartialEq, Eq, Clone, ValueEnum, Default)]
 pub enum Hierarchy {
-    /// enforce requirements for all types
+    /// Other variant represents additional types that may be used, including custom types.
     #[default]
-    Other = 1,
-    /// enforce requirements for fix, feature and breaking
-    Fix = 2,
-    /// enforce requirements for features and breaking
-    Feature = 3,
-    /// enforce requirements for breaking only
-    Breaking = 4,
+    Other,
+    /// Fix variant represents fix commits.
+    Fix,
+    /// Feature variant represents feature commits.
+    Feature,
+    /// Breaking variant represents breaking commits.
+    Breaking,
 }
 
 impl Ord for Hierarchy {
@@ -64,23 +59,14 @@ impl PartialOrd for Hierarchy {
 }
 
 impl Hierarchy {
-    /// Parse a string into a TypeHierarchy mapping the types or "breaking"
-    ///
+    #[allow(missing_docs)]
     pub fn parse(s: &str) -> Result<Hierarchy, Error> {
         Ok(match s.to_lowercase().as_str() {
+            "breaking" => Hierarchy::Breaking,
             "feat" => Hierarchy::Feature,
             "fix" => Hierarchy::Fix,
             "revert" => Hierarchy::Fix,
-            "docs" => Hierarchy::Other,
-            "style" => Hierarchy::Other,
-            "refactor" => Hierarchy::Other,
-            "perf" => Hierarchy::Other,
-            "test" => Hierarchy::Other,
-            "chore" => Hierarchy::Other,
-            "breaking" => Hierarchy::Breaking,
-            "build" => Hierarchy::Other,
-            "ci" => Hierarchy::Other,
-            _ => return Err(Error::NotTypeHierachyName(s.to_string())),
+            _ => Hierarchy::Other,
         })
     }
 }

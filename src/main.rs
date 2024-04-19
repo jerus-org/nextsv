@@ -76,19 +76,20 @@ fn run() -> ExitResult {
         (true, true) => log::info!("Calculating the next version number and level"),
     };
 
-    let mut calculator_config = CalculatorConfig::new(&args.prefix);
+    let mut calculator_config = CalculatorConfig::new();
+    calculator_config = calculator_config.set_prefix(&args.prefix);
     log::trace!("require: {:#?}", args.require);
-    calculator_config.set_print_bump(!args.no_bump);
-    calculator_config.set_print_version_number(args.number);
+    calculator_config = calculator_config.set_bump_report(!args.no_bump);
+    calculator_config = calculator_config.set_version_report(args.number);
     if let Some(force) = args.force {
-        calculator_config.set_force_level(force);
+        calculator_config = calculator_config.set_force_bump(force);
     };
     if !args.require.is_empty() {
-        calculator_config.add_required_files(args.require);
-        calculator_config.set_file_requirement_enforcement_level(args.enforce_level);
+        calculator_config = calculator_config.add_required_files(args.require);
+        calculator_config = calculator_config.set_required_enforcement(args.enforce_level);
     };
     if let Some(check_level) = args.check {
-        calculator_config.set_threshold(check_level);
+        calculator_config = calculator_config.set_reporting_threshold(check_level);
     }
     let calculator = calculator_config.build()?;
 

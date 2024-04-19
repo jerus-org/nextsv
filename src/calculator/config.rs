@@ -2,11 +2,11 @@ use std::{collections::HashSet, ffi::OsString};
 
 use crate::{Calculator, Error, ForceBump, Hierarchy};
 
-/// ### Configuration structure for calcuation.
+/// Captures the user configuration set for the bump and version number
+/// calculation
 ///
-/// CaclculatorConfig captures the user configuration set for the bump and
-/// version number calculation
-///
+/// The configuration is set following the builder pattern and final build
+/// command creates a [`Calculator`] struct.
 #[derive(Debug, Default, PartialEq, Eq, Clone)]
 pub struct CalculatorConfig {
     /// Required: version number prefix
@@ -20,65 +20,188 @@ pub struct CalculatorConfig {
     /// Optional: Files that must be updated before making the release
     pub(crate) files: HashSet<OsString>,
     /// Level at which file updates should be enforced [default: feature]
-    pub(crate) enforce_level: Hierarchy,
+    pub(crate) enforce: Hierarchy,
     /// Threshold level at which release should proceed [default: Other]
     /// Returns Level::None if the threshold is not met.
     pub(crate) threshold: Hierarchy,
 }
 
 impl CalculatorConfig {
-    /// ### new calculator config
-    ///
     /// Initialise a new calculator config by providing the version prefix.
+    ///
     /// The version prefix identifies the start of the version string in the tag.
-    ///  
-    pub fn new(version_prefix: &str) -> CalculatorConfig {
+    pub fn new() -> CalculatorConfig {
         CalculatorConfig {
-            prefix: version_prefix.to_string(),
             report_bump: true,
             ..Default::default()
         }
     }
 
-    /// ### set the bump to print (or not)
+    /// Set the version prefix.
     ///
-    /// Set true to report the bump value (default)
-    /// Set false to not report the bump value
+    /// The version prefix identifies the start of the version string in the tag.
     ///
-    pub fn set_print_bump(&mut self, bump_report_switch: bool) -> &mut Self {
-        self.report_bump = bump_report_switch;
+    /// # Example
+    ///
+    /// Where you have a version tag v0.7.9 the configuration should be set as follows:
+    ///
+    /// ```no_run
+    /// # fn main() -> Result<(),nextsv::Error> {
+    /// # use nextsv::CalculatorConfig;
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("v")
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn set_prefix(mut self, version_prefix: &str) -> Self {
+        self.prefix = version_prefix.to_string();
         self
     }
 
-    /// ### set the calculated next version number to print (or not)
-    ///
-    /// Set true to report the calculated next version number
-    /// Set false to not report the calculated next version number (default)
-    ///
-    pub fn set_print_version_number(&mut self, report_number: bool) -> &mut Self {
+    /// Set the flag indicating if the bump should be reported by the [`Calculator::report`] method.
+    /// - `true` indicates that the value should be reported
+    /// - `false` inidcates that the value should not be reported
+    pub fn set_bump_report(mut self, bump_report: bool) -> Self {
+        self.report_bump = bump_report;
+        self
+    }
+
+    /// Set the flag indicating if the calculated version number should be reported by the [`Calculator::report`] method.
+    /// - `true` indicates that the value should be reported
+    /// - `false` inidcates that the value should not be reported
+    pub fn set_version_report(mut self, report_number: bool) -> Self {
         self.report_number = report_number;
         self
     }
 
-    /// ### force the bump result to report
+    /// Force the bump result ignoring the bump that would be indicated by an analysis of conventional commits.
     ///
-    /// The forced bump result will be reported and the next vesion will be calculated
-    /// based on the forced bump level.
+    /// The forced bump result will be reported and the next vesion will be calculated based on the forced bump level.
     ///
-    pub fn set_force_level(&mut self, force_level: ForceBump) -> &mut Self {
+    /// # Example
+    ///
+    /// Publish the first production release.
+    ///
+    /// ```no_run
+    /// # fn main() -> Result<(),nextsv::Error> {
+    /// # use nextsv::{CalculatorConfig, ForceBump};
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("v")
+    ///         .set_force_bump(ForceBump::First)
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// Produces the output:
+    ///
+    /// ```console
+    /// v1.0.0
+    /// ```
+    pub fn set_force_bump(mut self, force_level: ForceBump) -> Self {
         self.force = Some(force_level);
         self
     }
 
-    /// ### add files that may be required to be updated
-    ///
     /// Add a list of files that should be updated if the calculated level of the
     /// conventional commits analysed meets or exceeds the enforcement level set
-    /// by `set_file_requirement_enforcement_level`.
+    /// by [`CalculatorConfig::set_required_enforcement`].
     ///
-    /// Typical files that may be list could include the README.md and/or CHANGELOG.md
+    /// # Examples
     ///
-    pub fn add_required_files(&mut self, files: Vec<OsString>) -> &mut Self {
+    /// ## Using `feature` (default enforcement level)
+    ///
+    /// Require that the `README.md` and `CHANGELOG.md` are updated for the calculation
+    /// to report successfully if the calculated bump is `feature` or higher.
+    ///
+    /// ```no_run
+    /// # fn main() -> Result<(),nextsv::Error> {
+    /// # use std::ffi::OsString;
+    /// # use nextsv::CalculatorConfig;
+    ///     let required_files = vec![
+    ///         OsString::from("README.md"),
+    ///         OsString::from("CHANGELOG.md"),
+    ///         ];
+    ///
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("v")
+    ///         .add_required_files(required_files)
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// The bump `minor` confirms that the checked files have been updated by the
+    /// convential commits submitted as part of proposed release.
+    ///
+    /// ```console
+    /// minor
+    /// ```
+    ///
+    /// In the event that one or more of the files was not found but the highest commit reached
+    /// the `feature` threshold the response would be `none`.
+    ///
+    /// ```console
+    /// none
+    /// ```
+    ///
+    /// ## Setting `breaking` as the enforcement level
+    ///
+    /// Require that the `README.md` and `CHANGELOG.md` are updated for the calculation
+    /// to report successfully if the calculated bump is `breaking` or higher.
+    ///
+    /// See
+    ///
+    /// ```no_run
+    /// # fn main() -> Result<(),nextsv::Error> {
+    /// # use std::ffi::OsString;
+    /// # use nextsv::{CalculatorConfig, Hierarchy};
+    /// // Current version is 1.2.0
+    ///     let required_files = vec![
+    ///         OsString::from("README.md"),
+    ///         OsString::from("CHANGELOG.md"),
+    ///         ];
+    ///
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("v")
+    ///         .add_required_files(required_files)
+    ///         .set_required_enforcement(Hierarchy::Breaking)
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// The bump `minor` indicates that the highest conventional commit in the hierachy
+    /// is a `feat` commit. The commits may or may not includes changes to the required files.
+    ///
+    /// ```console
+    /// minor
+    /// ```
+    ///
+    /// The bump `major` confirms that the checked files have been updated by the
+    /// convential commits submitted as part of proposed release.
+    ///
+    /// ```console
+    /// major
+    /// ```
+    ///
+    /// In the event that one or more of the files was not found but the highest commit reached
+    /// the `breaking` threshold the response would be `none`.
+    ///
+    /// ```console
+    /// none
+    /// ```
+    ///
+    /// Files that may be listed would include README.md and CHANGELOG.md.
+    ///
+    pub fn add_required_files(mut self, files: Vec<OsString>) -> Self {
         if !files.is_empty() {
             for file in files {
                 self.files.insert(file);
@@ -88,60 +211,60 @@ impl CalculatorConfig {
         self
     }
 
-    /// ### set the enforcement level for mandatory files
+    /// Sets the enforcement for the files submitted in [`CalculatorConfig::add_required_files`] according to the [`Hierarchy`] enum.
     ///
-    /// set the enforcement level for the files submitted in `add_required_files`
+    /// # Example
     ///
-    /// ## Levels
-    ///
-    /// The highest level is set depending on types of commits found in the analysis
-    /// mapped as follows:
-    /// - Breaking
-    ///     - breaking
-    /// - Feature
-    ///     - feat
-    /// - Fix
-    ///     - fix
-    ///     - revert
-    /// - Other
-    ///     - docs
-    ///     - style
-    ///     - refactor
-    ///     - perf
-    ///     - test
-    ///     - chore
-    ///     - build
-    ///     - ci
-    ///
-    pub fn set_file_requirement_enforcement_level(
-        &mut self,
-        level_hierarchy: Hierarchy,
-    ) -> &mut Self {
-        self.enforce_level = level_hierarchy;
+    /// See the second example in [`CalculatorConfig::add_required_files`] for the use of `set_required_enforcement`
+    pub fn set_required_enforcement(mut self, enforce: Hierarchy) -> Self {
+        self.enforce = enforce;
         self
     }
 
-    /// ### Set a threshold for reporting bump value
+    /// Set a threshold that must be met before the calculated bump is reported.
     ///
-    /// Set a threshold that must be met before the calculated bump level would be reported.
+    /// The threshold is set based on the [`Hierarchy`] enumm.
     ///
-    /// The levels are calculated based on the commits that are analysed as
-    /// described in `set_file_requirement_enforcement_level`.
+    /// # Example
     ///
-    /// If the threshold is not me the value returned will be "none" and no version number
-    /// will be reported (even if requested by `set_print_version_number`.)
+    /// Set a threshold of `Hierarchy::Feature` for reporting of the change bump.
     ///
-    pub fn set_threshold(&mut self, threshold: Hierarchy) -> &mut Self {
+    /// ```no_run
+    /// # fn main() -> Result<(),nextsv::Error> {
+    /// # use nextsv::{CalculatorConfig, Hierarchy};
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("v")
+    ///         .set_reporting_threshold(Hierarchy::Feature)
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// The bump `minor` indicates that the highest conventional commit in the hierachy
+    /// is a `feat` commit.
+    ///
+    /// ```console
+    /// minor
+    /// ```
+    ///
+    ///  If the threshold is not met bump is `none`
+    ///
+    /// ```console
+    /// none
+    /// ```
+    pub fn set_reporting_threshold(mut self, threshold: Hierarchy) -> Self {
         self.threshold = threshold;
         self
     }
 
-    /// ### build calculator
+    /// Executes the calculator with the `CalculatorConfig` returning a completed
+    /// [`Calculator`] or an [`Error`].
     ///
-    /// Concludes the configuration of the calculation and initialises the calculator.
-    ///
-    pub fn build_calculator(self) -> Result<Calculator, Error> {
-        Calculator::init(self)
+    pub fn build(self) -> Result<Calculator, Error> {
+        log::debug!("Config at build: {self:?}");
+        Calculator::execute(self)
     }
 }
 
@@ -163,7 +286,7 @@ mod test {
             report_bump: true,
             report_number: false,
             files: hash_set![],
-            enforce_level: Hierarchy::Other,
+            enforce: Hierarchy::Other,
             threshold: Hierarchy::Other,
         }
     }
@@ -171,7 +294,7 @@ mod test {
     #[test]
     fn test_default_calculator_config() {
         let expected = default_calculator_config();
-        let test = CalculatorConfig::new("");
+        let test = CalculatorConfig::new();
 
         assert_eq!(expected, test);
     }
@@ -186,8 +309,8 @@ mod test {
     #[case::rc(ForceBump::Rc, Some(ForceBump::Rc))]
     #[case::release(ForceBump::Release, Some(ForceBump::Release))]
     fn test_set_force_to(#[case] force: ForceBump, #[case] expected_force: Option<ForceBump>) {
-        let mut test = CalculatorConfig::new("v");
-        let test = test.set_force_level(force);
+        let test = CalculatorConfig::new().set_prefix("v").clone();
+        let test = test.set_force_bump(force);
 
         let expected = CalculatorConfig {
             prefix: String::from("v"),
@@ -196,7 +319,7 @@ mod test {
             ..Default::default()
         };
 
-        assert_eq!(expected, *test);
+        assert_eq!(expected, test);
     }
 
     #[fixture]
@@ -310,7 +433,7 @@ mod test {
         multiple_files_including_readme_expected()
     )]
     fn test_add_required_files(
-        #[case] mut initial_config: CalculatorConfig,
+        #[case] initial_config: CalculatorConfig,
         #[case] additional_files: Vec<OsString>,
         #[case] expected_files: HashSet<OsString>,
     ) {
@@ -323,7 +446,7 @@ mod test {
             ..Default::default()
         };
 
-        assert_eq!(expected, *test);
+        assert_eq!(expected, test);
     }
 
     #[rstest]
@@ -335,17 +458,17 @@ mod test {
         #[case] enforcement_level: Hierarchy,
         #[case] expected_level: Hierarchy,
     ) {
-        let mut test = CalculatorConfig::new("v");
-        let test = test.set_file_requirement_enforcement_level(enforcement_level);
+        let test = CalculatorConfig::new().set_prefix("v").clone();
+        let test = test.set_required_enforcement(enforcement_level);
 
         let expected = CalculatorConfig {
             prefix: String::from("v"),
             report_bump: true,
-            enforce_level: expected_level,
+            enforce: expected_level,
             ..Default::default()
         };
 
-        assert_eq!(expected, *test);
+        assert_eq!(expected, test);
     }
 
     #[rstest]
@@ -354,8 +477,8 @@ mod test {
     #[case::fix(Hierarchy::Fix, Hierarchy::Fix)]
     #[case::other(Hierarchy::Other, Hierarchy::Other)]
     fn test_set_threshold_to(#[case] threshold: Hierarchy, #[case] expected_threshold: Hierarchy) {
-        let mut test = CalculatorConfig::new("v");
-        let test = test.set_threshold(threshold);
+        let test = CalculatorConfig::new().set_prefix("v").clone();
+        let test = test.set_reporting_threshold(threshold);
 
         let expected = CalculatorConfig {
             prefix: String::from("v"),
@@ -364,6 +487,6 @@ mod test {
             ..Default::default()
         };
 
-        assert_eq!(expected, *test);
+        assert_eq!(expected, test);
     }
 }

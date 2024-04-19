@@ -1,14 +1,3 @@
-//! A semantic tag
-//!
-//! ## Example
-//!
-//!
-//! ## Panics
-//!
-//!
-//!
-//!
-
 mod bump;
 mod config;
 mod conventional;
@@ -16,8 +5,6 @@ mod force_bump;
 mod hierarchy;
 mod next_version;
 mod route;
-
-use std::ffi::OsString;
 
 use self::bump::Bump;
 pub use self::config::CalculatorConfig;
@@ -31,26 +18,24 @@ use crate::version::VersionTag;
 use crate::Error;
 use git2::Repository;
 
-/// VersionCalculator
+/// Used to calculate the bump and next version number.
 ///
-/// Builds up data about the current version to calculate the next version
-/// number and change level
-///
+/// Created by calling the [`CalculatorConfig::build`] method.
 #[derive(Debug, PartialEq, Eq, Default, Clone)]
 pub struct Calculator {
     config: CalculatorConfig,
     current_version: VersionTag,
-    route: Route,
     conventional: ConventionalCommits,
     bump: Bump,
     next_version: NextVersion,
-    // change_level: Option<Hierarchy>,
 }
 
 impl Calculator {
-    /// Initialize the version calculator
+    /// Collect the data and apply the configuration to calculate the
+    /// required outputs.
     ///
-    pub(crate) fn init(config: CalculatorConfig) -> Result<Self, Error> {
+    /// This method is typically executed by [`CalculatorConfig::build`].
+    pub(crate) fn execute(config: CalculatorConfig) -> Result<Self, Error> {
         let repo = Repository::open(".")?;
 
         let current_version = VersionTag::find_in_repo(&repo, config.prefix.as_str())?;
@@ -89,53 +74,144 @@ impl Calculator {
             return Ok(Calculator {
                 config: new_config,
                 current_version,
-                route,
                 conventional,
                 bump,
                 next_version,
             });
         }
 
-        let bump = Bump::calculate(&route, &conventional);
+        let bump = Bump::calculate(route, &conventional);
         let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
         Ok(Calculator {
             config,
             current_version,
-            route,
             conventional,
             bump,
             next_version,
         })
     }
 
-    /// Report the bump level
-    ///
-    pub fn bump_as_os_string(&self) -> OsString {
-        self.bump.clone().into()
+    /// Output the bump level
+    pub fn bump(&self) -> String {
+        self.bump.clone().to_string()
     }
 
-    /// ### Report the results of the calculation
-    ///
-    /// Depending on the config settings for bump and version number report either or both.
-    /// If both are reported they are reported on two lines.
-    ///
-    pub fn report(&self) -> String {
-        match (self.config.report_bump, self.config.report_number) {
-            (true, true) => format!("{}\n{}", self.bump, self.next_version.version_number()),
-            (false, true) => self.next_version.version_number(),
-            (true, false) => self.bump.to_string(),
-            (false, false) => String::from(""),
-        }
-    }
-
-    /// ### Report the next version number
-    ///
+    /// Output the next version number
     pub fn next_version_number(&self) -> String {
         if let NextVersion::Updated(version) = &self.next_version {
             version.semantic_version.to_string()
         } else {
             String::from("")
+        }
+    }
+
+    /// Output a string containing the bump and version number as required
+    /// by the configuration.
+    ///
+    /// # Examples
+    ///
+    /// ## Non production with feature changes
+    ///
+    /// With a current version number of 0.7.9 and `feat` conventional commits
+    /// and the following configuration requiring both bump and next version
+    /// number to tbe reported:
+    ///     
+    /// ```no_run
+    /// # use nextsv::CalculatorConfig;
+    /// # fn main() -> Result<(), nextsv::Error> {
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("v")
+    ///         .set_version_report(true)
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// The output is the following:
+    ///
+    /// ```console
+    /// minor
+    /// v0.8.0
+    /// ```
+    ///
+    /// ## Production with breaking change
+    ///
+    /// With a current production version number and `breaking` conventional commits
+    /// and the following configuration requiring only the bump to be reported:
+    ///     
+    /// ```no_run
+    /// # use nextsv::CalculatorConfig;
+    /// # fn main() -> Result<(), nextsv::Error> {
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("v")
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// The output is the following:
+    ///
+    /// ```console
+    /// major
+    /// ```
+    ///
+    /// ## Production with feature change reporting both
+    ///
+    /// With a current production version number(v1.7.9) and `feat`
+    /// conventional commits and the following configuration requiring
+    /// only the bump and next version number to tbe reported:
+    ///
+    /// ```no_run
+    /// # use nextsv::CalculatorConfig;
+    /// # fn main() -> Result<(), nextsv::Error> {
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("v")
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// The output is the following:
+    ///
+    /// ```console
+    /// major
+    /// v1.8.0
+    /// ```
+    ///
+    /// ## Pre-release with fix change reporting both
+    ///
+    /// With a current pre-release version number(v1.0.0-beta.4) and `fix`
+    /// conventional commits and the following configuration requiring only
+    /// the bump and next version number to tbe reported:
+    ///
+    /// ```no_run
+    /// # use nextsv::CalculatorConfig;
+    /// # fn main() -> Result<(), nextsv::Error> {
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("v")
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// The output is the following:
+    ///
+    /// ```console
+    /// beta
+    /// v1.0.0-beta.5
+    /// ```
+    pub fn report(&self) -> String {
+        log::debug!("Config for reporting: {:?}", self.config);
+        match (self.config.report_bump, self.config.report_number) {
+            (true, true) => format!("{}\n{}", self.bump, self.next_version.version_number()),
+            (false, true) => self.next_version.version_number(),
+            (true, false) => self.bump.to_string(),
+            (false, false) => String::from(""),
         }
     }
 }
@@ -172,7 +248,7 @@ mod test {
         let current_version = test_utils::gen_current_version("v", 0, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, false);
 
-        let bump = Bump::calculate(&Route::NonProd, &conventional);
+        let bump = Bump::calculate(Route::NonProd, &conventional);
         let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
         assert_eq!(expected_bump, bump.to_string().as_str());
@@ -196,7 +272,7 @@ mod test {
         let current_version = test_utils::gen_current_version("v", 0, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, true);
 
-        let bump = Bump::calculate(&Route::NonProd, &conventional);
+        let bump = Bump::calculate(Route::NonProd, &conventional);
         let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
         assert_eq!("minor", bump.to_string().as_str());
@@ -223,7 +299,7 @@ mod test {
         let current_version = test_utils::gen_current_version("v", 1, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, false);
 
-        let bump = Bump::calculate(&Route::Prod, &conventional);
+        let bump = Bump::calculate(Route::Prod, &conventional);
         let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
         assert_eq!(expected_bump, bump.to_string().as_str());
@@ -246,7 +322,7 @@ mod test {
 
         let route = Route::calculate(&current_version.semantic_version);
 
-        let bump = Bump::calculate(&route, &conventional);
+        let bump = Bump::calculate(route, &conventional);
         let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
         assert_eq!("alpha", bump.to_string().as_str());
@@ -266,7 +342,7 @@ mod test {
         let current_version = test_utils::gen_current_version("v", 1, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, true);
 
-        let bump = Bump::calculate(&Route::Prod, &conventional);
+        let bump = Bump::calculate(Route::Prod, &conventional);
         let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
         assert_eq!("major", bump.to_string().as_str());
@@ -279,7 +355,7 @@ mod test {
         let current_version = test_utils::gen_current_version("v", 0, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commits();
 
-        let bump = Bump::calculate(&Route::Forced(ForceBump::First), &conventional);
+        let bump = Bump::calculate(Route::Forced(ForceBump::First), &conventional);
         let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
         assert_eq!("1.0.0", bump.to_string().as_str());

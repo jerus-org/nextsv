@@ -63,10 +63,10 @@ impl VersionTag {
             semantic_version,
         }
     }
-    /// Parse a tag and return a struct
-    /// String format expect: <version_prefix>x.y.z
+    /// # Parse a tag and return a struct
+    /// String format expect: <version_prefix>x.y.z<-pre_release><+build_data>
     ///
-    /// # Fields
+    /// ## Fields
     ///
     /// tag - the tag proposed as a semantic version tag
     /// version_prefix - any string before the semantic version number
@@ -76,9 +76,9 @@ impl VersionTag {
     /// Parse a tag into a semantic version number where "v" is used to identify
     /// tags representing semantic version numbers.
     ///
-    /// ```rust
+    /// ```no_comp
     /// # fn main() -> Result<(), nextsv::Error> {
-    /// use nextsv::VersionTag;
+    /// use self::VersionTag;
     ///
     /// let tag = "refs/tags/v0.2.3";
     /// let semantic_version = VersionTag::parse(tag, "v")?;
