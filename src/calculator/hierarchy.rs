@@ -20,14 +20,14 @@ use crate::Error;
 /// The hierachy is listed in order of importance.
 #[derive(Debug, PartialEq, Eq, Clone, ValueEnum, Default)]
 pub enum Hierarchy {
-    /// Other variant represents additional types that may be used, including custom types.
+    /// Other variant represents other changes.
     #[default]
     Other,
-    /// Fix variant represents fix commits.
+    /// Fix variant represents fixes.
     Fix,
-    /// Feature variant represents feature commits.
+    /// Feature variant represents new features.
     Feature,
-    /// Breaking variant represents breaking commits.
+    /// Breaking variant represents breaking changes.
     Breaking,
 }
 

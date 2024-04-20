@@ -1,28 +1,9 @@
 use std::ffi::OsString;
-use std::fmt;
 
-use clap::{Parser, ValueEnum};
+use clap::Parser;
 use nextsv::{CalculatorConfig, ForceBump, Hierarchy};
 use proc_exit::{Code, ExitResult};
 
-#[derive(ValueEnum, Debug, Clone)]
-enum ForceOptions {
-    Major,
-    Minor,
-    Patch,
-    First,
-}
-
-impl fmt::Display for ForceOptions {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ForceOptions::Major => write!(f, "major"),
-            ForceOptions::Minor => write!(f, "minor"),
-            ForceOptions::Patch => write!(f, "patch"),
-            ForceOptions::First => write!(f, "first"),
-        }
-    }
-}
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Cli {
@@ -34,27 +15,32 @@ struct Cli {
     /// Prefix string to identify version number tags
     #[arg(short, long, value_parser, default_value = "v")]
     prefix: String,
-    /// Report the level of the version number change
+    /// Do not report version bump
     #[arg(short = 'b', long)]
     no_bump: bool,
     /// Report the version number
     #[arg(short = 'n', long)]
     number: bool,
-    /// Require changes to these file before building release
+    /// Files that require changes before making a release
+    ///
+    /// The level at which the required files are enforced
+    /// can be set with the `enforce` option.
     #[arg(short, long)]
     require: Vec<OsString>,
-    /// Level at which required files should be enforced
+    /// Bump level at which required files list should be enforced
+    ///
+    /// Should be used in conjunction with the `require` option.
     #[clap(short, long, default_value = "feature")]
-    enforce_level: Hierarchy,
+    enforce: Hierarchy,
     /// Check level meets minimum for setting
     ///
     /// This option can be used to check the calculated level
-    /// meets a minimum before applying an update. The program
-    /// exits with an error if the threshold is not met.
+    /// meets a minimum before applying an update. Bump is reported
+    /// as "none" if the required level is not met.
     #[clap(short, long)]
     check: Option<Hierarchy>,
     /// add output to environment variable
-    #[clap(long, default_value = "NEXTSV_LEVEL")]
+    #[clap(long, default_value = "NEXTSV_BUMP")]
     set_env: Option<String>,
 }
 
@@ -86,7 +72,7 @@ fn run() -> ExitResult {
     };
     if !args.require.is_empty() {
         calculator_config = calculator_config.add_required_files(args.require);
-        calculator_config = calculator_config.set_required_enforcement(args.enforce_level);
+        calculator_config = calculator_config.set_required_enforcement(args.enforce);
     };
     if let Some(check_level) = args.check {
         calculator_config = calculator_config.set_reporting_threshold(check_level);

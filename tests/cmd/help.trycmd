@@ -15,55 +15,59 @@ Options:
           Force the calculation of the version number
 
           Possible values:
-          - major:   force change to major
-          - minor:   force change to minor
-          - patch:   force change to patch
-          - first:   Force update of first production release (1.0.0)
-          - release: Release current version
-          - alpha:   Alpha pre-release of current version
-          - beta:    Beta pre-release of current version
-          - rc:      Rc pre-release of current version
+          - major:   Bump the major version component
+          - minor:   Bump the major version component
+          - patch:   Bump the major version component
+          - first:   Release the first production version - 1.0.0
+          - release: Remove the pre-release version component
+          - rc:      Bump the rc pre-release version component
+          - beta:    Bump the beta pre-release version component
+          - alpha:   Bump the alpha pre-release version component
 
   -p, --prefix <PREFIX>
           Prefix string to identify version number tags
           
           [default: v]
 
-      --level
-          Report the level of the version number change
+  -b, --no-bump
+          Do not report version bump
 
-      --number
+  -n, --number
           Report the version number
 
   -r, --require <REQUIRE>
-          Require changes to these file before building release
+          Files that require changes before making a release
+          
+          The level at which the required files are enforced can be set with the `enforce` option.
 
-  -e, --enforce-level <ENFORCE_LEVEL>
-          Level at which required files should be enforced
+  -e, --enforce <ENFORCE>
+          Bump level at which required files list should be enforced
+          
+          Should be used in conjunction with the `require` option.
           
           [default: feature]
 
           Possible values:
-          - other:    enforce requirements for all types
-          - fix:      enforce requirements for fix, feature and breaking
-          - feature:  enforce requirements for features and breaking
-          - breaking: enforce requirements for breaking only
+          - other:    Other variant represents other changes
+          - fix:      Fix variant represents fixes
+          - feature:  Feature variant represents new features
+          - breaking: Breaking variant represents breaking changes
 
   -c, --check <CHECK>
           Check level meets minimum for setting
           
-          This option can be used to check the calculated level meets a minimum before applying an update. The program exits with an error if the threshold is not met.
+          This option can be used to check the calculated level meets a minimum before applying an update. Bump is reported as "none" if the required level is not met.
 
           Possible values:
-          - other:    enforce requirements for all types
-          - fix:      enforce requirements for fix, feature and breaking
-          - feature:  enforce requirements for features and breaking
-          - breaking: enforce requirements for breaking only
+          - other:    Other variant represents other changes
+          - fix:      Fix variant represents fixes
+          - feature:  Feature variant represents new features
+          - breaking: Breaking variant represents breaking changes
 
       --set-env <SET_ENV>
           add output to environment variable
           
-          [default: NEXTSV_LEVEL]
+          [default: NEXTSV_BUMP]
 
   -h, --help
           Print help (see a summary with '-h')

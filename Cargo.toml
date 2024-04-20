@@ -1,6 +1,6 @@
 [package]
 name = "nextsv"
-version = "0.7.9-rc.0"
+version = "0.7.9"
 edition = "2021"
 authors = ["jerusdp <jrussell@jerus.ie>"]
 rust-version = "1.74"

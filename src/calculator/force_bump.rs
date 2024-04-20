@@ -7,21 +7,21 @@ use std::{cmp, fmt};
 /// that would be calculated from conventional commits.
 #[derive(Debug, PartialEq, Eq, Clone, ValueEnum)]
 pub enum ForceBump {
-    /// Represents a major version bump.
+    /// Bump the major version component.
     Major,
-    /// Represents a minor version bump.
+    /// Bump the major version component.
     Minor,
-    /// Represents a patch version bump.
+    /// Bump the major version component
     Patch,
-    /// Represents the first version.
+    /// Release the first production version - 1.0.0.
     First,
-    /// Represents a release bump.
+    /// Remove the pre-release version component.
     Release,
-    /// Represents a release candidate bump.
+    /// Bump the rc pre-release version component.
     Rc,
-    /// Represents a beta bump.
+    /// Bump the beta pre-release version component.
     Beta,
-    /// Represents an alpha bump.
+    /// Bump the alpha pre-release version component.
     Alpha,
 }
 
