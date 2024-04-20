@@ -34,6 +34,7 @@ log4rs_test_utils = { version = "0.2.3", default-features = false, features = [
 ] }
 map-macro = "0.3.0"
 rstest = "0.18.2"
+snapbox = { version = "0.5.9", features = ["cmd"] }
 trycmd = "0.15.0"
 uuid = { version = "1.8.0", features = ["v4"] }
 
