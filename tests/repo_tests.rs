@@ -1,3 +1,4 @@
+use core::panic;
 use std::{fs, process::Command};
 
 use rstest::rstest;
@@ -29,44 +30,44 @@ fn test_repo_no_changes() {
 }
 
 #[rstest]
-#[case::fix_commit_non_production("v0.1.0", "fix", "-n -vvv", "patch\n0.1.1\n")]
-#[case::chore_commit_non_production("v0.1.0", "chore", "-n", "patch\n0.1.1\n")]
-#[case::ci_commit_non_production("v0.1.0", "ci", "-n", "patch\n0.1.1\n")]
-#[case::revert_commit_non_production("v0.1.0", "revert", "-n", "patch\n0.1.1\n")]
-#[case::docs_commit_non_production("v0.1.0", "docs", "-n", "patch\n0.1.1\n")]
-#[case::style_commit_non_production("v0.1.0", "style", "-n", "patch\n0.1.1\n")]
-#[case::refactor_commit_non_production("v0.1.0", "refactor", "-n", "patch\n0.1.1\n")]
-#[case::perf_commit_non_production("v0.1.0", "perf", "-n", "patch\n0.1.1\n")]
-#[case::test_commit_non_production("v0.1.0", "test", "-n", "patch\n0.1.1\n")]
-#[case::build_commit_non_production("v0.1.0", "build", "-n", "patch\n0.1.1\n")]
-#[case::feat_commit_non_production("v0.1.0", "feat", "-n", "minor\n0.2.0\n")]
-#[case::breaking_commit_non_production("v0.1.0", "fix!", "-n", "minor\n0.2.0\n")]
-#[case::custom_commit_non_production("v0.1.0", "custom", "-n", "patch\n0.1.1\n")]
-#[case::fix_commit_production("v1.1.0", "fix", "-n -vvv", "patch\n1.1.1\n")]
-#[case::chore_commit_non_production("v1.1.0", "chore", "-n", "patch\n1.1.1\n")]
-#[case::ci_commit_production("v1.1.0", "ci", "-n", "patch\n1.1.1\n")]
-#[case::revert_commit_production("v1.1.0", "revert", "-n", "patch\n1.1.1\n")]
-#[case::docs_commit_production("v1.1.0", "docs", "-n", "patch\n1.1.1\n")]
-#[case::style_commit_production("v1.1.0", "style", "-n", "patch\n1.1.1\n")]
-#[case::refactor_commit_production("v1.1.0", "refactor", "-n", "patch\n1.1.1\n")]
-#[case::perf_commit_production("v1.1.0", "perf", "-n", "patch\n1.1.1\n")]
-#[case::test_commit_production("v1.1.0", "test", "-n", "patch\n1.1.1\n")]
-#[case::build_commit_production("v1.1.0", "build", "-n", "patch\n1.1.1\n")]
-#[case::feat_commit_production("v1.1.0", "feat", "-n", "minor\n1.2.0\n")]
-#[case::breaking_commit_production("v1.1.0", "fix!", "-n", "major\n2.0.0\n")]
-#[case::custom_commit_production("v1.1.0", "custom", "-n", "patch\n1.1.1\n")]
+#[case::non_production_commit("v0.1.0", "-n")]
+#[case::production_commit("v1.1.0", "-n")]
 #[trace]
 fn test_repo_with_commit(
     #[case] current_version: &str,
-    #[case] commit_type: &str,
+    #[values(
+        "fix", "chore", "ci", "revert", "docs", "style", "refactor", "perf", "test", "custom",
+        "build", "feat", "breaking"
+    )]
+    mut commit_type: &str,
     #[case] arguments: &str,
-    #[case] expected: &str,
 ) {
+    // select expected result
+    let expected = match current_version {
+        "v0.1.0" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" => "patch\n0.1.1\n",
+            "breaking" | "feat" => "minor\n0.2.0\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "v1.1.0" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" => "patch\n1.1.1\n",
+            "feat" => "minor\n1.2.0\n",
+            "breaking" => "major\n2.0.0\n",
+            _ => panic!("unexpected commit type"),
+        },
+        _ => panic!("unexpected current version"),
+    };
+
     // setup base state
     let (temp_dir, repo) = git_utils::create_test_git_directory(current_version);
     println!("temp_dir: {:?}", temp_dir);
 
     // setup the change conditions
+    if commit_type == "breaking" {
+        commit_type = "fix!";
+    };
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message);
