@@ -371,7 +371,12 @@ mod tests {
         test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
 
         let result = VersionTag::parse(input, version_prefix);
+        log::debug!("the result is:{:?}", result);
         assert_eq!(expected, result.is_ok());
+        if result.is_ok() {
+            let version = result.unwrap();
+            assert_eq!(input, version.to_string().as_str());
+        }
     }
 
     #[rstest]
