@@ -94,7 +94,7 @@ impl NextVersion {
                         next_version.version_mut().increment_pre_release();
                     }
                 }
-                bump = Bump::Custom(next_version.to_string());
+                bump = Bump::Custom(next_version.semantic_version.to_string());
                 next_version
             }
             Bump::Release => {
@@ -147,12 +147,12 @@ mod test {
     #[rstest]
     fn test_calculation_of_next_version(
         #[values(
-            "v0.7.9",
-            "v0.7.9-alpha.1",
-            "v0.7.9-beta.1",
-            "v0.7.9-rc.1",
-            "v0.7.9-pre.1",
-            "v1.7.9"
+            "refs/tags/v0.7.9",
+            "refs/tags/v0.7.9-alpha.1",
+            "refs/tags/v0.7.9-beta.1",
+            "refs/tags/v0.7.9-rc.1",
+            "refs/tags/v0.7.9-pre.1",
+            "refs/tags/v1.7.9"
         )]
         tag: &str,
         #[values(Bump::None, Bump::Patch, Bump::Minor, Bump::Major, Bump::Alpha, Bump::Beta, Bump::Rc, Bump::Release, Bump::Custom("".to_string()), Bump::First) ]
@@ -162,7 +162,7 @@ mod test {
         let (test, _updated_bump) = NextVersion::calculate(&current_version, bump.clone());
 
         let expected = match tag {
-            "v0.7.9" => match bump {
+            "refs/tags/v0.7.9" => match bump {
                 Bump::None
                 | Bump::Alpha
                 | Bump::Beta
@@ -177,7 +177,7 @@ mod test {
                     NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap())
                 }
             },
-            "v1.7.9" => match bump {
+            "refs/tags/v1.7.9" => match bump {
                 Bump::None
                 | Bump::Alpha
                 | Bump::Beta
@@ -191,7 +191,7 @@ mod test {
                 Bump::Minor => NextVersion::Updated(VersionTag::parse("v1.8.0", "v").unwrap()),
                 Bump::Major => NextVersion::Updated(VersionTag::parse("v2.0.0", "v").unwrap()),
             },
-            "v0.7.9-alpha.1" => match bump {
+            "refs/tags/v0.7.9-alpha.1" => match bump {
                 Bump::None | Bump::Beta | Bump::Rc | Bump::Custom(_) => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-alpha.1", "v").unwrap())
                 }
@@ -201,7 +201,7 @@ mod test {
                 Bump::Release => NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap()),
                 Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
             },
-            "v0.7.9-beta.1" => match bump {
+            "refs/tags/v0.7.9-beta.1" => match bump {
                 Bump::None | Bump::Alpha | Bump::Rc | Bump::Custom(_) => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-beta.1", "v").unwrap())
                 }
@@ -211,7 +211,7 @@ mod test {
                 Bump::Release => NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap()),
                 Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
             },
-            "v0.7.9-rc.1" => match bump {
+            "refs/tags/v0.7.9-rc.1" => match bump {
                 Bump::None | Bump::Alpha | Bump::Beta | Bump::Custom(_) => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-rc.1", "v").unwrap())
                 }
@@ -221,7 +221,7 @@ mod test {
                 Bump::Release => NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap()),
                 Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
             },
-            "v0.7.9-pre.1" => match bump {
+            "refs/tags/v0.7.9-pre.1" => match bump {
                 Bump::None | Bump::Alpha | Bump::Rc | Bump::Beta => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-pre.1", "v").unwrap())
                 }
@@ -231,7 +231,7 @@ mod test {
                 Bump::Release => NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap()),
                 Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
             },
-            _ => unreachable!(),
+            _ => unreachable!("unexpected tag"),
         };
 
         assert_eq!(expected.version_number(), test.version_number());
