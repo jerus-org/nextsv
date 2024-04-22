@@ -83,13 +83,17 @@ impl Calculator {
         let bump = Bump::calculate(route, &conventional);
         let (next_version, bump) = NextVersion::calculate(&current_version, bump);
 
-        Ok(Calculator {
+        let calculated_result = Ok(Calculator {
             config,
             current_version,
             conventional,
             bump,
             next_version,
-        })
+        });
+
+        log::trace!("Calculated result for reporting: {:#?}", calculated_result);
+
+        calculated_result
     }
 
     /// Output the bump level
