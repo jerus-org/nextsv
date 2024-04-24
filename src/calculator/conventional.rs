@@ -6,7 +6,7 @@ use std::{
     ffi::OsString,
 };
 
-use git2::Repository;
+use git2::{DiffOptions, Repository};
 
 use crate::Error;
 
@@ -31,6 +31,29 @@ impl ConventionalCommits {
         reference: &str,
     ) -> Result<Self, Error> {
         log::debug!("repo opened to find conventional commits");
+        log::debug!("Searching for the tag: `{}`", reference);
+        let tag_commit = match repo.find_reference(reference) {
+            Ok(reference) => match reference.peel_to_commit() {
+                Ok(commit) => commit,
+                Err(e) => {
+                    log::error!("Error finding the tag commit: {:?}", e);
+                    return Err(Error::Git2(e));
+                }
+            },
+            Err(e) => {
+                log::error!("Error finding the tag reference: {:?}", e);
+                return Err(Error::Git2(e));
+            }
+        };
+        let tag_tree = match tag_commit.tree() {
+            Ok(tree) => tree,
+            Err(e) => {
+                log::error!("Error finding the tag tree: {:?}", e);
+                return Err(Error::Git2(e));
+            }
+        };
+        log::debug!("tag tree found: {:?}", tag_tree);
+
         let mut revwalk = repo.revwalk()?;
         revwalk.set_sorting(git2::Sort::NONE)?;
         revwalk.push_head()?;
@@ -57,26 +80,28 @@ impl ConventionalCommits {
 
         let mut conventional_commits = ConventionalCommits::new();
 
-        // Walk back through the commits
-        let mut files = HashSet::new();
+        let mut tree_flag = true;
+        // Walk back through the commits to collect the commit summary and identitfy conventional commits
         for commit in revwalk.flatten() {
             // Get the summary for the conventional commits vec
             log::trace!("commit found: `{}`", &commit.summary().unwrap_or_default());
             conventional_commits.push(&commit);
-            // Get the files for the files vec
-            let tree = commit.tree()?;
-            let diff = repo.diff_tree_to_workdir(Some(&tree), None).unwrap();
-
-            diff.print(git2::DiffFormat::NameOnly, |delta, _hunk, _line| {
-                let file = delta.new_file().path().unwrap().file_name().unwrap();
-                log::trace!("file found: {:?}", file);
-                files.insert(file.to_os_string());
-                true
-            })
-            .unwrap();
+            if tree_flag {
+                let tree = commit.tree().unwrap();
+                let mut diff_options = DiffOptions::new();
+                let diff =
+                    repo.diff_tree_to_tree(Some(&tag_tree), Some(&tree), Some(&mut diff_options))?;
+                let mut files = HashSet::new();
+                diff.print(git2::DiffFormat::NameOnly, |delta, _hunk, _line| {
+                    let file = delta.new_file().path().unwrap().file_name().unwrap();
+                    log::trace!("file found: {:?}", file);
+                    files.insert(file.to_os_string());
+                    true
+                })?;
+                conventional_commits.files = files;
+                tree_flag = false;
+            }
         }
-
-        conventional_commits.files = files;
 
         Ok(conventional_commits)
     }

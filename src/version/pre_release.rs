@@ -62,6 +62,11 @@ impl PreRelease {
             pre_type,
         }
     }
+
+    pub(crate) fn is_label(&self, label: &str) -> bool {
+        // Add your implementation here
+        self.label.as_str() == label
+    }
 }
 
 #[cfg(test)]

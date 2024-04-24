@@ -1,3 +1,6 @@
+use crate::version::Semantic;
+
+use super::bump::Bump;
 #[allow(unused_imports)]
 use super::CalculatorConfig; // import used by documentation
 use clap::ValueEnum;
@@ -5,24 +8,104 @@ use std::{cmp, fmt};
 
 /// This enum is used by [`CalculatorConfig::set_force_bump`] to override the bump
 /// that would be calculated from conventional commits.
+///
+/// ## Variants
+///
+/// Variants are valid depending on the current version type.
+///
+/// |  Variant  | Non Prodution |  Pre Release  |  Production   |              Description                  |
+/// | ----------|---------------| --------------|---------------|-------------------------------------------|
+/// | `Major`   |       X       |               |       X       | Bump the major component                  |
+/// | `Minor`   |       X       |               |       X       | Bump the minor component                  |
+/// | `Patch`   |       X       |               |       X       | Bump the patch component                  |
+/// | `First`   |       X       |               |               | Set the first production version (1.0.0)  |
+/// | `Release` |               |       X       |               | Remove the pre-release                    |
+/// | `Rc`      |       X       |       X       |       X       | Bump or create rc pre-release             |
+/// | `Beta`    |       X       |       X       |       X       | Bump or create beta pre-release           |
+/// | `Alpha`   |       X       |       X       |       X       | Bump or create alpha pre-release          |
+///
+///  Where it is not valid the bump is forced to [`None`].
 #[derive(Debug, PartialEq, Eq, Clone, ValueEnum)]
 pub enum ForceBump {
     /// Bump the major version component.
     Major,
     /// Bump the major version component.
     Minor,
-    /// Bump the major version component
+    /// Bump the major version component.
     Patch,
-    /// Release the first production version - 1.0.0.
+    /// Release first production (1.0.0) version.
     First,
-    /// Remove the pre-release version component.
+    /// Remove the pre-release version component if present.
     Release,
-    /// Bump the rc pre-release version component.
+    /// Bump or create the rc pre-release version component.
     Rc,
-    /// Bump the beta pre-release version component.
+    /// Bump or create the beta pre-release version component.
     Beta,
-    /// Bump the alpha pre-release version component.
+    /// Bump or create the alpha pre-release version component.
     Alpha,
+}
+
+use crate::version::VersionType;
+
+impl ForceBump {
+    /// Returns the bump type that should be used to calculate the next version.
+    pub(crate) fn to_bump(&self, version_number: &Semantic) -> Bump {
+        log::debug!(
+            "ForceBump::to_bump({}) with version `{}`",
+            self,
+            version_number
+        );
+        match version_number.version_type() {
+            VersionType::NonProduction => match self {
+                ForceBump::Major => Bump::Major,
+                ForceBump::Minor => Bump::Minor,
+                ForceBump::Patch => Bump::Patch,
+                ForceBump::First => Bump::First,
+                ForceBump::Release => Bump::None,
+                ForceBump::Rc => Bump::Rc,
+                ForceBump::Beta => Bump::Beta,
+                ForceBump::Alpha => Bump::Alpha,
+            },
+            VersionType::PreRelease => match self {
+                ForceBump::Major => Bump::None,
+                ForceBump::Minor => Bump::None,
+                ForceBump::Patch => Bump::None,
+                ForceBump::First => Bump::None,
+                ForceBump::Release => Bump::Release,
+                ForceBump::Rc => {
+                    if version_number.is_pre_release("rc") {
+                        Bump::Rc
+                    } else {
+                        Bump::None
+                    }
+                }
+                ForceBump::Beta => {
+                    if version_number.is_pre_release("beta") {
+                        Bump::Beta
+                    } else {
+                        Bump::None
+                    }
+                }
+                ForceBump::Alpha => {
+                    if version_number.is_pre_release("alpha") {
+                        Bump::Alpha
+                    } else {
+                        Bump::None
+                    }
+                }
+            },
+            VersionType::Production => match self {
+                ForceBump::Major => Bump::Major,
+                ForceBump::Minor => Bump::Minor,
+                ForceBump::Patch => Bump::Patch,
+                ForceBump::First => Bump::None,
+                ForceBump::Release => Bump::None,
+                ForceBump::Rc => Bump::Rc,
+                ForceBump::Beta => Bump::Beta,
+                ForceBump::Alpha => Bump::Alpha,
+            },
+        }
+    }
 }
 
 impl fmt::Display for ForceBump {

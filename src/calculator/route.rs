@@ -1,7 +1,7 @@
 use std::fmt;
 
 use super::super::version::Semantic;
-use crate::{version::PreReleaseType, ForceBump};
+use crate::version::PreReleaseType;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Default)]
 pub(crate) enum Route {
@@ -9,7 +9,6 @@ pub(crate) enum Route {
     PreRelease(PreReleaseType),
     #[default]
     Prod,
-    Forced(ForceBump),
 }
 
 impl Route {
@@ -30,7 +29,6 @@ impl fmt::Display for Route {
             Route::PreRelease(pre_type) => write!(f, "{} pre release", pre_type),
             Route::NonProd => write!(f, "non production"),
             Route::Prod => write!(f, "production"),
-            Route::Forced(level) => write!(f, "Force to `{}`", level),
         }
     }
 }
@@ -38,10 +36,7 @@ impl fmt::Display for Route {
 #[cfg(test)]
 mod test {
 
-    use crate::{
-        version::{PreReleaseType, Semantic},
-        ForceBump,
-    };
+    use crate::version::{PreReleaseType, Semantic};
 
     use super::Route;
     use rstest::rstest;
@@ -50,7 +45,6 @@ mod test {
     #[case::pre_release(Route::PreRelease(PreReleaseType::Alpha), "Alpha pre release")]
     #[case::non_production(Route::NonProd, "non production")]
     #[case::production(Route::Prod, "production")]
-    #[case::release(Route::Forced(ForceBump::Minor), "Force to `minor`")]
     fn display_value(#[case] test: Route, #[case] expected: &str) {
         assert_eq!(expected, test.to_string().as_str());
     }

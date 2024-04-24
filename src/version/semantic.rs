@@ -23,6 +23,12 @@ macro_rules! some_or_none_string {
     };
 }
 
+pub(crate) enum VersionType {
+    NonProduction,
+    PreRelease,
+    Production,
+}
+
 /// The Semantic data structure represents a semantic version number.
 ///
 /// TODO: Implement support for pre-release and build
@@ -90,6 +96,27 @@ impl Semantic {
             self.pre_release = Some(pre_release);
         };
         self
+    }
+
+    /// Returns the type of version based on the major version number.
+    pub(crate) fn version_type(&self) -> VersionType {
+        if self.pre_release.is_some() {
+            return VersionType::PreRelease;
+        }
+        if self.major == 0 {
+            VersionType::NonProduction
+        } else {
+            VersionType::Production
+        }
+    }
+
+    /// Test the pre-release label against the suppplied value.
+    pub(crate) fn is_pre_release(&self, label: &str) -> bool {
+        if let Some(pre_release) = &self.pre_release {
+            pre_release.is_label(label)
+        } else {
+            false
+        }
     }
 }
 

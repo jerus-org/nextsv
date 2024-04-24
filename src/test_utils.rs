@@ -67,7 +67,7 @@ impl FromStr for ConventionalType {
 }
 
 // use crate::calculator::
-
+#[allow(dead_code)]
 pub(crate) fn gen_conventional_commits() -> ConventionalCommits {
     let mut counts = HashMap::new();
     let values = [

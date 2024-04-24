@@ -126,14 +126,7 @@ impl VersionTag {
         ))
     }
 
-    /// Provide a reference to the semantic version
-    ///
-    // pub(crate) fn version(&self) -> &Semantic {
-    //     &self.semantic_version
-    // }
-
     /// Provide a mutable reference to the semantic version
-    ///
     pub(crate) fn version_mut(&mut self) -> &mut Semantic {
         &mut self.semantic_version
     }

@@ -96,7 +96,7 @@ impl From<Bump> for OsString {
 use colored::Colorize;
 
 impl Bump {
-    pub(crate) fn calculate(route: Route, conventional: &ConventionalCommits) -> Bump {
+    pub(crate) fn calculate(route: &Route, conventional: &ConventionalCommits) -> Bump {
         log::debug!(
             "Calculating according to the `{}` route: ",
             route.to_string().blue()
@@ -110,11 +110,6 @@ impl Bump {
 
         log::debug!("Starting calculation with bump level of {bump}");
         match route {
-            Route::Forced(forced_level) => {
-                log::debug!("Forcing the bump level output to `{forced_level}`");
-                bump = forced_level.clone().into();
-                return bump;
-            }
             Route::NonProd => {
                 bump = if conventional.breaking {
                     // Breaking change found in commits
@@ -251,22 +246,14 @@ mod test {
             Route::PreRelease(PreReleaseType::Beta),
             Route::PreRelease(PreReleaseType::Rc),
             Route::PreRelease(PreReleaseType::Custom),
-            Route::Prod,
-            Route::Forced(ForceBump::Major),
-            Route::Forced(ForceBump::Major),
-            Route::Forced(ForceBump::Minor),
-            Route::Forced(ForceBump::Patch),
-            Route::Forced(ForceBump::Alpha),
-            Route::Forced(ForceBump::Beta),
-            Route::Forced(ForceBump::Rc),
-            Route::Forced(ForceBump::Release)
+            Route::Prod
         )]
         route: Route,
         #[values(other(), fix(), feature(), breaking())] conventional: ConventionalCommits,
     ) {
         println!("Route: {route}");
         println!("Conventional: {conventional:?}");
-        let test = Bump::calculate(route.clone(), &conventional);
+        let test = Bump::calculate(&route, &conventional);
 
         let expected = match route {
             Route::NonProd => match conventional.top_type {
@@ -286,12 +273,6 @@ mod test {
                 crate::Hierarchy::Fix => Bump::Patch,
                 crate::Hierarchy::Feature => Bump::Minor,
                 crate::Hierarchy::Breaking => Bump::Major,
-            },
-            Route::Forced(bump) => match conventional.top_type {
-                crate::Hierarchy::Other => bump.into(),
-                crate::Hierarchy::Fix => bump.into(),
-                crate::Hierarchy::Feature => bump.into(),
-                crate::Hierarchy::Breaking => bump.into(),
             },
         };
 

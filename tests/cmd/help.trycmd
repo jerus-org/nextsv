@@ -18,11 +18,11 @@ Options:
           - major:   Bump the major version component
           - minor:   Bump the major version component
           - patch:   Bump the major version component
-          - first:   Release the first production version - 1.0.0
-          - release: Remove the pre-release version component
-          - rc:      Bump the rc pre-release version component
-          - beta:    Bump the beta pre-release version component
-          - alpha:   Bump the alpha pre-release version component
+          - first:   Release first production (1.0.0) version
+          - release: Remove the pre-release version component if present
+          - rc:      Bump or create the rc pre-release version component
+          - beta:    Bump or create the beta pre-release version component
+          - alpha:   Bump or create the alpha pre-release version component
 
   -p, --prefix <PREFIX>
           Prefix string to identify version number tags
@@ -81,8 +81,8 @@ Options:
 
 ```console
 $ nextsv -e other -r README.md -r CHANGES.md -r CHANGELOG.md -r INVENTED.md
-? 13
-Missing the required file(s): ["INVENTED.md"].
+[..]Missing required files: [[..]"INVENTED.md"]
+none
 
 ```
 
