@@ -1129,3 +1129,111 @@ fn test_repo_with_commit_and_enforce_test_file(
     // assess the result
     assert_eq!(expected, test_result);
 }
+
+#[rstest]
+#[case::non_production_commit("0.1.0", "-n -vvvv -p")]
+#[case::production_commit("1.1.0", "-n -vvv -p")]
+#[case::non_production_pre_release_alpha_commit("0.1.0-alpha.2", "-n -p")]
+#[case::production_pre_release_alpha_commit("1.1.0-alpha.3", "-n -p")]
+#[case::non_production_pre_release_beta_commit("0.1.0-beta.4", "-n -p")]
+#[case::production_pre_release_beta_commit("1.1.0-beta.5", "-n -p")]
+#[case::non_production_pre_release_rc_commit("0.1.0-rc.6", "-n -p")]
+#[case::production_pre_release_rc_commit("1.1.0-rc.7", "-n -p")]
+#[case::non_production_pre_release_pre_commit("0.1.0-pre.8", "-n -p")]
+#[case::production_pre_release_pre_commit("1.1.0-pre.9", "-n -p")]
+#[trace]
+fn test_repo_with_commit_custom_version_prefix(
+    #[case] current_version: &str,
+    #[values(
+        "fix", "chore", "ci", "revert", "docs", "style", "refactor", "perf", "test", "custom",
+        "build", "feat", "breaking"
+    )]
+    mut commit_type: &str,
+    #[case] arguments: &str,
+    #[values("ver", "version_", "rel", "v")] prefix: &str,
+) {
+    // select expected result
+    let expected = match current_version {
+        "0.1.0" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" => "patch\n0.1.1\n",
+            "feat" | "breaking" => "minor\n0.2.0\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "1.1.0" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" => "patch\n1.1.1\n",
+            "feat" => "minor\n1.2.0\n",
+            "breaking" => "major\n2.0.0\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "0.1.0-alpha.2" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" | "feat" | "breaking" => "alpha\n0.1.0-alpha.3\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "1.1.0-alpha.3" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" | "feat" | "breaking" => "alpha\n1.1.0-alpha.4\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "0.1.0-beta.4" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" | "feat" | "breaking" => "beta\n0.1.0-beta.5\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "1.1.0-beta.5" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" | "feat" | "breaking" => "beta\n1.1.0-beta.6\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "0.1.0-rc.6" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" | "feat" | "breaking" => "rc\n0.1.0-rc.7\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "1.1.0-rc.7" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" | "feat" | "breaking" => "rc\n1.1.0-rc.8\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "0.1.0-pre.8" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" | "feat" | "breaking" => "0.1.0-pre.9\n0.1.0-pre.9\n",
+            _ => panic!("unexpected commit type"),
+        },
+        "1.1.0-pre.9" => match commit_type {
+            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
+            | "custom" | "build" | "feat" | "breaking" => "1.1.0-pre.10\n1.1.0-pre.10\n",
+            _ => panic!("unexpected commit type"),
+        },
+        _ => panic!("unexpected current version"),
+    };
+
+    // setup base state
+    let version = format!("{}{}", prefix, current_version);
+    let (temp_dir, repo) = git_utils::create_test_git_directory(&version);
+    println!("temp_dir: {:?}", temp_dir);
+
+    // setup the change conditions
+    if commit_type == "breaking" {
+        commit_type = "fix!";
+    };
+    let message = format!("{}: {}", commit_type, "test commit");
+    println!("message: {:?}", message);
+    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message);
+    println!("commit result: {:?}", result);
+
+    // execute the test
+    let mut arguments = arguments.to_string();
+    arguments.push(' ');
+    arguments.push_str(prefix);
+    let test_result = git_utils::execute_test(&arguments, &temp_dir);
+
+    // tidy up the test environment
+    let result = fs::remove_dir_all(temp_dir);
+    println!("remove_dir_all result: {:?}", result);
+
+    // assess the result
+    assert_eq!(expected, test_result);
+}
