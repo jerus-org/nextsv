@@ -76,18 +76,3 @@ Options:
           Print version
 
 ```
-
-# Required changes
-
-```console
-$ nextsv -e other -r README.md -r CHANGES.md -r CHANGELOG.md -r INVENTED.md
-[..]Missing required files: [[..]"INVENTED.md"]
-none
-
-```
-
-```console
-$ nextsv -q
-[..]
-
-```
