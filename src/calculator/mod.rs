@@ -50,20 +50,30 @@ impl Calculator {
         log::debug!("File enforcement level `{}`", config.enforce);
         if conventional.top_type >= config.enforce {
             log::debug!("Enforcing the files: {:?}", config.files);
-            if !config.files.is_subset(&conventional.files) {
+            if !config.files.is_subset(&conventional.changed_files) {
                 let mut missing_files = vec![];
                 for file in config.files.clone() {
-                    if !&conventional.files.contains(&file) {
-                        missing_files.push(file)
+                    log::debug!("Checking file: `{}`", file.to_string_lossy());
+                    log::debug!("File in repository: {:?}", conventional.all_files);
+                    log::debug!("File in change: {:?}", conventional.changed_files);
+                    if !&conventional.changed_files.contains(&file) {
+                        if conventional.all_files.contains(&file) {
+                            missing_files.push(file)
+                        } else {
+                            log::warn!("File `{}` not in repository.", file.to_string_lossy());
+                        }
                     }
                 }
-                log::error!("Missing required files: {:?}", missing_files);
-                return Ok(Calculator::exit_none(
-                    config.clone(),
-                    current_version,
-                    conventional,
-                    None,
-                ));
+
+                if !missing_files.is_empty() {
+                    log::error!("Missing required files: {:?}", missing_files);
+                    return Ok(Calculator::exit_none(
+                        config.clone(),
+                        current_version,
+                        conventional,
+                        None,
+                    ));
+                }
             } else {
                 log::debug!("All required files are present");
             };

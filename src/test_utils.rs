@@ -99,7 +99,8 @@ pub(crate) fn gen_conventional_commits() -> ConventionalCommits {
             "docs: Updated tests in docs.".to_string(),
         ],
         counts,
-        files,
+        changed_files: files.clone(),
+        all_files: files,
         breaking: false,
         top_type: Hierarchy::Feature,
     }
@@ -126,7 +127,8 @@ pub(crate) fn gen_conventional_commit(
         commits,
         counts,
         breaking,
-        files,
+        changed_files: files.clone(),
+        all_files: files,
         top_type,
     }
 }

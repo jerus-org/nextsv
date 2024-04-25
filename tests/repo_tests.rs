@@ -724,46 +724,37 @@ fn test_repo_with_commit_and_enforce_test_file(
     )]
     mut commit_type: &str,
     #[case] arguments: &str,
-    #[values("test.txt", "missing.txt")] file: &str,
+    #[values("test.txt", "missing.txt", "first-file -r test.txt")] file: &str,
     #[values("other", "fix", "feature", "breaking")] check: &str,
 ) {
     // select expected result
     let expected = match current_version {
         "v0.1.0" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" => "patch\n0.1.1\n",
                 "feat" | "breaking" => "minor\n0.2.0\n",
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
-                    "fix" => "patch\n0.1.1\n",
-                    "feature" => "patch\n0.1.1\n",
-                    "breaking" => "patch\n0.1.1\n",
+                    "fix" | "feature" | "breaking" => "patch\n0.1.1\n",
                     _ => panic!("unexpected check"),
                 },
                 "fix" | "revert" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "patch\n0.1.1\n",
-                    "breaking" => "patch\n0.1.1\n",
+                    "other" | "fix" => "none\n",
+                    "feature" | "breaking" => "patch\n0.1.1\n",
                     _ => panic!("unexpected check"),
                 },
                 "feat" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
+                    "other" | "fix" | "feature" => "none\n",
                     "breaking" => "minor\n0.2.0\n",
                     _ => panic!("unexpected check"),
                 },
                 "breaking" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
-                    "breaking" => "none\n",
+                    "other" | "fix" | "feature" | "breaking" => "none\n",
                     _ => panic!("unexpected check"),
                 },
                 _ => panic!("unexpected commit type"),
@@ -771,41 +762,32 @@ fn test_repo_with_commit_and_enforce_test_file(
             _ => panic!("unexpected file"),
         },
         "v1.1.0" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" => "patch\n1.1.1\n",
                 "feat" => "minor\n1.2.0\n",
                 "breaking" => "major\n2.0.0\n",
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
-                    "fix" => "patch\n1.1.1\n",
-                    "feature" => "patch\n1.1.1\n",
-                    "breaking" => "patch\n1.1.1\n",
+                    "fix" | "feature" | "breaking" => "patch\n1.1.1\n",
                     _ => panic!("unexpected check"),
                 },
                 "fix" | "revert" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "patch\n1.1.1\n",
-                    "breaking" => "patch\n1.1.1\n",
+                    "other" | "fix" => "none\n",
+                    "feature" | "breaking" => "patch\n1.1.1\n",
                     _ => panic!("unexpected check"),
                 },
                 "feat" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
+                    "other" | "fix" | "feature" => "none\n",
                     "breaking" => "minor\n1.2.0\n",
                     _ => panic!("unexpected check"),
                 },
                 "breaking" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
-                    "breaking" => "none\n",
+                    "other" | "fix" | "feature" | "breaking" => "none\n",
                     _ => panic!("unexpected check"),
                 },
                 _ => panic!("unexpected commit type"),
@@ -813,39 +795,30 @@ fn test_repo_with_commit_and_enforce_test_file(
             _ => panic!("unexpected file"),
         },
         "v0.1.0-alpha.2" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" | "feat" | "breaking" => "alpha\n0.1.0-alpha.3\n",
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
-                    "fix" => "alpha\n0.1.0-alpha.3\n",
-                    "feature" => "alpha\n0.1.0-alpha.3\n",
-                    "breaking" => "alpha\n0.1.0-alpha.3\n",
+                    "fix" | "feature" | "breaking" => "alpha\n0.1.0-alpha.3\n",
                     _ => panic!("unexpected check"),
                 },
                 "fix" | "revert" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "alpha\n0.1.0-alpha.3\n",
-                    "breaking" => "alpha\n0.1.0-alpha.3\n",
+                    "other" | "fix" => "none\n",
+                    "feature" | "breaking" => "alpha\n0.1.0-alpha.3\n",
                     _ => panic!("unexpected check"),
                 },
                 "feat" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
+                    "other" | "fix" | "feature" => "none\n",
                     "breaking" => "alpha\n0.1.0-alpha.3\n",
                     _ => panic!("unexpected check"),
                 },
                 "breaking" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
-                    "breaking" => "none\n",
+                    "other" | "fix" | "feature" | "breaking" => "none\n",
                     _ => panic!("unexpected check"),
                 },
                 _ => panic!("unexpected commit type"),
@@ -853,39 +826,30 @@ fn test_repo_with_commit_and_enforce_test_file(
             _ => panic!("unexpected file"),
         },
         "v1.1.0-alpha.3" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" | "feat" | "breaking" => "alpha\n1.1.0-alpha.4\n",
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
-                    "fix" => "alpha\n1.1.0-alpha.4\n",
-                    "feature" => "alpha\n1.1.0-alpha.4\n",
-                    "breaking" => "alpha\n1.1.0-alpha.4\n",
+                    "fix" | "feature" | "breaking" => "alpha\n1.1.0-alpha.4\n",
                     _ => panic!("unexpected check"),
                 },
                 "fix" | "revert" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "alpha\n1.1.0-alpha.4\n",
-                    "breaking" => "alpha\n1.1.0-alpha.4\n",
+                    "other" | "fix" => "none\n",
+                    "feature" | "breaking" => "alpha\n1.1.0-alpha.4\n",
                     _ => panic!("unexpected check"),
                 },
                 "feat" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
+                    "other" | "fix" | "feature" => "none\n",
                     "breaking" => "alpha\n1.1.0-alpha.4\n",
                     _ => panic!("unexpected check"),
                 },
                 "breaking" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
-                    "breaking" => "none\n",
+                    "other" | "fix" | "feature" | "breaking" => "none\n",
                     _ => panic!("unexpected check"),
                 },
                 _ => panic!("unexpected commit type"),
@@ -893,39 +857,30 @@ fn test_repo_with_commit_and_enforce_test_file(
             _ => panic!("unexpected file"),
         },
         "v0.1.0-beta.4" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" | "feat" | "breaking" => "beta\n0.1.0-beta.5\n",
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
-                    "fix" => "beta\n0.1.0-beta.5\n",
-                    "feature" => "beta\n0.1.0-beta.5\n",
-                    "breaking" => "beta\n0.1.0-beta.5\n",
+                    "fix" | "feature" | "breaking" => "beta\n0.1.0-beta.5\n",
                     _ => panic!("unexpected check"),
                 },
                 "fix" | "revert" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "beta\n0.1.0-beta.5\n",
-                    "breaking" => "beta\n0.1.0-beta.5\n",
+                    "other" | "fix" => "none\n",
+                    "feature" | "breaking" => "beta\n0.1.0-beta.5\n",
                     _ => panic!("unexpected check"),
                 },
                 "feat" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
+                    "other" | "fix" | "feature" => "none\n",
                     "breaking" => "beta\n0.1.0-beta.5\n",
                     _ => panic!("unexpected check"),
                 },
                 "breaking" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
-                    "breaking" => "none\n",
+                    "other" | "fix" | "feature" | "breaking" => "none\n",
                     _ => panic!("unexpected check"),
                 },
                 _ => panic!("unexpected commit type"),
@@ -933,39 +888,30 @@ fn test_repo_with_commit_and_enforce_test_file(
             _ => panic!("unexpected file"),
         },
         "v1.1.0-beta.5" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" | "feat" | "breaking" => "beta\n1.1.0-beta.6\n",
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
-                    "fix" => "beta\n1.1.0-beta.6\n",
-                    "feature" => "beta\n1.1.0-beta.6\n",
-                    "breaking" => "beta\n1.1.0-beta.6\n",
+                    "fix" | "feature" | "breaking" => "beta\n1.1.0-beta.6\n",
                     _ => panic!("unexpected check"),
                 },
                 "fix" | "revert" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "beta\n1.1.0-beta.6\n",
-                    "breaking" => "beta\n1.1.0-beta.6\n",
+                    "other" | "fix" => "none\n",
+                    "feature" | "breaking" => "beta\n1.1.0-beta.6\n",
                     _ => panic!("unexpected check"),
                 },
                 "feat" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
+                    "other" | "fix" | "feature" => "none\n",
                     "breaking" => "beta\n1.1.0-beta.6\n",
                     _ => panic!("unexpected check"),
                 },
                 "breaking" => match check {
-                    "other" => "none\n",
-                    "fix" => "none\n",
-                    "feature" => "none\n",
-                    "breaking" => "none\n",
+                    "other" | "fix" | "feature" | "breaking" => "none\n",
                     _ => panic!("unexpected check"),
                 },
                 _ => panic!("unexpected commit type"),
@@ -973,12 +919,12 @@ fn test_repo_with_commit_and_enforce_test_file(
             _ => panic!("unexpected file"),
         },
         "v0.1.0-rc.6" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" | "feat" | "breaking" => "rc\n0.1.0-rc.7\n",
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -1004,12 +950,12 @@ fn test_repo_with_commit_and_enforce_test_file(
             _ => panic!("unexpected file"),
         },
         "v1.1.0-rc.7" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" | "feat" | "breaking" => "rc\n1.1.0-rc.8\n",
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -1035,12 +981,12 @@ fn test_repo_with_commit_and_enforce_test_file(
             _ => panic!("unexpected file"),
         },
         "v0.1.0-pre.8" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" | "feat" | "breaking" => "0.1.0-pre.9\n0.1.0-pre.9\n",
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -1066,14 +1012,14 @@ fn test_repo_with_commit_and_enforce_test_file(
             _ => panic!("unexpected file"),
         },
         "v1.1.0-pre.9" => match file {
-            "test.txt" => match commit_type {
+            "test.txt" | "missing.txt" => match commit_type {
                 "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
                 | "test" | "custom" | "build" | "feat" | "breaking" => {
                     "1.1.0-pre.10\n1.1.0-pre.10\n"
                 }
                 _ => panic!("unexpected commit type"),
             },
-            "missing.txt" => match commit_type {
+            "first-file -r test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",

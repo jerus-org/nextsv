@@ -6,7 +6,7 @@ use std::{
     ffi::OsString,
 };
 
-use git2::{DiffOptions, Repository};
+use git2::{DiffOptions, Repository, TreeWalkMode, TreeWalkResult};
 
 use crate::Error;
 
@@ -18,7 +18,8 @@ pub(crate) struct ConventionalCommits {
     pub(crate) counts: HashMap<String, u32>,
     pub(crate) breaking: bool,
     pub(crate) top_type: Hierarchy,
-    pub(crate) files: HashSet<OsString>,
+    pub(crate) changed_files: HashSet<OsString>,
+    pub(crate) all_files: HashSet<OsString>,
 }
 
 impl ConventionalCommits {
@@ -88,6 +89,14 @@ impl ConventionalCommits {
             conventional_commits.push(&commit);
             if tree_flag {
                 let tree = commit.tree().unwrap();
+                let mut all_files = HashSet::new();
+                tree.walk(TreeWalkMode::PreOrder, |_, entry| {
+                    if let Some(os_string) = entry.name() {
+                        all_files.insert(OsString::from(os_string));
+                    }
+                    TreeWalkResult::Ok
+                })?;
+                conventional_commits.all_files = all_files;
                 let mut diff_options = DiffOptions::new();
                 let diff =
                     repo.diff_tree_to_tree(Some(&tag_tree), Some(&tree), Some(&mut diff_options))?;
@@ -98,7 +107,7 @@ impl ConventionalCommits {
                     files.insert(file.to_os_string());
                     true
                 })?;
-                conventional_commits.files = files;
+                conventional_commits.changed_files = files;
                 tree_flag = false;
             }
         }
