@@ -118,7 +118,7 @@ fn test_repo_with_commit(
     };
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
-    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message);
+    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
     println!("commit result: {:?}", result);
 
     // execute the test
@@ -313,7 +313,7 @@ fn test_repo_with_commit_and_force_bump(
     };
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
-    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message);
+    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
     println!("commit result: {:?}", result);
 
     // execute the test
@@ -687,7 +687,7 @@ fn test_repo_with_commit_and_check(
     };
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
-    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message);
+    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
     println!("commit result: {:?}", result);
 
     // execute the test
@@ -1057,7 +1057,7 @@ fn test_repo_with_commit_and_enforce_test_file(
     };
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
-    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message);
+    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
     println!("commit result: {:?}", result);
 
     // execute the test
@@ -1167,7 +1167,7 @@ fn test_repo_custom_version_prefix_with_commit(
     };
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
-    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message);
+    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
     println!("commit result: {:?}", result);
 
     // execute the test
@@ -1273,7 +1273,7 @@ fn test_repo_bump_only_with_commit(
     };
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
-    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message);
+    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
     println!("commit result: {:?}", result);
 
     // execute the test
@@ -1376,7 +1376,7 @@ fn test_repo_number_only_with_commit(
     };
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
-    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message);
+    let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
     println!("commit result: {:?}", result);
 
     // execute the test

@@ -70,29 +70,11 @@ impl ForceBump {
                 ForceBump::Major => Bump::None,
                 ForceBump::Minor => Bump::None,
                 ForceBump::Patch => Bump::None,
-                ForceBump::First => Bump::None,
+                ForceBump::First => Bump::First,
                 ForceBump::Release => Bump::Release,
-                ForceBump::Rc => {
-                    if version_number.is_pre_release("rc") {
-                        Bump::Rc
-                    } else {
-                        Bump::None
-                    }
-                }
-                ForceBump::Beta => {
-                    if version_number.is_pre_release("beta") {
-                        Bump::Beta
-                    } else {
-                        Bump::None
-                    }
-                }
-                ForceBump::Alpha => {
-                    if version_number.is_pre_release("alpha") {
-                        Bump::Alpha
-                    } else {
-                        Bump::None
-                    }
-                }
+                ForceBump::Rc => Bump::Rc,
+                ForceBump::Beta => Bump::Beta,
+                ForceBump::Alpha => Bump::Alpha,
             },
             VersionType::Production => match self {
                 ForceBump::Major => Bump::Major,

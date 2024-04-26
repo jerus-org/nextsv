@@ -109,15 +109,6 @@ impl Semantic {
             VersionType::Production
         }
     }
-
-    /// Test the pre-release label against the suppplied value.
-    pub(crate) fn is_pre_release(&self, label: &str) -> bool {
-        if let Some(pre_release) = &self.pre_release {
-            pre_release.is_label(label)
-        } else {
-            false
-        }
-    }
 }
 
 #[cfg(test)]

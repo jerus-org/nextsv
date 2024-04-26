@@ -1,7 +1,7 @@
 use git2::{Commit, ObjectType, Oid, Repository, Signature};
 use snapbox::cmd::cargo_bin;
 use std::{
-    fs::File,
+    fs::{File, OpenOptions},
     io::Write,
     path::{Path, PathBuf},
     process::Command,
@@ -113,14 +113,47 @@ pub(crate) fn create_file_and_commit(
     repo: &Repository,
     temp_dir: PathBuf,
     message: &str,
+    filename: Option<&str>,
 ) -> Result<Oid, git2::Error> {
-    let file_name = "test.txt";
+    let file_name: &str = match filename {
+        Some(f) => f,
+        None => "test.txt",
+    };
 
     let file_path = temp_dir.join(file_name);
     let mut file = File::create(&file_path).unwrap();
     file.write_all(b"Hello, world!").unwrap();
 
     println!("added file: {}", file_path.display());
+
+    // create file path from the file name
+    let file_name_path = Path::new(file_name);
+    let result = add_and_commit(repo, file_name_path, message);
+
+    let commit = find_last_commit(repo).unwrap();
+    display_commit(&commit);
+
+    result
+}
+
+#[allow(dead_code)]
+pub(crate) fn update_file_and_commit(
+    repo: &Repository,
+    temp_dir: PathBuf,
+    message: &str,
+    filename: Option<&str>,
+) -> Result<Oid, git2::Error> {
+    let file_name: &str = match filename {
+        Some(f) => f,
+        None => "test.txt",
+    };
+
+    let file_path = temp_dir.join(file_name);
+    // Open file_path and append text to the end of the file
+    let mut file = OpenOptions::new().append(true).open(&file_path).unwrap();
+    file.write_all(b"Hello, world!").unwrap();
+
+    println!("updated file: {}", file_path.display());
 
     // create file path from the file name
     let file_name_path = Path::new(file_name);

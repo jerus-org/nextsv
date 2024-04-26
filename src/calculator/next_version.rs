@@ -73,6 +73,9 @@ impl NextVersion {
                     Some(pre_release) => {
                         if pre_release.pre_type == PreReleaseType::Alpha {
                             next_version.version_mut().increment_pre_release();
+                        } else {
+                            next_version.version_mut().pre_release =
+                                Some(PreRelease::new("alpha.1"));
                         }
                     }
                     None => {
@@ -102,6 +105,9 @@ impl NextVersion {
                     Some(pre_release) => {
                         if pre_release.pre_type == PreReleaseType::Beta {
                             next_version.version_mut().increment_pre_release();
+                        } else {
+                            next_version.version_mut().pre_release =
+                                Some(PreRelease::new("beta.1"));
                         }
                     }
                     None => {
@@ -131,6 +137,8 @@ impl NextVersion {
                     Some(pre_release) => {
                         if pre_release.pre_type == PreReleaseType::Rc {
                             next_version.version_mut().increment_pre_release();
+                        } else {
+                            next_version.version_mut().pre_release = Some(PreRelease::new("rc.1"));
                         }
                     }
                     None => {
@@ -155,10 +163,13 @@ impl NextVersion {
                 }
                 next_version
             }
-            Bump::Custom(_s) => {
+            Bump::Custom(s) => {
                 if let Some(pre_release) = next_version.semantic_version.pre_release.as_ref() {
                     if pre_release.pre_type == PreReleaseType::Custom {
                         next_version.version_mut().increment_pre_release();
+                    } else {
+                        next_version.version_mut().pre_release =
+                            Some(PreRelease::new(format!("{}.1", s).as_str()));
                     }
                 }
                 bump = Bump::Custom(next_version.semantic_version.to_string());
