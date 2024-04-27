@@ -5,6 +5,8 @@ use colored::Colorize;
 
 use crate::Error;
 
+use super::TopType;
+
 /// The `Hierarchy` enum provides a hieracchy for commit types that maps to the levels
 /// of Major, Minor and Patch levels of semver. The top level is for breaking
 /// commits and would be mapped to a Major version change for a new
@@ -79,6 +81,24 @@ impl fmt::Display for Hierarchy {
             Hierarchy::Fix => write!(f, "{}", "[Patch]".green()),
             Hierarchy::Other => write!(f, "{}", "[Patch]".white()),
         }
+    }
+}
+
+impl From<&TopType> for Hierarchy {
+    fn from(t: &TopType) -> Self {
+        match t {
+            TopType::Breaking => Hierarchy::Breaking,
+            TopType::Feature => Hierarchy::Feature,
+            TopType::Fix => Hierarchy::Fix,
+            TopType::Other => Hierarchy::Other,
+            TopType::None => Hierarchy::Other,
+        }
+    }
+}
+
+impl AsRef<Hierarchy> for Hierarchy {
+    fn as_ref(&self) -> &Hierarchy {
+        self
     }
 }
 

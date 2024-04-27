@@ -5,11 +5,12 @@ use std::{
     str::FromStr,
 };
 
+use crate::calculator::TopType;
+use crate::version::Semantic;
 use crate::{
     calculator::ConventionalCommits,
     version::{PreRelease, VersionTag},
 };
-use crate::{version::Semantic, Hierarchy};
 
 #[derive(Debug)]
 pub(crate) enum ConventionalType {
@@ -102,7 +103,7 @@ pub(crate) fn gen_conventional_commits() -> ConventionalCommits {
         changed_files: files.clone(),
         all_files: files,
         breaking: false,
-        top_type: Hierarchy::Feature,
+        top_type: TopType::Feature,
     }
 }
 
@@ -121,7 +122,7 @@ pub(crate) fn gen_conventional_commit(
 
     let files = gen_files();
 
-    let top_type = Hierarchy::parse(&commit_type.to_string()).unwrap();
+    let top_type = TopType::parse(&commit_type.to_string()).unwrap();
 
     ConventionalCommits {
         commits,

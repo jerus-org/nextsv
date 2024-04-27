@@ -6,12 +6,14 @@ mod force_bump;
 mod hierarchy;
 mod next_version;
 mod route;
+mod top_type;
 
 use self::bump::Bump;
 pub use self::config::CalculatorConfig;
 
 pub use self::force_bump::ForceBump;
 pub(crate) use self::route::Route;
+pub(crate) use self::top_type::TopType;
 pub(crate) use self::{conventional::ConventionalCommits, next_version::NextVersion};
 use crate::version::VersionTag;
 use crate::Error;
@@ -47,8 +49,13 @@ impl Calculator {
             current_version.to_string().as_str(),
         )?;
 
-        log::debug!("File enforcement level `{}`", config.enforce);
-        if conventional.top_type >= config.enforce {
+        let test_level: Hierarchy = conventional.top_type.as_ref().into();
+        log::debug!(
+            "File enforcement required at `{:?}` and change level `{:?}`",
+            config.enforce,
+            test_level,
+        );
+        if dbg!(test_level >= config.enforce) {
             log::debug!("Enforcing the files: {:?}", config.files);
             if !config.files.is_subset(&conventional.changed_files) {
                 let mut missing_files = vec![];
@@ -94,16 +101,16 @@ impl Calculator {
         // Check the force level and apply if required
         log::debug!("Force level: {:?}", config.force);
         if let Some(ref force_level) = config.force {
-            log::trace!("Forcing bump level: `{}`", force_level);
+            log::trace!("Forcing bump level: `{:?}`", force_level);
             log::trace!("Current version: `{}`", current_version.semantic_version);
             bump = force_level.to_bump(&current_version.semantic_version);
         };
 
         // Check the threshold and exit early if it has not been met.
-        if config.threshold > conventional.top_type {
+        if config.threshold > conventional.top_type.as_ref().into() {
             log::info!(
                 "The highest level change `{}` does not exceed the threshold `{}`",
-                conventional.top_type,
+                std::convert::Into::<Hierarchy>::into(conventional.top_type.as_ref()),
                 config.threshold
             );
 

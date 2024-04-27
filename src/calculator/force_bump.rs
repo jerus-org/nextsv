@@ -3,7 +3,7 @@ use crate::version::Semantic;
 use super::bump::Bump;
 #[allow(unused_imports)]
 use super::CalculatorConfig; // import used by documentation
-use clap::ValueEnum;
+use clap::{Parser, ValueEnum};
 use std::{cmp, fmt};
 
 /// This enum is used by [`CalculatorConfig::set_force_bump`] to override the bump
@@ -25,7 +25,7 @@ use std::{cmp, fmt};
 /// | `Alpha`   |       X       |       X       |       X       | Bump or create alpha pre-release          |
 ///
 ///  Where it is not valid the bump is forced to [`None`].
-#[derive(Debug, PartialEq, Eq, Clone, ValueEnum)]
+#[derive(Debug, PartialEq, Eq, Clone, ValueEnum, Parser)]
 pub enum ForceBump {
     /// Bump the major version component.
     Major,
@@ -51,9 +51,9 @@ impl ForceBump {
     /// Returns the bump type that should be used to calculate the next version.
     pub(crate) fn to_bump(&self, version_number: &Semantic) -> Bump {
         log::debug!(
-            "ForceBump::to_bump({}) with version `{}`",
+            "ForceBump::to_bump({:?}) with version `{:?}`",
             self,
-            version_number
+            version_number.version_type()
         );
         match version_number.version_type() {
             VersionType::NonProduction => match self {
@@ -70,7 +70,13 @@ impl ForceBump {
                 ForceBump::Major => Bump::None,
                 ForceBump::Minor => Bump::None,
                 ForceBump::Patch => Bump::None,
-                ForceBump::First => Bump::First,
+                ForceBump::First => {
+                    if version_number.is_production_version() {
+                        Bump::None
+                    } else {
+                        Bump::First
+                    }
+                }
                 ForceBump::Release => Bump::Release,
                 ForceBump::Rc => Bump::Rc,
                 ForceBump::Beta => Bump::Beta,

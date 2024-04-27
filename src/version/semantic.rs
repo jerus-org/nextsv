@@ -23,6 +23,7 @@ macro_rules! some_or_none_string {
     };
 }
 
+#[derive(Debug, PartialEq, Clone)]
 pub(crate) enum VersionType {
     NonProduction,
     PreRelease,
@@ -108,6 +109,10 @@ impl Semantic {
         } else {
             VersionType::Production
         }
+    }
+
+    pub(crate) fn is_production_version(&self) -> bool {
+        self.major != 0
     }
 }
 

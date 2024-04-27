@@ -162,9 +162,9 @@ mod test {
     use map_macro::hash_map;
 
     use crate::{
-        calculator::{ConventionalCommits, Route},
+        calculator::{top_type::TopType, ConventionalCommits, Route},
         version::PreReleaseType,
-        ForceBump, Hierarchy,
+        ForceBump,
     };
 
     use super::Bump;
@@ -200,7 +200,7 @@ mod test {
             commits: vec!["chore: Updated minium rust version references".to_string()],
             counts: hash_map! {"chore".to_string() => 1},
             breaking: false,
-            top_type: Hierarchy::Other,
+            top_type: TopType::Other,
             ..Default::default()
         }
     }
@@ -211,7 +211,7 @@ mod test {
             commits: vec!["fix: spelling of output in description of set_env".to_string()],
             counts: hash_map! {"fix".to_string() => 1},
             breaking: false,
-            top_type: Hierarchy::Fix,
+            top_type: TopType::Fix,
             ..Default::default()
         }
     }
@@ -222,7 +222,7 @@ mod test {
             commits: vec!["feat: Regex implemented to extract version string".to_string()],
             counts: hash_map! {"feat".to_string() => 1},
             breaking: false,
-            top_type: Hierarchy::Feature,
+            top_type: TopType::Feature,
             ..Default::default()
         }
     }
@@ -233,7 +233,7 @@ mod test {
             commits: vec!["feat: Regex implemented to extract version string".to_string()],
             counts: hash_map! {"feat".to_string() => 1},
             breaking: true,
-            top_type: Hierarchy::Breaking,
+            top_type: TopType::Breaking,
             ..Default::default()
         }
     }
@@ -257,22 +257,25 @@ mod test {
 
         let expected = match route {
             Route::NonProd => match conventional.top_type {
-                crate::Hierarchy::Other => Bump::Patch,
-                crate::Hierarchy::Fix => Bump::Patch,
-                crate::Hierarchy::Feature => Bump::Minor,
-                crate::Hierarchy::Breaking => Bump::Minor,
+                TopType::Other => Bump::Patch,
+                TopType::Fix => Bump::Patch,
+                TopType::Feature => Bump::Minor,
+                TopType::Breaking => Bump::Minor,
+                TopType::None => Bump::None,
             },
             Route::PreRelease(pre_type) => match conventional.top_type {
-                crate::Hierarchy::Other => pre_type.into(),
-                crate::Hierarchy::Fix => pre_type.into(),
-                crate::Hierarchy::Feature => pre_type.into(),
-                crate::Hierarchy::Breaking => pre_type.into(),
+                TopType::Other => pre_type.into(),
+                TopType::Fix => pre_type.into(),
+                TopType::Feature => pre_type.into(),
+                TopType::Breaking => pre_type.into(),
+                TopType::None => Bump::None,
             },
             Route::Prod => match conventional.top_type {
-                crate::Hierarchy::Other => Bump::Patch,
-                crate::Hierarchy::Fix => Bump::Patch,
-                crate::Hierarchy::Feature => Bump::Minor,
-                crate::Hierarchy::Breaking => Bump::Major,
+                TopType::Other => Bump::Patch,
+                TopType::Fix => Bump::Patch,
+                TopType::Feature => Bump::Minor,
+                TopType::Breaking => Bump::Major,
+                TopType::None => Bump::None,
             },
         };
 

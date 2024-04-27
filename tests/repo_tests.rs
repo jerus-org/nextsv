@@ -140,7 +140,7 @@ fn test_repo_with_commit(
 #[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n -f")]
 #[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n -f")]
 #[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n -f")]
-#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n -f")]
+#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n -vvv -f")]
 #[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n -f")]
 #[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n -f")]
 #[trace]
@@ -216,10 +216,10 @@ fn test_repo_with_commit_and_force_bump(
             "major" => "none\n",
             "minor" => "none\n",
             "patch" => "none\n",
-            "first" => "none\n",
+            "first" => "1.0.0\n1.0.0\n",
             "release" => "release\n0.1.0\n",
-            "rc" => "none\n",
-            "beta" => "none\n",
+            "rc" => "rc\n0.1.0-rc.1\n",
+            "beta" => "beta\n0.1.0-beta.1\n",
             "alpha" => "alpha\n0.1.0-alpha.3\n",
             _ => panic!("unexpected force_bump"),
         },
@@ -229,8 +229,8 @@ fn test_repo_with_commit_and_force_bump(
             "patch" => "none\n",
             "first" => "none\n",
             "release" => "release\n1.1.0\n",
-            "rc" => "none\n",
-            "beta" => "none\n",
+            "rc" => "rc\n1.1.0-rc.1\n",
+            "beta" => "beta\n1.1.0-beta.1\n",
             "alpha" => "alpha\n1.1.0-alpha.4\n",
             _ => panic!("unexpected force_bump"),
         },
@@ -238,11 +238,11 @@ fn test_repo_with_commit_and_force_bump(
             "major" => "none\n",
             "minor" => "none\n",
             "patch" => "none\n",
-            "first" => "none\n",
+            "first" => "1.0.0\n1.0.0\n",
             "release" => "release\n0.1.0\n",
-            "rc" => "none\n",
+            "rc" => "rc\n0.1.0-rc.1\n",
             "beta" => "beta\n0.1.0-beta.5\n",
-            "alpha" => "none\n",
+            "alpha" => "alpha\n0.1.0-alpha.1\n",
             _ => panic!("unexpected force_bump"),
         },
         "v1.1.0-beta.5" => match force_bump {
@@ -251,20 +251,20 @@ fn test_repo_with_commit_and_force_bump(
             "patch" => "none\n",
             "first" => "none\n",
             "release" => "release\n1.1.0\n",
-            "rc" => "none\n",
+            "rc" => "rc\n1.1.0-rc.1\n",
             "beta" => "beta\n1.1.0-beta.6\n",
-            "alpha" => "none\n",
+            "alpha" => "alpha\n1.1.0-alpha.1\n",
             _ => panic!("unexpected force_bump"),
         },
         "v0.1.0-rc.6" => match force_bump {
             "major" => "none\n",
             "minor" => "none\n",
             "patch" => "none\n",
-            "first" => "none\n",
+            "first" => "1.0.0\n1.0.0\n",
             "release" => "release\n0.1.0\n",
             "rc" => "rc\n0.1.0-rc.7\n",
-            "beta" => "none\n",
-            "alpha" => "none\n",
+            "beta" => "beta\n0.1.0-beta.1\n",
+            "alpha" => "alpha\n0.1.0-alpha.1\n",
             _ => panic!("unexpected force_bump"),
         },
         "v1.1.0-rc.7" => match force_bump {
@@ -274,19 +274,19 @@ fn test_repo_with_commit_and_force_bump(
             "first" => "none\n",
             "release" => "release\n1.1.0\n",
             "rc" => "rc\n1.1.0-rc.8\n",
-            "beta" => "none\n",
-            "alpha" => "none\n",
+            "beta" => "beta\n1.1.0-beta.1\n",
+            "alpha" => "alpha\n1.1.0-alpha.1\n",
             _ => panic!("unexpected force_bump"),
         },
         "v0.1.0-pre.8" => match force_bump {
             "major" => "none\n",
             "minor" => "none\n",
             "patch" => "none\n",
-            "first" => "none\n",
+            "first" => "1.0.0\n1.0.0\n",
             "release" => "release\n0.1.0\n",
-            "rc" => "none\n",
-            "beta" => "none\n",
-            "alpha" => "none\n",
+            "rc" => "rc\n0.1.0-rc.1\n",
+            "beta" => "beta\n0.1.0-beta.1\n",
+            "alpha" => "alpha\n0.1.0-alpha.1\n",
             _ => panic!("unexpected force_bump"),
         },
         "v1.1.0-pre.9" => match force_bump {
@@ -295,9 +295,9 @@ fn test_repo_with_commit_and_force_bump(
             "patch" => "none\n",
             "first" => "none\n",
             "release" => "release\n1.1.0\n",
-            "rc" => "none\n",
-            "beta" => "none\n",
-            "alpha" => "none\n",
+            "rc" => "rc\n1.1.0-rc.1\n",
+            "beta" => "beta\n1.1.0-beta.1\n",
+            "alpha" => "alpha\n1.1.0-alpha.1\n",
             _ => panic!("unexpected force_bump"),
         },
         _ => panic!("unexpected current version"),
@@ -707,9 +707,9 @@ fn test_repo_with_commit_and_check(
 #[rstest]
 #[case::non_production_commit("v0.1.0", "-n -vvvv -r")]
 #[case::production_commit("v1.1.0", "-n -r")]
-#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n -vvvv -r")]
-#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n -vvvv -r")]
-#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n -r")]
+#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n -r")]
+#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n -r")]
+#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n -vvv -r")]
 #[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n -r")]
 #[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n -r")]
 #[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n -r")]

@@ -10,14 +10,14 @@ use git2::{DiffOptions, Repository, TreeWalkMode, TreeWalkResult};
 
 use crate::Error;
 
-use super::Hierarchy;
+use super::{Hierarchy, TopType};
 
 #[derive(Default, Debug, PartialEq, Eq, Clone)]
 pub(crate) struct ConventionalCommits {
     pub(crate) commits: Vec<String>,
     pub(crate) counts: HashMap<String, u32>,
     pub(crate) breaking: bool,
-    pub(crate) top_type: Hierarchy,
+    pub(crate) top_type: TopType,
     pub(crate) changed_files: HashSet<OsString>,
     pub(crate) all_files: HashSet<OsString>,
 }
@@ -133,13 +133,15 @@ impl ConventionalCommits {
                 *counter += 1;
 
                 if !self.breaking {
+                    log::trace!("Not broken yet!");
                     if conventional.breaking() {
+                        log::trace!("Breaking change found!");
                         self.breaking = conventional.breaking();
-                        self.top_type = Hierarchy::Breaking;
-                    } else if Hierarchy::parse(conventional.type_().as_str()).unwrap()
-                        > self.top_type
+                        self.top_type = TopType::Breaking;
+                    } else if TopType::parse(conventional.type_().as_str()).unwrap() > self.top_type
                     {
-                        self.top_type = Hierarchy::parse(conventional.type_().as_str()).unwrap();
+                        self.top_type = TopType::parse(conventional.type_().as_str()).unwrap();
+                        log::trace!("New top type found {}!", self.top_type);
                     };
                 }
             }
