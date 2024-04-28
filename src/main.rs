@@ -1,6 +1,6 @@
 use std::ffi::OsString;
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use nextsv::{CalculatorConfig, ForceBump, Hierarchy};
 use proc_exit::{Code, ExitResult};
 
@@ -10,28 +10,77 @@ struct Cli {
     #[clap(flatten)]
     logging: clap_verbosity_flag::Verbosity,
     /// Force the calculation of the version number
-    #[arg(short, long, value_enum)]
-    force: Option<ForceBump>,
-    /// Prefix string to identify version number tags
-    #[arg(short, long, value_parser, default_value = "v")]
-    prefix: String,
+    #[command(subcommand)]
+    command: Commands,
+    /// add output to environment variable
+    #[clap(long, default_value = "NEXTSV_BUMP")]
+    set_env: Option<String>,
     /// Do not report version bump
     #[arg(short = 'b', long)]
     no_bump: bool,
     /// Report the version number
     #[arg(short = 'n', long)]
     number: bool,
+    /// Prefix string to identify version number tags
+    #[arg(short, long, value_parser, default_value = "v")]
+    prefix: String,
+}
+
+#[derive(Subcommand, Debug)]
+enum Commands {
+    #[clap(name = "calculate", about = "Calculate the next version number")]
+    Calculate(Calculate),
+    #[clap(name = "force", about = "Force the bump level")]
+    Force(Force),
+    #[clap(
+        name = "require",
+        about = "Require the listed files to be updated before making a release with the specified change level"
+    )]
+    Require(Require),
+}
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Force {
+    /// Force the calculation to the bump value
+    #[command(subcommand)]
+    bump: ForceBump,
+    /// First flag to set first version and pre-release in the same transaction
+    #[arg(short, long)]
+    first: bool,
+}
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Require {
+    #[command(subcommand)]
+    enforce: Hierarchy,
+    #[arg(short, long)]
+    files: Vec<OsString>,
+}
+
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Calculate {
+    /// Prefix string to identify version number tags
+    #[arg(short, long, value_parser, default_value = "v")]
+    prefix: String,
+    // /// Do not report version bump
+    // #[arg(short = 'b', long)]
+    // no_bump: bool,
+    // /// Report the version number
+    // #[arg(short = 'n', long)]
+    // number: bool,
     /// Files that require changes before making a release
     ///
     /// The level at which the required files are enforced
     /// can be set with the `enforce` option.
-    #[arg(short, long)]
-    require: Vec<OsString>,
-    /// Bump level at which required files list should be enforced
-    ///
-    /// Should be used in conjunction with the `require` option.
-    #[clap(short, long, default_value = "feature")]
-    enforce: Hierarchy,
+    // #[arg(short, long)]
+    // require: Vec<OsString>,
+    // /// Bump level at which required files list should be enforced
+    // ///
+    // /// Should be used in conjunction with the `require` option.
+    // #[clap(short, long, default_value = "feature")]
+    // enforce: Hierarchy,
     /// Check level meets minimum for setting
     ///
     /// This option can be used to check the calculated level
@@ -39,9 +88,6 @@ struct Cli {
     /// as "none" if the required level is not met.
     #[clap(short, long)]
     check: Option<Hierarchy>,
-    /// add output to environment variable
-    #[clap(long, default_value = "NEXTSV_BUMP")]
-    set_env: Option<String>,
 }
 
 fn main() {
@@ -64,19 +110,44 @@ fn run() -> ExitResult {
 
     let mut calculator_config = CalculatorConfig::new();
     calculator_config = calculator_config.set_prefix(&args.prefix);
-    log::trace!("require: {:#?}", args.require);
     calculator_config = calculator_config.set_bump_report(!args.no_bump);
     calculator_config = calculator_config.set_version_report(args.number);
-    if let Some(force) = args.force {
-        calculator_config = calculator_config.set_force_bump(force);
+
+    match args.command {
+        Commands::Force(args) => {
+            calculator_config = calculator_config.set_force_bump(args.bump);
+            if args.first {
+                log::debug!("Setting first version and pre-release in the same transaction");
+                calculator_config = calculator_config.set_first_version();
+            };
+        }
+        Commands::Calculate(args) => {
+            // match (args.number, args.no_bump) {
+            //     (false, false) => log::info!("Calculating the next version level"),
+            //     (false, true) => log::info!("Calculating the next version level"),
+            //     (true, false) => log::info!("Calculating the next version number"),
+            //     (true, true) => log::info!("Calculating the next version number and level"),
+            // };
+
+            // let mut calculator_config = CalculatorConfig::new();
+            // calculator_config = calculator_config.set_prefix(&args.prefix);
+            // log::trace!("require: {:#?}", args.require);
+            // calculator_config = calculator_config.set_bump_report(!args.no_bump);
+            // calculator_config = calculator_config.set_version_report(args.number);
+            // if !args.require.is_empty() {
+            //     calculator_config = calculator_config.add_required_files(args.require);
+            //     calculator_config = calculator_config.set_required_enforcement(args.enforce);
+            // };
+            if let Some(check_level) = args.check {
+                calculator_config = calculator_config.set_reporting_threshold(check_level);
+            };
+        }
+        Commands::Require(args) => {
+            calculator_config = calculator_config.add_required_files(args.files);
+            calculator_config = calculator_config.set_required_enforcement(args.enforce);
+        }
     };
-    if !args.require.is_empty() {
-        calculator_config = calculator_config.add_required_files(args.require);
-        calculator_config = calculator_config.set_required_enforcement(args.enforce);
-    };
-    if let Some(check_level) = args.check {
-        calculator_config = calculator_config.set_reporting_threshold(check_level);
-    }
+
     let calculator = calculator_config.build()?;
 
     // Set the environment variable if required

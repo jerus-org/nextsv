@@ -14,7 +14,7 @@ fn test_repo_no_changes() {
     println!("temp_dir: {:?}", temp_dir);
 
     let output = Command::new(cargo_bin!("nextsv"))
-        // .arg("run")
+        .arg("calculate")
         .current_dir(&temp_dir)
         .output()
         .unwrap();
@@ -30,16 +30,16 @@ fn test_repo_no_changes() {
 }
 
 #[rstest]
-#[case::non_production_commit("v0.1.0", "-n")]
-#[case::production_commit("v1.1.0", "-n")]
-#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n")]
-#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n")]
-#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n")]
-#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n")]
-#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n")]
-#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n")]
-#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n -vvvv")]
-#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n -vvvv")]
+#[case::non_production_commit("v0.1.0", "-n calculate")]
+#[case::production_commit("v1.1.0", "-n calculate")]
+#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n calculate")]
+#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n calculate")]
+#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n calculate")]
+#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n calculate")]
+#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n calculate")]
+#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n calculate")]
+#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n calculate")]
+#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n calculate")]
 #[trace]
 fn test_repo_with_commit(
     #[case] current_version: &str,
@@ -133,16 +133,16 @@ fn test_repo_with_commit(
 }
 
 #[rstest]
-#[case::non_production_commit("v0.1.0", "-n -vvv -f ")]
-#[case::production_commit("v1.1.0", "-n -f")]
-#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n -vvvv -f")]
-#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n -vvvv -f")]
-#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n -f")]
-#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n -f")]
-#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n -f")]
-#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n -vvv -f")]
-#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n -f")]
-#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n -f")]
+#[case::non_production_commit("v0.1.0", "-n force")]
+#[case::production_commit("v1.1.0", "-n force")]
+#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n force")]
+#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n force")]
+#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n force")]
+#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n force")]
+#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n force")]
+#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n force")]
+#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n force")]
+#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n force")]
 #[trace]
 fn test_repo_with_commit_and_force_bump(
     #[case] current_version: &str,
@@ -331,16 +331,16 @@ fn test_repo_with_commit_and_force_bump(
 }
 
 #[rstest]
-#[case::non_production_commit("v0.1.0", "-n -vvv -c ")]
-#[case::production_commit("v1.1.0", "-n -c")]
-#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n -vvvv -c")]
-#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n -vvvv -c")]
-#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n -c")]
-#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n -c")]
-#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n -c")]
-#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n -c")]
-#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n -c")]
-#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n -c")]
+#[case::non_production_commit("v0.1.0", "-n calculate -c ")]
+#[case::production_commit("v1.1.0", "-n calculate -c ")]
+#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n calculate -c ")]
+#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n calculate -c ")]
+#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n calculate -c ")]
+#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n calculate -c ")]
+#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n calculate -c ")]
+#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n calculate -c ")]
+#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n calculate -c ")]
+#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n calculate -c ")]
 #[trace]
 fn test_repo_with_commit_and_check(
     #[case] current_version: &str,
@@ -705,16 +705,16 @@ fn test_repo_with_commit_and_check(
 }
 
 #[rstest]
-#[case::non_production_commit("v0.1.0", "-n -vvvv -r")]
-#[case::production_commit("v1.1.0", "-n -r")]
-#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n -r")]
-#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n -r")]
-#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n -vvv -r")]
-#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n -r")]
-#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n -r")]
-#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n -r")]
-#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n -r")]
-#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n -r")]
+#[case::non_production_commit("v0.1.0", "-n require -f")]
+#[case::production_commit("v1.1.0", "-n require -f")]
+#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n require -f")]
+#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n require -f")]
+#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n require -f")]
+#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n require -f")]
+#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n require -f")]
+#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n require -f")]
+#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n require -f")]
+#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n require -f")]
 #[trace]
 fn test_repo_with_commit_and_enforce_test_file(
     #[case] current_version: &str,
@@ -724,7 +724,7 @@ fn test_repo_with_commit_and_enforce_test_file(
     )]
     mut commit_type: &str,
     #[case] arguments: &str,
-    #[values("test.txt", "missing.txt", "first-file -r test.txt")] file: &str,
+    #[values("test.txt", "missing.txt", "first-file -f test.txt")] file: &str,
     #[values("other", "fix", "feature", "breaking")] check: &str,
 ) {
     // select expected result
@@ -736,7 +736,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 "feat" | "breaking" => "minor\n0.2.0\n",
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -769,7 +769,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 "breaking" => "major\n2.0.0\n",
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -800,7 +800,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 | "test" | "custom" | "build" | "feat" | "breaking" => "alpha\n0.1.0-alpha.3\n",
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -831,7 +831,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 | "test" | "custom" | "build" | "feat" | "breaking" => "alpha\n1.1.0-alpha.4\n",
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -862,7 +862,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 | "test" | "custom" | "build" | "feat" | "breaking" => "beta\n0.1.0-beta.5\n",
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -893,7 +893,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 | "test" | "custom" | "build" | "feat" | "breaking" => "beta\n1.1.0-beta.6\n",
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -924,7 +924,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 | "test" | "custom" | "build" | "feat" | "breaking" => "rc\n0.1.0-rc.7\n",
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -955,7 +955,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 | "test" | "custom" | "build" | "feat" | "breaking" => "rc\n1.1.0-rc.8\n",
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -986,7 +986,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 | "test" | "custom" | "build" | "feat" | "breaking" => "0.1.0-pre.9\n0.1.0-pre.9\n",
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -1019,7 +1019,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 }
                 _ => panic!("unexpected commit type"),
             },
-            "first-file -r test.txt" => match commit_type {
+            "first-file -f test.txt" => match commit_type {
                 "chore" | "ci" | "docs" | "style" | "refactor" | "perf" | "test" | "custom"
                 | "build" => match check {
                     "other" => "none\n",
@@ -1064,7 +1064,7 @@ fn test_repo_with_commit_and_enforce_test_file(
     let mut arguments = arguments.to_string();
     arguments.push(' ');
     arguments.push_str(file);
-    arguments.push_str(" -e ");
+    arguments.push(' ');
     arguments.push_str(check);
     let test_result = git_utils::execute_test(&arguments, &temp_dir);
 
@@ -1174,6 +1174,7 @@ fn test_repo_custom_version_prefix_with_commit(
     let mut arguments = arguments.to_string();
     arguments.push(' ');
     arguments.push_str(prefix);
+    arguments.push_str(" calculate");
     let test_result = git_utils::execute_test(&arguments, &temp_dir);
 
     // tidy up the test environment
@@ -1185,16 +1186,16 @@ fn test_repo_custom_version_prefix_with_commit(
 }
 
 #[rstest]
-#[case::non_production_commit("v0.1.0", "-vvvv")]
-#[case::production_commit("v1.1.0", "-vvv")]
-#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "")]
-#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "")]
-#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "")]
-#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "")]
-#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "")]
-#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "")]
-#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "")]
-#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "")]
+#[case::non_production_commit("v0.1.0", "-vvvv calculate")]
+#[case::production_commit("v1.1.0", "calculate")]
+#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "calculate")]
+#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "calculate")]
+#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "calculate")]
+#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "calculate")]
+#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "calculate")]
+#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "calculate")]
+#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "calculate")]
+#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "calculate")]
 #[trace]
 fn test_repo_bump_only_with_commit(
     #[case] current_version: &str,
@@ -1288,16 +1289,16 @@ fn test_repo_bump_only_with_commit(
 }
 
 #[rstest]
-#[case::non_production_commit("v0.1.0", "-n -vvvv -b")]
-#[case::production_commit("v1.1.0", "-n -vvv -b")]
-#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n -b")]
-#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n -b")]
-#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n -b")]
-#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n -b")]
-#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n -b")]
-#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n -b")]
-#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n -b")]
-#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n -b")]
+#[case::non_production_commit("v0.1.0", "-n -b calculate")]
+#[case::production_commit("v1.1.0", "-n -b calculate")]
+#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n -b calculate")]
+#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n -b calculate")]
+#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n -b calculate")]
+#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n -b calculate")]
+#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n -b calculate")]
+#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n -b calculate")]
+#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n -b calculate")]
+#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n -b calculate")]
 #[trace]
 fn test_repo_number_only_with_commit(
     #[case] current_version: &str,

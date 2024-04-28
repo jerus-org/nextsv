@@ -13,6 +13,8 @@ pub struct CalculatorConfig {
     pub(crate) prefix: String,
     /// Optional: Force the calculation to return the specified bump level
     pub(crate) force: Option<ForceBump>,
+    /// Optional: Force the first version to be calculated as 1.0.0
+    pub force_first_version: bool,
     /// Report the level bump for the version change [default: true]
     pub(crate) report_bump: bool,
     /// Report the calculated next version number  [default: false]
@@ -259,6 +261,14 @@ impl CalculatorConfig {
         self
     }
 
+    /// Set the flag to force the first version to be calculated as 1.0.0 to true. This is
+    /// useful in combination with a pre-release to create a pre-release for the for the
+    /// first production release.
+    pub fn set_first_version(mut self) -> Self {
+        self.force_first_version = true;
+        self
+    }
+
     /// Executes the calculator with the `CalculatorConfig` returning a completed
     /// [`Calculator`] or an [`Error`].
     ///
@@ -283,6 +293,7 @@ mod test {
         CalculatorConfig {
             prefix: String::from(""),
             force: None,
+            force_first_version: false,
             report_bump: true,
             report_number: false,
             files: hash_set![],

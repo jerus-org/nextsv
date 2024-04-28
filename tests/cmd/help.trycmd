@@ -2,59 +2,69 @@
 $ nextsv --help
 Next semantic version calculator
 
-Usage: nextsv [OPTIONS]
+Usage: nextsv [OPTIONS] <COMMAND>
+
+Commands:
+  calculate  Calculate the next version number
+  force      Force the bump level
+  require    Require the listed files to be updated before making a release with the specified change level
+  help       Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...
-          Increase logging verbosity
+  -v, --verbose...         Increase logging verbosity
+  -q, --quiet...           Decrease logging verbosity
+      --set-env <SET_ENV>  add output to environment variable [default: NEXTSV_BUMP]
+  -b, --no-bump            Do not report version bump
+  -n, --number             Report the version number
+  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
+  -h, --help               Print help
+  -V, --version            Print version
 
-  -q, --quiet...
-          Decrease logging verbosity
+```
 
-  -f, --force <FORCE>
-          Force the calculation of the version number
+```console
+$ nextsv -h
+Next semantic version calculator
 
-          Possible values:
-          - major:   Bump the major version component
-          - minor:   Bump the major version component
-          - patch:   Bump the major version component
-          - first:   Release first production (1.0.0) version
-          - release: Remove the pre-release version component if present
-          - rc:      Bump or create the rc pre-release version component
-          - beta:    Bump or create the beta pre-release version component
-          - alpha:   Bump or create the alpha pre-release version component
+Usage: nextsv [OPTIONS] <COMMAND>
 
+Commands:
+  calculate  Calculate the next version number
+  force      Force the bump level
+  require    Require the listed files to be updated before making a release with the specified change level
+  help       Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose...         Increase logging verbosity
+  -q, --quiet...           Decrease logging verbosity
+      --set-env <SET_ENV>  add output to environment variable [default: NEXTSV_BUMP]
+  -b, --no-bump            Do not report version bump
+  -n, --number             Report the version number
+  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
+  -h, --help               Print help
+  -V, --version            Print version
+
+```
+
+```console
+$ nextsv calculate --help
+Calculate the next version number
+
+Usage: nextsv calculate [OPTIONS]
+
+Options:
   -p, --prefix <PREFIX>
           Prefix string to identify version number tags
           
           [default: v]
 
-  -b, --no-bump
-          Do not report version bump
-
-  -n, --number
-          Report the version number
-
-  -r, --require <REQUIRE>
-          Files that require changes before making a release
-          
-          The level at which the required files are enforced can be set with the `enforce` option.
-
-  -e, --enforce <ENFORCE>
-          Bump level at which required files list should be enforced
-          
-          Should be used in conjunction with the `require` option.
-          
-          [default: feature]
-
-          Possible values:
-          - other:    Other variant represents other changes
-          - fix:      Fix variant represents fixes
-          - feature:  Feature variant represents new features
-          - breaking: Breaking variant represents breaking changes
+  -v, --verbose...
+          Increase logging verbosity
 
   -c, --check <CHECK>
-          Check level meets minimum for setting
+          Files that require changes before making a release
+          
+          The level at which the required files are enforced can be set with the `enforce` option. Check level meets minimum for setting
           
           This option can be used to check the calculated level meets a minimum before applying an update. Bump is reported as "none" if the required level is not met.
 
@@ -64,15 +74,125 @@ Options:
           - feature:  Feature variant represents new features
           - breaking: Breaking variant represents breaking changes
 
-      --set-env <SET_ENV>
-          add output to environment variable
-          
-          [default: NEXTSV_BUMP]
+  -q, --quiet...
+          Decrease logging verbosity
 
   -h, --help
           Print help (see a summary with '-h')
 
   -V, --version
           Print version
+
+```
+
+```console
+$ nextsv force --help
+Force the bump level
+
+Usage: nextsv force [OPTIONS] <COMMAND>
+
+Commands:
+  major    Bump the major version component
+  minor    Bump the major version component
+  patch    Bump the major version component
+  first    Release first production (1.0.0) version
+  release  Remove the pre-release version component if present
+  rc       Bump or create the rc pre-release version component
+  beta     Bump or create the beta pre-release version component
+  alpha    Bump or create the alpha pre-release version component
+  help     Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose...  Increase logging verbosity
+  -q, --quiet...    Decrease logging verbosity
+  -f, --first       First flag to set first version and pre-release in the same transaction
+  -h, --help        Print help
+  -V, --version     Print version
+
+```
+
+```console
+$ nextsv require --help
+Require the listed files to be updated before making a release with the specified change level
+
+Usage: nextsv require [OPTIONS] <COMMAND>
+
+Commands:
+  other     Other variant represents other changes
+  fix       Fix variant represents fixes
+  feature   Feature variant represents new features
+  breaking  Breaking variant represents breaking changes
+  help      Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose...     Increase logging verbosity
+  -q, --quiet...       Decrease logging verbosity
+  -f, --files <FILES>  
+  -h, --help           Print help
+  -V, --version        Print version
+
+```
+
+```console
+$ nextsv calculate -h
+Calculate the next version number
+
+Usage: nextsv calculate [OPTIONS]
+
+Options:
+  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
+  -v, --verbose...       Increase logging verbosity
+  -c, --check <CHECK>    Files that require changes before making a release [possible values: other, fix, feature, breaking]
+  -q, --quiet...         Decrease logging verbosity
+  -h, --help             Print help (see more with '--help')
+  -V, --version          Print version
+
+```
+
+```console
+$ nextsv force -h
+Force the bump level
+
+Usage: nextsv force [OPTIONS] <COMMAND>
+
+Commands:
+  major    Bump the major version component
+  minor    Bump the major version component
+  patch    Bump the major version component
+  first    Release first production (1.0.0) version
+  release  Remove the pre-release version component if present
+  rc       Bump or create the rc pre-release version component
+  beta     Bump or create the beta pre-release version component
+  alpha    Bump or create the alpha pre-release version component
+  help     Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose...  Increase logging verbosity
+  -q, --quiet...    Decrease logging verbosity
+  -f, --first       First flag to set first version and pre-release in the same transaction
+  -h, --help        Print help
+  -V, --version     Print version
+
+```
+
+```console
+$ nextsv require -h
+Require the listed files to be updated before making a release with the specified change level
+
+Usage: nextsv require [OPTIONS] <COMMAND>
+
+Commands:
+  other     Other variant represents other changes
+  fix       Fix variant represents fixes
+  feature   Feature variant represents new features
+  breaking  Breaking variant represents breaking changes
+  help      Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose...     Increase logging verbosity
+  -q, --quiet...       Decrease logging verbosity
+  -f, --files <FILES>  
+  -h, --help           Print help
+  -V, --version        Print version
 
 ```
