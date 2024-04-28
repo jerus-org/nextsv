@@ -38,13 +38,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependency Updates
 
-### Features 
+### Features
 
 - add check option to check if a minimum level of release has been met. Program exits with error of the level has not been met.
 
 ### Refactor
 
-- Remove EnforeLevel type and use TypeHiearchy defined in conventional instead for CLI flags. Define level when building conventional. 
+- Remove EnforceLevel type and use TypeHierarchy defined in conventional instead for CLI flags. Define level when building conventional.
 
 ## [0.7.5] - 2022-12-05
 
