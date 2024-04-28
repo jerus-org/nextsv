@@ -1,8 +1,31 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, process::Command};
 
 use git2::Repository;
+use snapbox::cmd::cargo_bin;
 
-mod git_utils;
+use test_utils::git_utils;
+
+fn execute_test(arguments: &str, temp_dir: &PathBuf) -> String {
+    let cmd = cargo_bin!("nextsv");
+    println!("cmd: {:?}", cmd);
+
+    let test_args: Vec<&str> = arguments.split_ascii_whitespace().collect();
+    println!("test_args: {:?}", test_args);
+
+    let output = Command::new(cmd)
+        .args(test_args)
+        .current_dir(temp_dir)
+        .output()
+        .unwrap();
+
+    println!("Exit code: {}", output.status.code().unwrap());
+    let test_result = String::from_utf8(output.stdout).unwrap();
+    let stderr = String::from_utf8(output.stderr).unwrap();
+
+    println!("stdout:\n-------\n{}", test_result);
+    println!("stderr:\n-------\n{}", stderr);
+    test_result
+}
 
 #[test]
 fn test_intitial_to_production() {
@@ -86,7 +109,7 @@ fn test_intitial_to_production() {
     );
 
     // Promote to production release
-    let test_result_str = git_utils::execute_test("-n force first", &temp_dir);
+    let test_result_str = execute_test("-n force first", &temp_dir);
     let test_result = test_result_split(&test_result_str);
     println!("test_result: {:?}", test_result_str);
 
@@ -245,7 +268,7 @@ fn test_intitial_to_production_with_pre_releases() {
     );
 
     // Promote to production release
-    let test_result_str = git_utils::execute_test("-n -vvv force first", &temp_dir);
+    let test_result_str = execute_test("-n -vvv force first", &temp_dir);
     let test_result = test_result_split(&test_result_str);
     println!("test_result: {:?}", test_result_str);
 
@@ -331,7 +354,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     );
 
     // // Make alpha pre-release
-    // let test_result_str = git_utils::execute_test("-n force alpha", &temp_dir);
+    // let test_result_str = execute_test("-n force alpha", &temp_dir);
     // let test_result = test_result_split(&test_result_str);
     // println!("test_result: {:?}", test_result_str);
 
@@ -420,7 +443,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     );
 
     // Release production release
-    let test_result_str = git_utils::execute_test("-n -vvv force release", &temp_dir);
+    let test_result_str = execute_test("-n -vvv force release", &temp_dir);
     let test_result = test_result_split(&test_result_str);
     println!("test_result: {:?}", test_result_str);
 
@@ -490,7 +513,7 @@ fn add_feature(
     println!("commit result: {:?}", result);
 
     // execute the test
-    let test_result_str = git_utils::execute_test(arguments, temp_dir);
+    let test_result_str = execute_test(arguments, temp_dir);
     let test_result = test_result_split(&test_result_str);
     println!("test_result: {:?}", test_result_str);
 
@@ -521,7 +544,7 @@ fn update_feature(
     println!("commit result: {:?}", result);
 
     // execute the test
-    let test_result_str = git_utils::execute_test(arguments, temp_dir);
+    let test_result_str = execute_test(arguments, temp_dir);
     let test_result = test_result_split(&test_result_str);
     println!("test_result: {:?}", test_result_str);
 
