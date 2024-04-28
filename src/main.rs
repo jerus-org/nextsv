@@ -64,23 +64,6 @@ struct Calculate {
     /// Prefix string to identify version number tags
     #[arg(short, long, value_parser, default_value = "v")]
     prefix: String,
-    // /// Do not report version bump
-    // #[arg(short = 'b', long)]
-    // no_bump: bool,
-    // /// Report the version number
-    // #[arg(short = 'n', long)]
-    // number: bool,
-    /// Files that require changes before making a release
-    ///
-    /// The level at which the required files are enforced
-    /// can be set with the `enforce` option.
-    // #[arg(short, long)]
-    // require: Vec<OsString>,
-    // /// Bump level at which required files list should be enforced
-    // ///
-    // /// Should be used in conjunction with the `require` option.
-    // #[clap(short, long, default_value = "feature")]
-    // enforce: Hierarchy,
     /// Check level meets minimum for setting
     ///
     /// This option can be used to check the calculated level
@@ -122,22 +105,6 @@ fn run() -> ExitResult {
             };
         }
         Commands::Calculate(args) => {
-            // match (args.number, args.no_bump) {
-            //     (false, false) => log::info!("Calculating the next version level"),
-            //     (false, true) => log::info!("Calculating the next version level"),
-            //     (true, false) => log::info!("Calculating the next version number"),
-            //     (true, true) => log::info!("Calculating the next version number and level"),
-            // };
-
-            // let mut calculator_config = CalculatorConfig::new();
-            // calculator_config = calculator_config.set_prefix(&args.prefix);
-            // log::trace!("require: {:#?}", args.require);
-            // calculator_config = calculator_config.set_bump_report(!args.no_bump);
-            // calculator_config = calculator_config.set_version_report(args.number);
-            // if !args.require.is_empty() {
-            //     calculator_config = calculator_config.add_required_files(args.require);
-            //     calculator_config = calculator_config.set_required_enforcement(args.enforce);
-            // };
             if let Some(check_level) = args.check {
                 calculator_config = calculator_config.set_reporting_threshold(check_level);
             };
