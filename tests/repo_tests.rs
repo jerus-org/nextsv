@@ -1,10 +1,33 @@
 use core::panic;
+use std::path::PathBuf;
 use std::{fs, process::Command};
 
 use rstest::rstest;
 use snapbox::cmd::cargo_bin;
 
-mod git_utils;
+use test_utils::git_utils;
+
+fn execute_test(arguments: &str, temp_dir: &PathBuf) -> String {
+    let cmd = cargo_bin!("nextsv");
+    println!("cmd: {:?}", cmd);
+
+    let test_args: Vec<&str> = arguments.split_ascii_whitespace().collect();
+    println!("test_args: {:?}", test_args);
+
+    let output = Command::new(cmd)
+        .args(test_args)
+        .current_dir(temp_dir)
+        .output()
+        .unwrap();
+
+    println!("Exit code: {}", output.status.code().unwrap());
+    let test_result = String::from_utf8(output.stdout).unwrap();
+    let stderr = String::from_utf8(output.stderr).unwrap();
+
+    println!("stdout:\n-------\n{}", test_result);
+    println!("stderr:\n-------\n{}", stderr);
+    test_result
+}
 
 #[test]
 fn test_repo_no_changes() {
@@ -122,7 +145,7 @@ fn test_repo_with_commit(
     println!("commit result: {:?}", result);
 
     // execute the test
-    let test_result = git_utils::execute_test(arguments, &temp_dir);
+    let test_result = execute_test(arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
@@ -320,7 +343,7 @@ fn test_repo_with_commit_and_force_bump(
     let mut arguments = arguments.to_string();
     arguments.push(' ');
     arguments.push_str(force_bump);
-    let test_result = git_utils::execute_test(&arguments, &temp_dir);
+    let test_result = execute_test(&arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
@@ -694,7 +717,7 @@ fn test_repo_with_commit_and_check(
     let mut arguments = arguments.to_string();
     arguments.push(' ');
     arguments.push_str(check);
-    let test_result = git_utils::execute_test(&arguments, &temp_dir);
+    let test_result = execute_test(&arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
@@ -1066,7 +1089,7 @@ fn test_repo_with_commit_and_enforce_test_file(
     arguments.push_str(file);
     arguments.push(' ');
     arguments.push_str(check);
-    let test_result = git_utils::execute_test(&arguments, &temp_dir);
+    let test_result = execute_test(&arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
@@ -1175,7 +1198,7 @@ fn test_repo_custom_version_prefix_with_commit(
     arguments.push(' ');
     arguments.push_str(prefix);
     arguments.push_str(" calculate");
-    let test_result = git_utils::execute_test(&arguments, &temp_dir);
+    let test_result = execute_test(&arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
@@ -1278,7 +1301,7 @@ fn test_repo_bump_only_with_commit(
     println!("commit result: {:?}", result);
 
     // execute the test
-    let test_result = git_utils::execute_test(arguments, &temp_dir);
+    let test_result = execute_test(arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
@@ -1381,7 +1404,7 @@ fn test_repo_number_only_with_commit(
     println!("commit result: {:?}", result);
 
     // execute the test
-    let test_result = git_utils::execute_test(arguments, &temp_dir);
+    let test_result = execute_test(arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);

@@ -1,10 +1,8 @@
 use git2::{Commit, ObjectType, Oid, Repository, Signature};
-use snapbox::cmd::cargo_bin;
 use std::{
     fs::{File, OpenOptions},
     io::Write,
     path::{Path, PathBuf},
-    process::Command,
 };
 use uuid::Uuid;
 
@@ -14,7 +12,7 @@ const GIT_TEMPLATE_DIR: &str = "tests/repo_template";
 /// Initialise a git repository in the temporary directory and create a commit.
 ///         The commit is tagged with the current version.
 /// Return the temporary directory and the repository.
-pub(crate) fn create_test_git_directory(current_version: &str) -> (PathBuf, Repository) {
+pub fn create_test_git_directory(current_version: &str) -> (PathBuf, Repository) {
     let temp_dir_string = format!("tests/tmp/test-{}", Uuid::new_v4());
     let temp_dir = Path::new(&temp_dir_string);
     println!("Temporary directory: {:?}", temp_dir);
@@ -64,7 +62,7 @@ pub(crate) fn add_file_and_first_commit(
 
 /// Find the last commit in the repository.
 /// Return the commit.  If there is an error, return the error.
-pub(crate) fn find_last_commit(repo: &Repository) -> Result<Commit, git2::Error> {
+pub fn find_last_commit(repo: &Repository) -> Result<Commit, git2::Error> {
     let obj = repo.head()?.resolve()?.peel(ObjectType::Commit)?;
     obj.into_commit()
         .map_err(|_| git2::Error::from_str("Couldn't find commit"))
@@ -109,7 +107,7 @@ pub(crate) fn add_and_commit(
     ) // parents
 }
 
-pub(crate) fn create_file_and_commit(
+pub fn create_file_and_commit(
     repo: &Repository,
     temp_dir: PathBuf,
     message: &str,
@@ -137,7 +135,7 @@ pub(crate) fn create_file_and_commit(
 }
 
 #[allow(dead_code)]
-pub(crate) fn update_file_and_commit(
+pub fn update_file_and_commit(
     repo: &Repository,
     temp_dir: PathBuf,
     message: &str,
@@ -163,26 +161,4 @@ pub(crate) fn update_file_and_commit(
     display_commit(&commit);
 
     result
-}
-
-pub(crate) fn execute_test(arguments: &str, temp_dir: &PathBuf) -> String {
-    let cmd = cargo_bin!("nextsv");
-    println!("cmd: {:?}", cmd);
-
-    let test_args: Vec<&str> = arguments.split_ascii_whitespace().collect();
-    println!("test_args: {:?}", test_args);
-
-    let output = Command::new(cmd)
-        .args(test_args)
-        .current_dir(temp_dir)
-        .output()
-        .unwrap();
-
-    println!("Exit code: {}", output.status.code().unwrap());
-    let test_result = String::from_utf8(output.stdout).unwrap();
-    let stderr = String::from_utf8(output.stderr).unwrap();
-
-    println!("stdout:\n-------\n{}", test_result);
-    println!("stderr:\n-------\n{}", stderr);
-    test_result
 }
