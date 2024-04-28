@@ -128,11 +128,29 @@ impl Calculator {
             bump,
             change_bump
         );
-        let (next_version, bump) =
+        let (mut next_version, mut bump) =
             NextVersion::calculate(&current_version, bump, change_bump.as_ref());
 
         if bump == Bump::None {
             config.report_number = false;
+        }
+
+        log::debug!(
+            "Checking for first version flag `{}` with version number `{}`",
+            config.force_first_version,
+            next_version.version_number(),
+        );
+        if config.force_first_version {
+            log::debug!("Forcing the first version number");
+            if let NextVersion::Updated(ref mut version) = next_version {
+                if version.semantic_version.major == 0 {
+                    version.semantic_version.major = 1;
+                    version.semantic_version.minor = 0;
+                    version.semantic_version.patch = 0;
+
+                    bump = Bump::Custom(next_version.version_number().to_string());
+                }
+            }
         }
 
         let calculated_result = Ok(Calculator {

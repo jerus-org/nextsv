@@ -1,6 +1,6 @@
 use std::{cmp, fmt};
 
-use clap::ValueEnum;
+use clap::{Parser, ValueEnum};
 use colored::Colorize;
 
 use crate::Error;
@@ -20,7 +20,7 @@ use super::TopType;
 /// | Other     | docs, style, refactor, perf, test, chore, build, ci, etc. | Patch       | Patch           |
 ///
 /// The hierachy is listed in order of importance.
-#[derive(Debug, PartialEq, Eq, Clone, ValueEnum, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, ValueEnum, Default, Parser)]
 pub enum Hierarchy {
     /// Other variant represents other changes.
     #[default]

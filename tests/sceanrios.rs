@@ -16,7 +16,7 @@ fn test_intitial_to_production() {
 
     let version_prefix = "v";
     // let arguments = "-n -vvv";
-    let arguments = "-n";
+    let arguments = "-n calculate";
 
     let initial_version = format!("{}0.1.0", version_prefix);
 
@@ -86,7 +86,7 @@ fn test_intitial_to_production() {
     );
 
     // Promote to production release
-    let test_result_str = git_utils::execute_test("-n -f first", &temp_dir);
+    let test_result_str = git_utils::execute_test("-n force first", &temp_dir);
     let test_result = test_result_split(&test_result_str);
     println!("test_result: {:?}", test_result_str);
 
@@ -103,7 +103,7 @@ fn test_intitial_to_production_with_pre_releases() {
 
     let version_prefix = "v";
     // let arguments = "-n -vvv";
-    let arguments = "-n";
+    let arguments = "-n calculate";
 
     let initial_version = format!("{}0.1.0", version_prefix);
 
@@ -165,7 +165,7 @@ fn test_intitial_to_production_with_pre_releases() {
         feature,
         message,
         expected,
-        "-n -f alpha",
+        "-n force alpha",
         version_prefix,
     );
 
@@ -195,7 +195,7 @@ fn test_intitial_to_production_with_pre_releases() {
         feature,
         message,
         expected,
-        "-n -f beta",
+        "-n force beta",
         version_prefix,
     );
 
@@ -225,7 +225,7 @@ fn test_intitial_to_production_with_pre_releases() {
         feature,
         message,
         expected,
-        "-n -f rc",
+        "-n force rc",
         version_prefix,
     );
 
@@ -245,7 +245,7 @@ fn test_intitial_to_production_with_pre_releases() {
     );
 
     // Promote to production release
-    let test_result_str = git_utils::execute_test("-n -vvv -f first", &temp_dir);
+    let test_result_str = git_utils::execute_test("-n -vvv force first", &temp_dir);
     let test_result = test_result_split(&test_result_str);
     println!("test_result: {:?}", test_result_str);
 
@@ -263,8 +263,8 @@ fn test_intitial_to_production_with_production_pre_releases() {
     // Scenario: Initial to Production
 
     let version_prefix = "v";
-    // let arguments = "-n -vvv";
-    let arguments = "-n";
+    // let arguments = "-n calculate -vvv";
+    let arguments = "-n calculate";
 
     let initial_version = format!("{}0.1.0", version_prefix);
 
@@ -317,8 +317,8 @@ fn test_intitial_to_production_with_production_pre_releases() {
 
     // Promote to version 1.0.0
     let message = "feat: update feature1";
-    let arguments = "-n -f alpha";
-    let expected = ("alpha".to_string(), "1.0.0-alpha.1".to_string());
+    let arguments = "-n -vvv force -f alpha ";
+    let expected = ("1.0.0-alpha.1".to_string(), "1.0.0-alpha.1".to_string());
 
     update_feature(
         &repo,
@@ -331,7 +331,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     );
 
     // // Make alpha pre-release
-    // let test_result_str = git_utils::execute_test("-n -f alpha", &temp_dir);
+    // let test_result_str = git_utils::execute_test("-n force alpha", &temp_dir);
     // let test_result = test_result_split(&test_result_str);
     // println!("test_result: {:?}", test_result_str);
 
@@ -342,7 +342,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     // Update feature and apply a fix
     let feature = "feature1.txt";
     let message = "fix: breaking fix to feature1";
-    let arguments = "-n -vvvv -f alpha";
+    let arguments = "-n -vvvv force alpha";
     let expected = ("alpha".to_string(), "1.0.0-alpha.2".to_string());
 
     update_feature(
@@ -358,7 +358,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     // Update feature and make beta pre-release
     let feature = "feature1.txt";
     let message = "fix: fix to feature1";
-    let arguments = "-n -f beta";
+    let arguments = "-n force beta";
     let expected = ("beta".to_string(), "1.0.0-beta.1".to_string());
 
     update_feature(
@@ -374,7 +374,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     // Update feature and apply a fix
     let feature = "feature1.txt";
     let message = "fix: breaking fix to feature1";
-    let arguments = "-n -f beta";
+    let arguments = "-n force beta";
     let expected = ("beta".to_string(), "1.0.0-beta.2".to_string());
 
     update_feature(
@@ -390,7 +390,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     // Update feature and make rc pre-release
     let feature = "feature1.txt";
     let message = "fix: fix to feature1";
-    let arguments = "-n -f rc";
+    let arguments = "-n force rc";
     let expected = ("rc".to_string(), "1.0.0-rc.1".to_string());
 
     update_feature(
@@ -406,7 +406,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     // Update feature and apply a fix
     let feature = "feature1.txt";
     let message = "fix: breaking fix to feature1";
-    let arguments = "-n -f rc";
+    let arguments = "-n force rc";
     let expected = ("rc".to_string(), "1.0.0-rc.2".to_string());
 
     update_feature(
@@ -420,7 +420,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     );
 
     // Release production release
-    let test_result_str = git_utils::execute_test("-n -vvv -f release", &temp_dir);
+    let test_result_str = git_utils::execute_test("-n -vvv force release", &temp_dir);
     let test_result = test_result_split(&test_result_str);
     println!("test_result: {:?}", test_result_str);
 
@@ -437,7 +437,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
 // // Update feature and make pre pre-release
 // let feature = "feature1.txt";
 // let message = "fix: fix to feature1";
-// let arguments = "-n -f pre";
+// let arguments = "-n force pre";
 // let expected = ("pre".to_string(), "1.0.0-pre.1".to_string());
 
 // update_feature(
@@ -453,7 +453,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
 // // Update feature and apply a fix
 // let feature = "feature1.txt";
 // let message = "fix: breaking fix to feature1";
-// let arguments = "-n -f pre";
+// let arguments = "-n force pre";
 // let expected = ("pre".to_string(), "1.0.0-pre.2".to_string());
 
 // update_feature(
