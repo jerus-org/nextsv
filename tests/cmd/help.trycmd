@@ -62,9 +62,7 @@ Options:
           Increase logging verbosity
 
   -c, --check <CHECK>
-          Files that require changes before making a release
-          
-          The level at which the required files are enforced can be set with the `enforce` option. Check level meets minimum for setting
+          Check level meets minimum for setting
           
           This option can be used to check the calculated level meets a minimum before applying an update. Bump is reported as "none" if the required level is not met.
 
@@ -142,7 +140,7 @@ Usage: nextsv calculate [OPTIONS]
 Options:
   -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
   -v, --verbose...       Increase logging verbosity
-  -c, --check <CHECK>    Files that require changes before making a release [possible values: other, fix, feature, breaking]
+  -c, --check <CHECK>    Check level meets minimum for setting [possible values: other, fix, feature, breaking]
   -q, --quiet...         Decrease logging verbosity
   -h, --help             Print help (see more with '--help')
   -V, --version          Print version
