@@ -246,7 +246,7 @@ mod test {
             "refs/tags/v1.7.9"
         )]
         tag: &str,
-        #[values(Bump::None, Bump::Patch, Bump::Minor, 
+        #[values(Bump::None, Bump::Patch, Bump::Minor,
             Bump::Major, Bump::Alpha, Bump::Beta, Bump::Rc, Bump::Release, Bump::Custom("pre".to_string()), Bump::First) ]
         bump: Bump,
     ) {
@@ -322,38 +322,33 @@ mod test {
                 Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
             },
             "refs/tags/v0.7.9-beta.1" => match bump {
-                Bump::None 
-                => {
+                Bump::None => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-beta.1", "v").unwrap())
                 }
-                 Bump::Alpha  => {
-                     NextVersion::Updated(VersionTag::parse("v0.7.9-alpha.1", "v").unwrap())
-                    }
-                    Bump::Beta | Bump::Patch | Bump::Minor | Bump::Major => {
-                        NextVersion::Updated(VersionTag::parse("v0.7.9-beta.2", "v").unwrap())
-                    }
-                 Bump::Rc  => {
-                    NextVersion::Updated(VersionTag::parse("v0.7.9-rc.1", "v").unwrap())
+                Bump::Alpha => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-alpha.1", "v").unwrap())
                 }
-                 Bump::Custom(ref pre) => {
-                    NextVersion::Updated(VersionTag::parse(format!("v0.7.9-{pre}.1").as_str(), "v").unwrap())
+                Bump::Beta | Bump::Patch | Bump::Minor | Bump::Major => {
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-beta.2", "v").unwrap())
                 }
+                Bump::Rc => NextVersion::Updated(VersionTag::parse("v0.7.9-rc.1", "v").unwrap()),
+                Bump::Custom(ref pre) => NextVersion::Updated(
+                    VersionTag::parse(format!("v0.7.9-{pre}.1").as_str(), "v").unwrap(),
+                ),
                 Bump::Release => NextVersion::Updated(VersionTag::parse("v0.7.9", "v").unwrap()),
                 Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
             },
             "refs/tags/v0.7.9-rc.1" => match bump {
-                Bump::None  => {
-                    NextVersion::Updated(VersionTag::parse("v0.7.9-rc.1", "v").unwrap())
-                }
-                 Bump::Alpha  => {
+                Bump::None => NextVersion::Updated(VersionTag::parse("v0.7.9-rc.1", "v").unwrap()),
+                Bump::Alpha => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-alpha.1", "v").unwrap())
                 }
-                Bump::Beta  => {
+                Bump::Beta => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-beta.1", "v").unwrap())
                 }
-                Bump::Custom(ref pre) => {
-                    NextVersion::Updated(VersionTag::parse(format!("v0.7.9-{pre}.1").as_str(), "v").unwrap())
-                }
+                Bump::Custom(ref pre) => NextVersion::Updated(
+                    VersionTag::parse(format!("v0.7.9-{pre}.1").as_str(), "v").unwrap(),
+                ),
                 Bump::Rc | Bump::Patch | Bump::Minor | Bump::Major => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-rc.2", "v").unwrap())
                 }
@@ -361,18 +356,14 @@ mod test {
                 Bump::First => NextVersion::Updated(VersionTag::parse("v1.0.0", "v").unwrap()),
             },
             "refs/tags/v0.7.9-pre.1" => match bump {
-                Bump::None => {
-                    NextVersion::Updated(VersionTag::parse("v0.7.9-pre.1", "v").unwrap())
-                }
-                 Bump::Alpha => {
+                Bump::None => NextVersion::Updated(VersionTag::parse("v0.7.9-pre.1", "v").unwrap()),
+                Bump::Alpha => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-alpha.1", "v").unwrap())
                 }
                 Bump::Beta => {
-                   NextVersion::Updated(VersionTag::parse("v0.7.9-beta.1", "v").unwrap())
-               }
-                 Bump::Rc  => {
-                    NextVersion::Updated(VersionTag::parse("v0.7.9-rc.1", "v").unwrap())
+                    NextVersion::Updated(VersionTag::parse("v0.7.9-beta.1", "v").unwrap())
                 }
+                Bump::Rc => NextVersion::Updated(VersionTag::parse("v0.7.9-rc.1", "v").unwrap()),
                 Bump::Custom(_) | Bump::Patch | Bump::Minor | Bump::Major => {
                     NextVersion::Updated(VersionTag::parse("v0.7.9-pre.2", "v").unwrap())
                 }
