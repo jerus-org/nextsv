@@ -5,11 +5,11 @@ use std::ffi::OsString;
 use proc_exit::{Code, Exit};
 use thiserror::Error;
 
-const EXIT_UNEXPECTED_ERROR: i32 = 10;
-const EXIT_NOT_CALCULATED_CODE: i32 = 12;
-const EXIT_MISSING_REQUIRED_CODE: i32 = 13;
-const EXIT_NOT_REQUIRED_LEVEL: i32 = 14;
-const EXIT_NO_FILES_LISTED: i32 = 15;
+pub const EXIT_UNEXPECTED_ERROR: i32 = 10;
+pub const EXIT_NOT_CALCULATED_CODE: i32 = 12;
+pub const EXIT_MISSING_REQUIRED_CODE: i32 = 13;
+// pub const EXIT_NOT_REQUIRED_LEVEL: i32 = 14;
+pub const EXIT_NO_FILES_LISTED: i32 = 15;
 
 /// The error type for nextsv.
 #[non_exhaustive]
@@ -43,21 +43,35 @@ pub enum Error {
     /// Not a valid Type Hierachy name.
     #[error("{0} is not a valid type hierarchy namne.")]
     NotTypeHierachyName(String),
-    /// List of files has not been generated yet (or there are no commits). Call `commits` to generate the list by walking back to the current version tag.
+    /// Corrupt version check regex. Check the `prefix` value.
+    #[error("Version check regex error {0}. Check the `prefix` value.")]
+    CorruptVersionRegex(regex::Error),
+    /// List of files has not been generated yet (or there are no commits). Call `commits`
+    /// to generate the list by walking back to the current version tag.
     #[error("No files have been listed. May have been called before `commits`.")]
     NoFilesListed,
-    /// The minimum change level set for check has been met.
-    #[error("Minimum change Level has been met.")]
-    MinimumChangeLevelMet,
-    /// The minimum change level set for check has not been met.
-    #[error("Minimum change level has not been met.")]
-    MinimumChangeLevelNotMet,
+    //
+    // TODO: make use of these codes again by providing an option to use exit codes in the
+    // CLI and to enable the use of the exit codes as an alternative to "breaking" a dependant
+    // programme by providing an output that it cannot understand ("none")
+    //
+    // /// The minimum change level set for check has been met.
+    // #[error("Minimum change Level has been met.")]
+    // MinimumChangeLevelMet,
+    // /// The minimum change level set for check has not been met.
+    // #[error("Minimum change level has not been met.")]
+    // MinimumChangeLevelNotMet,
     /// Error passed up from git2
     #[error("0:?")]
     Git2(#[from] git2::Error),
+    /// Error passed up from convert TryFrom
+    #[error("0:?")]
+    TryFromIntError(#[from] std::num::TryFromIntError),
 }
 
 impl From<Error> for Exit {
+    /// Convert select error codes into an exit code to allow a calling application to exit
+    /// with an error code instead of handling the error.
     fn from(err: Error) -> Self {
         match err {
             Error::Git2(_) => {
@@ -69,11 +83,25 @@ impl From<Error> for Exit {
             Error::NoFilesListed => {
                 Exit::new(Code::new(EXIT_NO_FILES_LISTED)).with_message(err.to_string())
             }
-            Error::MinimumChangeLevelMet => Exit::new(Code::SUCCESS).with_message(err.to_string()),
-            Error::MinimumChangeLevelNotMet => {
-                Exit::new(Code::new(EXIT_NOT_REQUIRED_LEVEL)).with_message(err.to_string())
-            }
+            // Error::MinimumChangeLevelMet => Exit::new(Code::SUCCESS).with_message(err.to_string()),
+            // Error::MinimumChangeLevelNotMet => {
+            //     Exit::new(Code::new(EXIT_NOT_REQUIRED_LEVEL)).with_message(err.to_string())
+            // }
             _ => Exit::new(Code::new(EXIT_UNEXPECTED_ERROR)),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_constants() {
+        assert_eq!(EXIT_UNEXPECTED_ERROR, 10);
+        assert_eq!(EXIT_NOT_CALCULATED_CODE, 12);
+        assert_eq!(EXIT_MISSING_REQUIRED_CODE, 13);
+        // assert_eq!(EXIT_NOT_REQUIRED_LEVEL, 14);
+        assert_eq!(EXIT_NO_FILES_LISTED, 15);
     }
 }

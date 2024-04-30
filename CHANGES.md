@@ -10,6 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+### Features
+
+- Support the setting of pre-release tagged version numbers
+- Clearing the pre-release tag to release the planned version
+- Supporting a first version that includes a pre-release tag
+- Restructure of CLI to provide
+  - calculate, force and require
+  - calculate performs the calculation
+  - force forces the bump result with a flag to create a first version
+  - require enforces changes to specific files if a change threshold is met
+
+### Testing
+
+- Provide more comprehensive testing
+
 ### Security
 
 - Dependency Updates
@@ -38,13 +53,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependency Updates
 
-### Features 
+### Features
 
 - add check option to check if a minimum level of release has been met. Program exits with error of the level has not been met.
 
 ### Refactor
 
-- Remove EnforeLevel type and use TypeHiearchy defined in conventional instead for CLI flags. Define level when building conventional. 
+- Remove EnforceLevel type and use TypeHierarchy defined in conventional instead for CLI flags. Define level when building conventional.
 
 ## [0.7.5] - 2022-12-05
 

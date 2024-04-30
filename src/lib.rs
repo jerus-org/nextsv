@@ -1,12 +1,18 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![warn(missing_docs)]
+#![warn(
+    missing_docs,
+    rustdoc::broken_intra_doc_links,
+    rustdoc::private_intra_doc_links,
+    rustdoc::invalid_rust_codeblocks,
+    rustdoc::invalid_codeblock_attributes
+)]
 #![cfg_attr(docsrs, feature(rustdoc_missing_doc_code_examples))]
 #![cfg_attr(docsrs, warn(rustdoc::missing_doc_code_examples))]
 #![cfg_attr(docsrs, warn(rustdoc::invalid_codeblock_attributes))]
 
-//! Semantic Versioning Management
+//! # Calculate next semantic bump and/or version number
 //!
-//! Calculates the next semantic version number and level based on
+//! Calculates the next semantic bump and/or version number based on
 //! the current version number and the conventional commits made
 //! since the last version has been released.
 //!
@@ -15,34 +21,87 @@
 //! Add the dependency to Cargo.toml
 //!
 //! ```toml
-//!
 //! [dependencies]
 //! nextsv = "0.7.9"
-//!
 //! ```
 //!
-//! ```no_run
-//! # fn main() -> Result<(), nextsv::Error> {
-//!     use nextsv::VersionCalculator;
-//!     let version_prefix = "v"; // Identifies a version tag
+//! Calculation workflow:
+//! 1. Create the configuration
+//! 2. Build the calculator
+//! 3. Report the calculation
 //!
-//!     let latest_version = VersionCalculator::new(version_prefix)?;
+//! Report the results from the calculator
 //!
-//!     let answer = latest_version.walk_commits()?.next_version();
+//! ```rust
+//! #   use nextsv::{CalculatorConfig, ForceBump, Hierarchy};
+//! #   use std::ffi::OsString;
+//! #
+//! #   fn main() -> Result<(), nextsv::Error> {
+//! #   struct Args {
+//! #       prefix: String,
+//! #       level: bool,
+//! #       number: bool,
+//! #       force: Option<ForceBump>,
+//! #       require: Vec<OsString>,
+//! #       enforce_level: Hierarchy,
+//! #       check: Option<Hierarchy>,
+//! #       
+//! #   };
+//!     // arguments collected from CLI
+//!     let args = Args {
+//!         prefix: String::from("v"),
+//!         level: true,
+//!         number: true,
+//!         force: None,
+//!         require: vec![OsString::from("README.md"), OsString::from("CHANGES.md"), ],
+//!         enforce_level: Hierarchy::Feature,
+//!         check: None,
+//!     };
 //!
-//!     println!("Next Version: {}\nNext Level: {}", answer.version_number, answer.bump_level);
+//!     // 1. Create the configuration
+//!
+//!     let mut calculator_config = CalculatorConfig::new();
+//!
+//!     // Set the version number prefix
+//!     calculator_config = calculator_config.set_prefix(&args.prefix);
+//!
+//!     // What do we want to output?    
+//!     calculator_config = calculator_config.set_bump_report(args.level);
+//!     calculator_config = calculator_config.set_version_report(args.number);
+//!
+//!     // Is the bump level being forced?
+//!     if let Some(force) = args.force {
+//!         calculator_config = calculator_config.set_force_bump(force);
+//!     };
+//!
+//!     // Are there files that must be updated? What change level should they be enforced at?
+//!     if !args.require.is_empty() {
+//!         calculator_config = calculator_config.add_required_files(args.require);
+//!         calculator_config = calculator_config.set_required_enforcement(args.enforce_level);
+//!     };
+//!
+//!     // Is three a threshold set that must be met before proceeding with a change?
+//!     if let Some(check_level) = args.check {
+//!         calculator_config = calculator_config.set_reporting_threshold(check_level);
+//!     }
+//!
+//!     // 2. Build the calculator
+//!     // Apply the config and create a calculator
+//!     let calculator = calculator_config.build()?;
+//!     
+//!     // 3. Report the calculations
+//!     println!("{}", calculator.report());
 //!
 //! #    Ok(())
 //! # }
 //! ```
 
 mod calculator;
-mod conventional;
 mod error;
-mod semantic;
+#[cfg(test)]
+mod test_utils;
+mod version;
 
-pub use calculator::{Answer, ForceLevel, VersionCalculator};
-pub(crate) use conventional::ConventionalCommits;
-pub use conventional::TypeHierarchy;
+pub use calculator::{Calculator, CalculatorConfig, ForceBump, Hierarchy};
 pub use error::Error;
-pub use semantic::{Level, Semantic};
+// pub use version::VersionTag;

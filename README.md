@@ -36,9 +36,9 @@ A utility to calculate the level of change and the next semantic version number 
 - [x] Check for required files (e.g. CHANGELOG.md)
 - [x] Set level of change (Breaking, Feature, Fix, Other) at which required files are required
 - [x] Check that any changes made meet a specified level
-- [ ] Support pre-release versions (alpha, beta, rc)
+- [x] Support pre-release versions (alpha, beta, rc)
+- [x] Update to release version (removing pre-release identifiers)
 - [ ] Handle case where no tag is found
-- [ ] Update to release version (removing pre-release identifiers)
 
 ## CLI Usage
 
@@ -109,6 +109,8 @@ This can be used with `cargo release` to update and publish a new release.
 cargo release $(nextsv -q)
 
 ```
+
+Further details on usage scenarios can be found [here](docs/sceanrios.md).
 
 ## Library Usage
 
