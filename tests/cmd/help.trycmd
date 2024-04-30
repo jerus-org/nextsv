@@ -11,14 +11,39 @@ Commands:
   help       Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...         Increase logging verbosity
-  -q, --quiet...           Decrease logging verbosity
-      --set-env <SET_ENV>  add output to environment variable [default: NEXTSV_BUMP]
-  -b, --no-bump            Do not report version bump
-  -n, --number             Report the version number
-  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
-  -h, --help               Print help
-  -V, --version            Print version
+  -v, --verbose...
+          Increase logging verbosity
+
+  -q, --quiet...
+          Decrease logging verbosity
+
+  -b, --no-bump
+          Do not report version bump
+
+  -n, --number
+          Report the version number
+
+  -p, --prefix <PREFIX>
+          Prefix string to identify version number tags
+          
+          [default: v]
+
+  -c, --check <CHECK>
+          Check level meets minimum for setting
+          
+          This option can be used to check the calculated level meets a minimum before applying an update. Bump is reported as "none" if the required level is not met.
+
+          Possible values:
+          - other:    Other variant represents other changes
+          - fix:      Fix variant represents fixes
+          - feature:  Feature variant represents new features
+          - breaking: Breaking variant represents breaking changes
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
 
 ```
 
@@ -35,14 +60,14 @@ Commands:
   help       Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...         Increase logging verbosity
-  -q, --quiet...           Decrease logging verbosity
-      --set-env <SET_ENV>  add output to environment variable [default: NEXTSV_BUMP]
-  -b, --no-bump            Do not report version bump
-  -n, --number             Report the version number
-  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
-  -h, --help               Print help
-  -V, --version            Print version
+  -v, --verbose...       Increase logging verbosity
+  -q, --quiet...         Decrease logging verbosity
+  -b, --no-bump          Do not report version bump
+  -n, --number           Report the version number
+  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
+  -c, --check <CHECK>    Check level meets minimum for setting [possible values: other, fix, feature, breaking]
+  -h, --help             Print help (see more with '--help')
+  -V, --version          Print version
 
 ```
 
@@ -53,33 +78,9 @@ Calculate the next version number
 Usage: nextsv calculate [OPTIONS]
 
 Options:
-  -p, --prefix <PREFIX>
-          Prefix string to identify version number tags
-          
-          [default: v]
-
-  -v, --verbose...
-          Increase logging verbosity
-
-  -c, --check <CHECK>
-          Check level meets minimum for setting
-          
-          This option can be used to check the calculated level meets a minimum before applying an update. Bump is reported as "none" if the required level is not met.
-
-          Possible values:
-          - other:    Other variant represents other changes
-          - fix:      Fix variant represents fixes
-          - feature:  Feature variant represents new features
-          - breaking: Breaking variant represents breaking changes
-
-  -q, --quiet...
-          Decrease logging verbosity
-
-  -h, --help
-          Print help (see a summary with '-h')
-
-  -V, --version
-          Print version
+  -v, --verbose...  Increase logging verbosity
+  -q, --quiet...    Decrease logging verbosity
+  -h, --help        Print help
 
 ```
 
@@ -138,12 +139,9 @@ Calculate the next version number
 Usage: nextsv calculate [OPTIONS]
 
 Options:
-  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
-  -v, --verbose...       Increase logging verbosity
-  -c, --check <CHECK>    Check level meets minimum for setting [possible values: other, fix, feature, breaking]
-  -q, --quiet...         Decrease logging verbosity
-  -h, --help             Print help (see more with '--help')
-  -V, --version          Print version
+  -v, --verbose...  Increase logging verbosity
+  -q, --quiet...    Decrease logging verbosity
+  -h, --help        Print help
 
 ```
 
