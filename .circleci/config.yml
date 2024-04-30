@@ -103,8 +103,8 @@ jobs:
           name: Publish update
           command: |
             set -exo pipefail
-
-            if nextsv -vvv -c fix -e feature -r 'CHANGES.md' -r 'CHANGELOG.md' --set-env ; then 
+            export NEXTSV_LEVEL=$(nextsv -q -c fix require -f CHANGES.md -f CHANGELOG.md feature)
+            if [$NEXTSV_LEVEL != "none" ] ; then 
               # will this work?
               cargo release change
               cargo release -vvv --registry spare --execute --no-confirm "$NEXTSV_LEVEL"
