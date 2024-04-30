@@ -10,6 +10,123 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+### Bug Fixes
+
+- Return type should be answer
+- Missing ";"
+- Spelling of output in description of set_env
+- Scorecards to depend on github token only
+- Set publish_results false for scorecards (testing cosign issue)
+- Move rust security check to Circle CI
+- Added missing build and ci types to TypeHierarchy parse
+- Removed second treatment of threshold in reporting method
+- Made tag refs optional
+- Fix default for level to true so that level is set by default
+- Adding a fix for a patch bump
+- Adding a fix for a patch bump
+- Adding a fix for a patch bump
+- Refactor next_version.rs to use semantic_version field in Bump::Custom
+
+### Documentation
+
+- Update code in doc comment
+- Updated doc tests and removed deleted Answer type
+- Added documentation for CalculationConfig
+- Documentation review and revision for completeness
+- Scenarios describing usage
+
+### Features
+
+- Export Answer type
+- Set environment variable; use Answer type; return error
+- Add proc-exit
+- Regex implemented to extract version string
+- Added builder config struct for VersionCalculator and tests
+- Restructure to allow force to pre-release and first version
+
+### Miscellaneous Tasks
+
+- Licensing scanning only required once.
+- Update MSRV to 1.64
+- Replace default implementation with derive
+- Update MSRV to 1.70
+- Update env_logger requirement from 0.10.0 to 0.11.1
+- Update minium rust to 1.71 to ensure env_logger works
+- Update git2 requirement from 0.15.0 to 0.18.1
+- Bump actions/checkout from 3 to 4
+- Bump fossa-contrib/fossa-action from 1 to 3
+- Bump actions/upload-artifact from 3.1.1 to 4.3.0
+- Bump actions/upload-artifact from 4.3.0 to 4.3.1
+- Update trycmd requirement from 0.14.5 to 0.15.0
+- Updated minium rust version references
+- Silenced warnings and started tidy up of redundant code.
+- Cleaned up viability to restrict internal use types and functions to pub(crate).
+- Trace output from calculation for trouble shooting.
+- Add debug logging to PreRelease::new() and VersionTag::parse() functions
+- Tidy up source documents
+- Cosmetic fixes in changes.
+- Ensure all tests passing
+- Formatting fix
+- Prepare for release
+
+### Refactor
+
+- Answer type to store result of calculation
+- Configure error for cli output
+- Configure error for cli output
+- Improve update of top type
+- Implemented VersionTag
+- Split out semantic and add tests
+- Extract version_tag and supporting test utils
+- Extracted VersionTag to separate module and implement tests
+- Extracted PreRelease to module and create tests
+- Clean up of mod and testing, testing for first production version.
+- Breakup calculator module. Extract ForceLevel, extend options and integrate directly with CLI. Implement tests.
+- Split types in calculator and implemented individual tests.
+- Conventional as part of calculator and separate module for LevelHierarchy
+- Renamed semantic to version and included semantic as part of the overall module.
+- Implemented a cleaner approach to calculation.
+- Commit type handling in test_repo_with_commit function
+
+### Testing
+
+- Update tests with new feature
+- Update cli tests
+- Update expected results from trycmd tests
+- Ensure all current tests are passing
+- Added rstest module for testing case features
+- Added tests for single commit of each type to 0 major
+- Added tests for nonprod and breaking case
+- Added testing for prod cases with breaking and non-breaking changes
+- Added log4rs_test_utils to make logs available in tests
+- Implemented failing test for alpha pre-release
+- Update help text validation for cli test  with expanded force list.
+- Tests for error codes.
+- Completed testing for separated types and refactored the test utils for sharing across the crate.
+- Validate tests and ensure that they are all passing
+- Implemented passing tests for next_version::calculate
+- Implemented passing tests for bump::calculate
+- Ensured that all tests were passing
+- Initial build of integration tests with git repo
+- Cli tests for help an help text revision
+- Expand testing for bump using rstest and cases
+- Add support for pre-release versions in test_repo_with_commit function
+- Integration tests and making them work
+- Integration tests for different prefixes
+- Remove force testing from trycmd
+- Outputs of bump only and number only
+- Incorrect required files should not short circuit calculation
+- First two scenarios
+- Scenario with first production pre-releases
+- Move out git_utils fto test_utils crate
+
+### Ci
+
+- Test to make work; prep for env variable
+- Update CI to use 1.70 as min rust
+- Update minimum rust to 1.73
+- Updated Minimum rust version to 1.74
+
 ## [0.7.9] - 2022-12-21
 
 ## [0.7.8] - 2022-12-16
@@ -59,7 +176,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Split release job into two
 - Fix release ready script
-- Debug verbosityr for nextsv
+- Debug verbosity for nextsv
 - Use check in  CI
 
 ## [0.7.5] - 2022-12-05
@@ -91,7 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Testing
 
 - Update cmd line tests as without updates the test should fail
-- Removing testing tifle
+- Removing testing title
 - Correct required file check
 
 ## [0.7.3] - 2022-11-05
@@ -132,7 +249,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bug Fixes
 
-- Clippy lint failure on not derving Eq
+- Clippy lint failure on not deriving Eq
 
 ### Miscellaneous Tasks
 
@@ -141,7 +258,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Preload security in unreleased
 - Spacing in change logs
 - Update nextsv calculation
-- Updeate enforce flag to -e
+- Update enforce flag to -e
 - Release
 
 ### Refactor
@@ -400,7 +517,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.7.9]: https://github.com/jerusdp/nextsv/compare/v0.7.8...v0.7.9
 [0.7.8]: https://github.com/jerusdp/nextsv/compare/v0.7.7...v0.7.8
 [0.7.7]: https://github.com/jerusdp/nextsv/compare/v0.7.6...v0.7.7
-[0.7.6]: https://github.com/jerusdp/nextsv/compare/v0.7.5...v0.7.6
 [0.7.5]: https://github.com/jerusdp/nextsv/compare/v0.7.4...v0.7.5
 [0.7.4]: https://github.com/jerusdp/nextsv/compare/v0.7.3...v0.7.4
 [0.7.3]: https://github.com/jerusdp/nextsv/compare/v0.7.2...v0.7.3
@@ -412,7 +528,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.6.0]: <https://github.com/jerusdp/nextsv/compare/v0.5.2...v0.6.0>
 [0.5.2]: <https://github.com/jerusdp/nextsv/compare/v0.5.1...v0.5.2>
 [0.5.1]: <https://github.com/jerusdp/nextsv/compare/v0.5.0...v0.5.1>
-[0.5.0]: <https://github.com/jerusdp/nextsv/compare/v0.4.0...v0.5.0>
 [0.4.0]: <https://github.com/jerusdp/nextsv/compare/v0.3.1...V0.4.0>
 [0.3.1]: <https://github.com/jerusdp/nextsv/compare/v0.3.0...v0.3.1>
 [0.3.0]: <https://github.com/jerusdp/nextsv/compare/v0.2.0...v0.3.0>"

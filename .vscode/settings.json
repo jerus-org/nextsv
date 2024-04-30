@@ -1,7 +1,10 @@
 {
     "cSpell.words": [
+        "contrib",
+        "Enforcelevel",
         "nextsv",
         "nfiles",
+        "proc",
         "reflog",
         "refs",
         "revwalk",

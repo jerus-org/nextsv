@@ -23,21 +23,19 @@ env_logger = "0.11.1"
 git-conventional = "0.12.0"
 git2 = "0.18.1"
 log = "0.4.17"
-outdir-tempdir = "0.2.0"
 proc-exit = "2.0.0"
 regex = "1.10.4"
 thiserror = "1.0"
 
 [dev-dependencies]
-snapbox = { version = "0.5.9", features = ["cmd"] }
-claims = "0.7"
 log4rs_test_utils = { version = "0.2.3", default-features = false, features = [
     "test_logging",
 ] }
 map-macro = "0.3.0"
 rstest = "0.19.0"
-trycmd = "0.15.0"
+snapbox = { version = "0.5.9", features = ["cmd"] }
 test_utils = { path = "test-utils" }
+trycmd = "0.15.0"
 
 
 [lib]
