@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adding a fix for a patch bump
 - Adding a fix for a patch bump
 - Refactor next_version.rs to use semantic_version field in Bump::Custom
+- [**breaking**] Check option needs to be at the top level so that it can be applied to calculate and require
+- [**breaking**] Remove set-env feature as not workable as thought
 
 ### Documentation
 
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated doc tests and removed deleted Answer type
 - Added documentation for CalculationConfig
 - Documentation review and revision for completeness
+- Scenarios describing usage
 - Scenarios describing usage
 
 ### Features
@@ -42,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add proc-exit
 - Regex implemented to extract version string
 - Added builder config struct for VersionCalculator and tests
+- [**breaking**] Restructure to allow force to pre-release and first version
 - Restructure to allow force to pre-release and first version
 
 ### Miscellaneous Tasks
@@ -68,6 +72,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure all tests passing
 - Formatting fix
 - Prepare for release
+- Bump github/codeql-action from 1 to 3
+- Bump ossf/scorecard-action from 2.1.1 to 2.3.1
+- Bump actions/upload-artifact from 4.3.1 to 4.3.3
+- Tidy up source documents
+- Cosmetic fixes in changes.
+- Ensure all tests passing
+- Formatting fix
+- Prepare for release
+- Bump github/codeql-action from 1 to 3
+- Bump ossf/scorecard-action from 2.1.1 to 2.3.1
+- Bump actions/upload-artifact from 4.3.1 to 4.3.3
 
 ### Refactor
 
@@ -119,6 +134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First two scenarios
 - Scenario with first production pre-releases
 - Move out git_utils fto test_utils crate
+- Move out git_utils fto test_utils crate
 
 ### Ci
 
@@ -126,6 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update CI to use 1.70 as min rust
 - Update minimum rust to 1.73
 - Updated Minimum rust version to 1.74
+- Updated circle ci config to use new cli
 
 ## [0.7.9] - 2022-12-21
 
