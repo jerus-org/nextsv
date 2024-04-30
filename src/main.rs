@@ -12,9 +12,6 @@ struct Cli {
     /// Force the calculation of the version number
     #[command(subcommand)]
     command: Commands,
-    /// add output to environment variable
-    #[clap(long, default_value = "NEXTSV_BUMP")]
-    set_env: Option<String>,
     /// Do not report version bump
     #[arg(short = 'b', long)]
     no_bump: bool,
@@ -65,10 +62,6 @@ struct Require {
     files: Vec<OsString>,
 }
 
-// #[derive(Parser, Debug)]
-// #[clap(author, version, about, long_about = None)]
-// struct Calculate {}
-
 fn main() {
     let result = run();
     proc_exit::exit(result);
@@ -112,11 +105,6 @@ fn run() -> ExitResult {
     };
 
     let calculator = calculator_config.build()?;
-
-    // Set the environment variable if required
-    if let Some(key) = args.set_env {
-        std::env::set_var::<OsString, OsString>(key.into(), calculator.bump().into())
-    }
 
     println!("{}", calculator.report());
 
