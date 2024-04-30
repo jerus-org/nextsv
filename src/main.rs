@@ -24,12 +24,19 @@ struct Cli {
     /// Prefix string to identify version number tags
     #[arg(short, long, value_parser, default_value = "v")]
     prefix: String,
+    /// Check level meets minimum for setting
+    ///
+    /// This option can be used to check the calculated level
+    /// meets a minimum before applying an update. Bump is reported
+    /// as "none" if the required level is not met.
+    #[clap(short, long)]
+    check: Option<Hierarchy>,
 }
 
 #[derive(Subcommand, Debug)]
 enum Commands {
     #[clap(name = "calculate", about = "Calculate the next version number")]
-    Calculate(Calculate),
+    Calculate,
     #[clap(name = "force", about = "Force the bump level")]
     Force(Force),
     #[clap(
@@ -58,20 +65,9 @@ struct Require {
     files: Vec<OsString>,
 }
 
-#[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
-struct Calculate {
-    /// Prefix string to identify version number tags
-    #[arg(short, long, value_parser, default_value = "v")]
-    prefix: String,
-    /// Check level meets minimum for setting
-    ///
-    /// This option can be used to check the calculated level
-    /// meets a minimum before applying an update. Bump is reported
-    /// as "none" if the required level is not met.
-    #[clap(short, long)]
-    check: Option<Hierarchy>,
-}
+// #[derive(Parser, Debug)]
+// #[clap(author, version, about, long_about = None)]
+// struct Calculate {}
 
 fn main() {
     let result = run();
@@ -96,6 +92,10 @@ fn run() -> ExitResult {
     calculator_config = calculator_config.set_bump_report(!args.no_bump);
     calculator_config = calculator_config.set_version_report(args.number);
 
+    if let Some(check_level) = args.check {
+        calculator_config = calculator_config.set_reporting_threshold(check_level);
+    };
+
     match args.command {
         Commands::Force(args) => {
             calculator_config = calculator_config.set_force_bump(args.bump);
@@ -104,11 +104,7 @@ fn run() -> ExitResult {
                 calculator_config = calculator_config.set_first_version();
             };
         }
-        Commands::Calculate(args) => {
-            if let Some(check_level) = args.check {
-                calculator_config = calculator_config.set_reporting_threshold(check_level);
-            };
-        }
+        Commands::Calculate => {}
         Commands::Require(args) => {
             calculator_config = calculator_config.add_required_files(args.files);
             calculator_config = calculator_config.set_required_enforcement(args.enforce);

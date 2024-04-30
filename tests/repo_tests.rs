@@ -354,16 +354,16 @@ fn test_repo_with_commit_and_force_bump(
 }
 
 #[rstest]
-#[case::non_production_commit("v0.1.0", "-n calculate -c ")]
-#[case::production_commit("v1.1.0", "-n calculate -c ")]
-#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n calculate -c ")]
-#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n calculate -c ")]
-#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n calculate -c ")]
-#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n calculate -c ")]
-#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n calculate -c ")]
-#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n calculate -c ")]
-#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n calculate -c ")]
-#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n calculate -c ")]
+#[case::non_production_commit("v0.1.0", "-n -c")]
+#[case::production_commit("v1.1.0", "-n -c")]
+#[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n -c")]
+#[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n -c")]
+#[case::non_production_pre_release_beta_commit("v0.1.0-beta.4", "-n -c")]
+#[case::production_pre_release_beta_commit("v1.1.0-beta.5", "-n -c")]
+#[case::non_production_pre_release_rc_commit("v0.1.0-rc.6", "-n -c")]
+#[case::production_pre_release_rc_commit("v1.1.0-rc.7", "-n -c")]
+#[case::non_production_pre_release_pre_commit("v0.1.0-pre.8", "-n -c")]
+#[case::production_pre_release_pre_commit("v1.1.0-pre.9", "-n -c")]
 #[trace]
 fn test_repo_with_commit_and_check(
     #[case] current_version: &str,
@@ -717,6 +717,7 @@ fn test_repo_with_commit_and_check(
     let mut arguments = arguments.to_string();
     arguments.push(' ');
     arguments.push_str(check);
+    arguments.push_str(" calculate");
     let test_result = execute_test(&arguments, &temp_dir);
 
     // tidy up the test environment
