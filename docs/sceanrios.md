@@ -21,41 +21,41 @@ The -n option to nextsv prints the expected version number based on the calculat
 
 ```console
 $ nextsv -n calculate
-minor
-0.2.0
+patch
+0.1.1
 
 ```
 
-### Make `fix` to version `0.2.0`
+### Make `fix` to version `0.1.1`
 
 ```console
 $ nextsv -n calculate
 patch
-0.2.1
+0.1.2
 
 ```
 
-### Add a new `feature` to version `0.2.1`
+### Add a new `feature` to version `0.1.2`
 
 ```console
 $ nextsv -n calculate
-minor
-0.3.0
+patch
+0.1.3
 
 ```
 
-### Add a `breaking` change to version `0.3.0`
+### Add a `breaking` change to version `0.1.3`
 
 As our current version is unstable the breaking change will increment the minor component.
 
 ```console
 $ nextsv -n calculate
 minor
-0.4.0
+0.2.0
 
 ```
 
-### Promote to `first` stable version from version `0.4.0`
+### Promote to `first` stable version from version `0.2.0`
 
 As there is no bump level in cargo release, nextsv produces the version number to effect the version 1.0.0 release.
 
@@ -79,43 +79,43 @@ The feature level change promotes the version to 0.4.0 and the alpha tag is then
 ```console
 $ nextsv -n force alpha
 alpha
-0.4.0-alpha.1
+0.3.1-alpha.1
 ```
 
-### Add a `fix` to release `0.4.0-alpha.1`
+### Add a `fix` to release `0.3.1-alpha.1`
 
 A fix to a pre-release version will increment the pre-release version number only.
 
 ```console
 $ nextsv -n calculate 
 alpha
-0.4.0-alpha.2
+0.3.1-alpha.2
 
 ```
 
-### Add another `fix` to version `0.4.0-alpha.2` and release as the first `beta` release
+### Add another `fix` to version `0.3.1-alpha.2` and release as the first `beta` release
 
 As the change is made to a pre-release version the version number is not affected.
 
 ```console
 $ nextsv -n force beta
 beta
-0.4.0-beta.1
+0.3.1-beta.1
 
 ```
 
-### Add another `fix` to version `0.4.0-beta.1` and release as the first `rc` release
+### Add another `fix` to version `0.3.1-beta.1` and release as the first `rc` release
 
 As the change is made to a pre-release version the version number is not affected.
 
 ```console
 $ nextsv -n force rc
 beta
-0.4.0-rc.1
+0.3.1-rc.1
 
 ```
 
-### Add final `fix` to release `0.4.0-rc.1` and release as `first` stable version
+### Add final `fix` to release `0.3.1-rc.1` and release as `first` stable version
 
 Forcing the version to first will remove the pre-release tag from the version number and give the release the first stable version number.
 
