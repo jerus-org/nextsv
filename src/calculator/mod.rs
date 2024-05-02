@@ -325,7 +325,7 @@ mod test {
     use crate::ForceBump;
 
     #[rstest]
-    #[case::feature("feat", "minor", "0.8.0")]
+    #[case::feature("feat", "patch", "0.8.0")]
     #[case::fix("fix", "patch", "0.7.10")]
     #[case::docs("docs", "patch", "0.7.10")]
     #[case::style("style", "patch", "0.7.10")]
