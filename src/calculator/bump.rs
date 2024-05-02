@@ -115,12 +115,6 @@ impl Bump {
                     // Breaking change found in commits
                     log::info!("Non production breaking change found.");
                     Bump::Minor
-                } else if 0 < *conventional.counts.get("feat").unwrap_or(&0_u32) {
-                    log::debug!(
-                        "{} feature commit(s) found requiring increment of minor number",
-                        conventional.counts.get("feat").unwrap_or(&0_u32).to_owned()
-                    );
-                    Bump::Minor
                 } else {
                     log::debug!(
                         "{} conventional commit(s) found requiring increment of patch number",
@@ -259,7 +253,7 @@ mod test {
             Route::NonProd => match conventional.top_type {
                 TopType::Other => Bump::Patch,
                 TopType::Fix => Bump::Patch,
-                TopType::Feature => Bump::Minor,
+                TopType::Feature => Bump::Patch,
                 TopType::Breaking => Bump::Minor,
                 TopType::None => Bump::None,
             },
