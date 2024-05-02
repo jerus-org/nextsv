@@ -38,8 +38,7 @@ fn test_intitial_to_production() {
     //  - Promote to production release
 
     let version_prefix = "v";
-    // let arguments = "-n -vvv";
-    let arguments = "-n calculate";
+    let arguments = "-n -vvv calculate";
 
     let initial_version = format!("{}0.1.0", version_prefix);
 
@@ -49,7 +48,7 @@ fn test_intitial_to_production() {
     // Add a file and create a feature commit
     let feature = "feature1.txt";
     let message = "feat: add feature1";
-    let expected = ("minor".to_string(), "0.2.0".to_string());
+    let expected = ("patch".to_string(), "0.1.1".to_string());
 
     add_feature(
         &repo,
@@ -65,7 +64,7 @@ fn test_intitial_to_production() {
 
     let feature = "feature1.txt";
     let message = "fix: fix to feature1";
-    let expected = ("patch".to_string(), "0.2.1".to_string());
+    let expected = ("patch".to_string(), "0.1.2".to_string());
 
     update_feature(
         &repo,
@@ -80,7 +79,7 @@ fn test_intitial_to_production() {
     // Add a new feature
     let feature = "feature2.txt";
     let message = "feat: add feature1";
-    let expected = ("minor".to_string(), "0.3.0".to_string());
+    let expected = ("patch".to_string(), "0.1.3".to_string());
 
     add_feature(
         &repo,
@@ -96,7 +95,7 @@ fn test_intitial_to_production() {
 
     let feature = "feature2.txt";
     let message = "fix!: breaking fix to feature2";
-    let expected = ("minor".to_string(), "0.4.0".to_string());
+    let expected = ("minor".to_string(), "0.2.0".to_string());
 
     update_feature(
         &repo,
@@ -136,7 +135,7 @@ fn test_intitial_to_production_with_pre_releases() {
     // Add a file and create a feature commit
     let feature = "feature1.txt";
     let message = "feat: add feature1";
-    let expected = ("minor".to_string(), "0.2.0".to_string());
+    let expected = ("patch".to_string(), "0.1.1".to_string());
 
     add_feature(
         &repo,
@@ -151,7 +150,7 @@ fn test_intitial_to_production_with_pre_releases() {
     // Update the file and create a fix commit
 
     let message = "fix: fix to feature1";
-    let expected = ("patch".to_string(), "0.2.1".to_string());
+    let expected = ("patch".to_string(), "0.1.2".to_string());
 
     update_feature(
         &repo,
@@ -165,7 +164,7 @@ fn test_intitial_to_production_with_pre_releases() {
 
     // Update a new feature
     let message = "feat: update feature1";
-    let expected = ("minor".to_string(), "0.3.0".to_string());
+    let expected = ("patch".to_string(), "0.1.3".to_string());
 
     update_feature(
         &repo,
@@ -180,7 +179,7 @@ fn test_intitial_to_production_with_pre_releases() {
     // Update feature and make alpha pre-release
     let feature = "feature1.txt";
     let message = "fix!: breaking fix to feature1";
-    let expected = ("alpha".to_string(), "0.4.0-alpha.1".to_string());
+    let expected = ("alpha".to_string(), "0.2.0-alpha.1".to_string());
 
     update_feature(
         &repo,
@@ -195,7 +194,7 @@ fn test_intitial_to_production_with_pre_releases() {
     // Update feature and apply a fix
     let feature = "feature1.txt";
     let message = "fix: breaking fix to feature1";
-    let expected = ("alpha".to_string(), "0.4.0-alpha.2".to_string());
+    let expected = ("alpha".to_string(), "0.2.0-alpha.2".to_string());
 
     update_feature(
         &repo,
@@ -210,7 +209,7 @@ fn test_intitial_to_production_with_pre_releases() {
     // Update feature and make beta pre-release
     let feature = "feature1.txt";
     let message = "fix: fix to feature1";
-    let expected = ("beta".to_string(), "0.4.0-beta.1".to_string());
+    let expected = ("beta".to_string(), "0.2.0-beta.1".to_string());
 
     update_feature(
         &repo,
@@ -225,7 +224,7 @@ fn test_intitial_to_production_with_pre_releases() {
     // Update feature and apply a fix
     let feature = "feature1.txt";
     let message = "fix: breaking fix to feature1";
-    let expected = ("beta".to_string(), "0.4.0-beta.2".to_string());
+    let expected = ("beta".to_string(), "0.2.0-beta.2".to_string());
 
     update_feature(
         &repo,
@@ -240,7 +239,7 @@ fn test_intitial_to_production_with_pre_releases() {
     // Update feature and make rc pre-release
     let feature = "feature1.txt";
     let message = "fix: fix to feature1";
-    let expected = ("rc".to_string(), "0.4.0-rc.1".to_string());
+    let expected = ("rc".to_string(), "0.2.0-rc.1".to_string());
 
     update_feature(
         &repo,
@@ -255,7 +254,7 @@ fn test_intitial_to_production_with_pre_releases() {
     // Update feature and apply a fix
     let feature = "feature1.txt";
     let message = "fix: breaking fix to feature1";
-    let expected = ("rc".to_string(), "0.4.0-rc.2".to_string());
+    let expected = ("rc".to_string(), "0.2.0-rc.2".to_string());
 
     update_feature(
         &repo,
@@ -297,7 +296,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     // Add a file and create a feature commit
     let feature = "feature1.txt";
     let message = "feat: add feature1";
-    let expected = ("minor".to_string(), "0.2.0".to_string());
+    let expected = ("patch".to_string(), "0.1.1".to_string());
 
     add_feature(
         &repo,
@@ -312,7 +311,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
     // Update the file and create a fix commit
 
     let message = "fix: fix to feature1";
-    let expected = ("patch".to_string(), "0.2.1".to_string());
+    let expected = ("patch".to_string(), "0.1.2".to_string());
 
     update_feature(
         &repo,
@@ -326,7 +325,7 @@ fn test_intitial_to_production_with_production_pre_releases() {
 
     // Update a new feature
     let message = "feat: update feature1";
-    let expected = ("minor".to_string(), "0.3.0".to_string());
+    let expected = ("patch".to_string(), "0.1.3".to_string());
 
     update_feature(
         &repo,

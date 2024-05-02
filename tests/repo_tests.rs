@@ -77,8 +77,8 @@ fn test_repo_with_commit(
     let expected = match current_version {
         "v0.1.0" => match commit_type {
             "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
-            | "custom" | "build" => "patch\n0.1.1\n",
-            "breaking" | "feat" => "minor\n0.2.0\n",
+            | "feat" | "custom" | "build" => "patch\n0.1.1\n",
+            "breaking" => "minor\n0.2.0\n",
             _ => panic!("unexpected commit type"),
         },
         "v1.1.0" => match commit_type {
@@ -394,9 +394,9 @@ fn test_repo_with_commit_and_check(
                 _ => panic!("unexpected check"),
             },
             "feat" => match check {
-                "other" => "minor\n0.2.0\n",
-                "fix" => "minor\n0.2.0\n",
-                "feature" => "minor\n0.2.0\n",
+                "other" => "patch\n0.1.1\n",
+                "fix" => "patch\n0.1.1\n",
+                "feature" => "patch\n0.1.1\n",
                 "breaking" => "none\n",
                 _ => panic!("unexpected check"),
             },
@@ -729,7 +729,7 @@ fn test_repo_with_commit_and_check(
 }
 
 #[rstest]
-#[case::non_production_commit("v0.1.0", "-n require -f")]
+#[case::non_production_commit("v0.1.0", "-n -vvv require -f")]
 #[case::production_commit("v1.1.0", "-n require -f")]
 #[case::non_production_pre_release_alpha_commit("v0.1.0-alpha.2", "-n require -f")]
 #[case::production_pre_release_alpha_commit("v1.1.0-alpha.3", "-n require -f")]
@@ -755,9 +755,9 @@ fn test_repo_with_commit_and_enforce_test_file(
     let expected = match current_version {
         "v0.1.0" => match file {
             "test.txt" | "missing.txt" => match commit_type {
-                "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
-                | "test" | "custom" | "build" => "patch\n0.1.1\n",
-                "feat" | "breaking" => "minor\n0.2.0\n",
+                "feat" | "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor"
+                | "perf" | "test" | "custom" | "build" => "patch\n0.1.1\n",
+                "breaking" => "minor\n0.2.0\n",
                 _ => panic!("unexpected commit type"),
             },
             "first-file -f test.txt" => match commit_type {
@@ -774,7 +774,7 @@ fn test_repo_with_commit_and_enforce_test_file(
                 },
                 "feat" => match check {
                     "other" | "fix" | "feature" => "none\n",
-                    "breaking" => "minor\n0.2.0\n",
+                    "breaking" => "patch\n0.1.1\n",
                     _ => panic!("unexpected check"),
                 },
                 "breaking" => match check {
@@ -1125,9 +1125,9 @@ fn test_repo_custom_version_prefix_with_commit(
     // select expected result
     let expected = match current_version {
         "0.1.0" => match commit_type {
-            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
-            | "custom" | "build" => "patch\n0.1.1\n",
-            "feat" | "breaking" => "minor\n0.2.0\n",
+            "feat" | "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
+            | "test" | "custom" | "build" => "patch\n0.1.1\n",
+            "breaking" => "minor\n0.2.0\n",
             _ => panic!("unexpected commit type"),
         },
         "1.1.0" => match commit_type {
@@ -1233,9 +1233,9 @@ fn test_repo_bump_only_with_commit(
     // select expected result
     let expected = match current_version {
         "v0.1.0" => match commit_type {
-            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
-            | "custom" | "build" => "patch\n",
-            "feat" | "breaking" => "minor\n",
+            "feat" | "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
+            | "test" | "custom" | "build" => "patch\n",
+            "breaking" => "minor\n",
             _ => panic!("unexpected commit type"),
         },
         "v1.1.0" => match commit_type {
@@ -1336,9 +1336,9 @@ fn test_repo_number_only_with_commit(
     // select expected result
     let expected = match current_version {
         "v0.1.0" => match commit_type {
-            "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf" | "test"
-            | "custom" | "build" => "0.1.1\n",
-            "feat" | "breaking" => "0.2.0\n",
+            "feat" | "fix" | "chore" | "ci" | "revert" | "docs" | "style" | "refactor" | "perf"
+            | "test" | "custom" | "build" => "0.1.1\n",
+            "breaking" => "0.2.0\n",
             _ => panic!("unexpected commit type"),
         },
         "v1.1.0" => match commit_type {
