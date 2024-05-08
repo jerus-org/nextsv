@@ -2,7 +2,7 @@ workspace = { members = ["test-utils"] }
 
 [package]
 name = "nextsv"
-version = "0.8.1"
+version = "0.8.2"
 edition = "2021"
 authors = ["jerusdp <jrussell@jerus.ie>"]
 rust-version = "1.74"
