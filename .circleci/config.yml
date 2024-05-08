@@ -103,7 +103,7 @@ jobs:
           name: Publish update
           command: |
             set -exo pipefail
-            export NEXTSV_LEVEL=$(nextsv -q -c other require -f CHANGES.md -f CHANGELOG.md feature
+            export NEXTSV_LEVEL=$(nextsv -q -c other require -f CHANGES.md -f CHANGELOG.md feature)
             if [ $NEXTSV_LEVEL != "none" ] ; then 
               cargo release changes
               cargo release -vvv --execute --no-confirm --sign-tag "$NEXTSV_LEVEL"
