@@ -106,7 +106,7 @@ jobs:
             export NEXTSV_LEVEL=$(nextsv -q -c fix require -f CHANGES.md -f CHANGELOG.md feature)
             if [ $NEXTSV_LEVEL != "none" ] ; then 
               cargo release changes
-              cargo release -vvv --execute --no-confirm "$NEXTSV_LEVEL"
+              cargo release -vvv --execute --no-confirm --sign-tag "$NEXTSV_LEVEL"
             else 
               echo "Not ready to release yet."
             fi
