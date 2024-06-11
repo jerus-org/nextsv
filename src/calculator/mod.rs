@@ -55,7 +55,7 @@ impl Calculator {
             config.enforce,
             test_level,
         );
-        if dbg!(test_level >= config.enforce) {
+        if test_level >= config.enforce {
             log::debug!("Enforcing the files: {:?}", config.files);
             if !config.files.is_subset(&conventional.changed_files) {
                 let mut missing_files = vec![];

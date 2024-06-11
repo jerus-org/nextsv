@@ -192,3 +192,27 @@ Options:
   -V, --version        Print version
 
 ```
+```
+$ nextsv
+? 2
+Next semantic version calculator
+
+Usage: nextsv [OPTIONS] <COMMAND>
+
+Commands:
+  calculate  Calculate the next version number
+  force      Force the bump level
+  require    Require the listed files to be updated before making a release with the specified change level
+  help       Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose...       Increase logging verbosity
+  -q, --quiet...         Decrease logging verbosity
+  -b, --no-bump          Do not report version bump
+  -n, --number           Report the version number
+  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
+  -c, --check <CHECK>    Check level meets minimum for setting [possible values: other, fix, feature, breaking]
+  -h, --help             Print help (see more with '--help')
+  -V, --version          Print version
+
+```
