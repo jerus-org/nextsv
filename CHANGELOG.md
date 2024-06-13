@@ -6,8 +6,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<!-- next-header -->
-
 ## [Unreleased] - ReleaseDate
 
 ## [0.8.5] - 2024-06-11
@@ -24,13 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.1] - 2024-05-08
 
-### Bug Fixes
+### Fixed
 
 - Unstable features bump patch
 
 ## [0.8.0] - 2024-04-30
 
-### Bug Fixes
+### Fixed
 
 - Return type should be answer
 - Missing ";"
@@ -49,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [**breaking**] Check option needs to be at the top level so that it can be applied to calculate and require
 - [**breaking**] Remove set-env feature as not workable as thought
 
-### Documentation
+### Changed
 
 - Update code in doc comment
 - Updated doc tests and removed deleted Answer type
@@ -58,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Scenarios describing usage
 - Scenarios describing usage
 
-### Features
+### Added
 
 - Export Answer type
 - Set environment variable; use Answer type; return error
@@ -68,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [**breaking**] Restructure to allow force to pre-release and first version
 - Restructure to allow force to pre-release and first version
 
-### Miscellaneous Tasks
+### Changed
 
 - Licensing scanning only required once.
 - Update MSRV to 1.64
@@ -104,7 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump ossf/scorecard-action from 2.1.1 to 2.3.1
 - Bump actions/upload-artifact from 4.3.1 to 4.3.3
 
-### Refactor
+### Changed
 
 - Answer type to store result of calculation
 - Configure error for cli output
@@ -123,7 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented a cleaner approach to calculation.
 - Commit type handling in test_repo_with_commit function
 
-### Testing
+### Changed
 
 - Update tests with new feature
 - Update cli tests
@@ -156,7 +154,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move out git_utils fto test_utils crate
 - Move out git_utils fto test_utils crate
 
-### Ci
+### Changed
 
 - Test to make work; prep for env variable
 - Update CI to use 1.70 as min rust
@@ -172,23 +170,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 2022-12-16
 
-### Bug Fixes
+### Fixed
 
 - Case where major is 0
 - Update rust crate clap to 4.0.29
 - Correct Enforcelevel values
 - Update rust crate env_logger to 0.10.0
 
-### Documentation
+### Changed
 
 - Feature set as list
 - Fix typo in comment
 
-### Features
+### Added
 
 - Add check option
 
-### Miscellaneous Tasks
+### Changed
 
 - Update github/codeql-action action to v2.1.35
 - Build script to gate let_else
@@ -196,20 +194,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update ossf/scorecard-action digest to b8b2b68
 - Update github/codeql-action digest to 62b14cb
 
-### Refactor
+### Changed
 
 - Make check option optional
 - Correct log level of to info
 - Return output from calculate
 - Implementation of type hierarchy checking
 
-### Testing
+### Changed
 
 - Fix breaking test as test incorrect
 - Update tests for trycmd
 - Align tests with code changes
 
-### Ci
+### Changed
 
 - Split release job into two
 - Fix release ready script
@@ -220,14 +218,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.4] - 2022-11-19
 
-### Bug Fixes
+### Fixed
 
 - Check  backwards
 - Rename of variable
 - Update rust crate clap to 4.0.26
 - Update rust crate env_logger to 0.9.3
 
-### Miscellaneous Tasks
+### Changed
 
 - Fix release nextsv specification
 - Update github/codeql-action digest
@@ -242,7 +240,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update ossf/scorecard-action action to v2
 - Release
 
-### Testing
+### Changed
 
 - Update cmd line tests as without updates the test should fail
 - Removing testing title
@@ -250,7 +248,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.3] - 2022-11-05
 
-### Bug Fixes
+### Fixed
 
 - Update rust crate clap to 3.2.23
 - Update rust crate env_logger to 0.9.1
@@ -259,7 +257,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update rust crate clap to v4
 - Adapt to Clap 4.0
 
-### Miscellaneous Tasks
+### Changed
 
 - Update actions/upload-artifact digest to 83fd05a
 - Feature enable missing doc
@@ -272,23 +270,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update
 - Release
 
-### Testing
+### Changed
 
 - Add tests for CLI expected outputs
 
 ## [0.7.2] - 2022-09-24
 
-### Miscellaneous Tasks
+### Changed
 
 - Release
 
 ## [0.7.1] - 2022-09-18
 
-### Bug Fixes
+### Fixed
 
 - Clippy lint failure on not deriving Eq
 
-### Miscellaneous Tasks
+### Changed
 
 - Tidy up the change logs
 - Update security policy
@@ -298,18 +296,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update enforce flag to -e
 - Release
 
-### Refactor
+### Changed
 
 - Rename require-level enforce-level
 
 ## [0.7.0] - 2022-08-22
 
-### Bug Fixes
+### Fixed
 
 - Files check as part of the calculation
 - Pass vec and not reference to vec
 
-### Features
+### Added
 
 - ✨ require switch in cli
 - Multiple value flag on cli config
@@ -325,11 +323,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use diff to get file list as OsStrings
 - Required_level to enforce
 
-### Miscellaneous Tasks
+### Changed
 
 - (ci) remove redundant rustup in docs job
 
-### Refactor
+### Changed
 
 - Simplify options
 - Rename commits walk_commits
@@ -340,67 +338,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.1] - 2022-08-14
 
-### Bug Fixes
+### Fixed
 
 - (docs) minimum rust release graphic
 
-### Miscellaneous Tasks
+### Changed
 
 - Release
 
 ## [0.6.0] - 2022-08-14
 
-### Bug Fixes
+### Fixed
 
 - (docs) update min rust version to 1.60
 - (crate) update rust-version to 1.60
 
-### Features
+### Added
 
 - Custom image for execution environment
 
-### Miscellaneous Tasks
+### Changed
 
 - (ci) remove rustup
 - Release
 
-### Ci
+### Changed
 
 - Remove installs included in custom executor
 
 ## [0.5.2] - 2022-08-08
 
-### Bug Fixes
+### Fixed
 
 - Allow none as valid response
 - Clippy lint on unused Level
 
-### Miscellaneous Tasks
+### Changed
 
 - If test publish only not none
 - Release
 
-### Ci
+### Changed
 
 - Add else block to halt instead of fail.
 
 ## [0.5.1] - 2022-08-07
 
-### Bug Fixes
+### Fixed
 
 - Registry must be a https:// link not a ssh link
 - Correct specification of registry
 
-### Miscellaneous Tasks
+### Changed
 
 - (ci) update address for crates.io
 - Release
 
-### Bug Fixes
+### Fixed
 
 - Align documentation tests
 
-### Features
+### Added
 
 - ✨ Add logging feature to crate
 - ✨ Add logging to the CLI.
@@ -409,12 +407,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🎨 Report level with   version number
 - Exit with an error
 
-### Miscellaneous Tasks
+### Changed
 
 - 🎨 Check using nextsv to fail quickly
 - Update Changelogs
 
-### Refactor
+### Changed
 
 - 🎨 Remove count fields from the struct
 - 🎨 replace old methods with new
@@ -431,7 +429,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - 2022-07-31
 
-### Bug Fixes
+### Fixed
 
 - Update rust crate clap to 3.2.11
 - Update rust crate clap to 3.2.12
@@ -440,14 +438,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update rust crate clap to 3.2.14
 - 🐛 Spelling error in error text
 
-### Features
+### Added
 
 - Create enum of bump levels
 - ✨ add patch level of none when no conventional commits are found
 - Instead of Level::None return and error NoLevelChange
 - Add error for no level change
 
-### Miscellaneous Tasks
+### Changed
 
 - 🎨 Update changelogs
 - Update github/codeql-action digest to d8c9c72
@@ -464,22 +462,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.1] - 2022-07-11
 
-## Fix
+## Fixed
 
 - Errors found after cargo release run
 
 ## [0.3.0] - 2022-07-11
 
-### Bug Fixes
+### Fixed
 
 - Fix errors in drafted Level code
 - 🐛 replace tag identification using 'v' with prefix variable
 
-### Documentation
+### Changed
 
 - ✨ Commit based changelog using git cliff application
 
-### Features
+### Added
 
 - Create enum of bump levels
 - ✨ Features for calculation of level or version number
@@ -487,7 +485,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ function to calculate next level based on recent commits
 - ✨ Implement display for semantic::Level
 
-### Refactor
+### Changed
 
 - 🎨 separate version calculation into a dedicated function version
 - 🎨 move level printing code to separate function for level
@@ -496,16 +494,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2022-06-27
 
-### Bug Fixes
+### Fixed
 
 - 🐛 Set lower components to 0 on increment
 
-### Features
+### Added
 
 - ✨ cli based on clap with verbose setting
 - ✨ force option on cli to force a specific level of update
 
-### Miscellaneous Tasks
+### Changed
 
 - 🔥 Remove dbg! macros
 - 📝 Update release version in Cargo.toml to 0.1.1
@@ -513,18 +511,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.1] - 2022-06-26
 
-### Bug Fixes
+### Fixed
 
 - 🐛 Fix failure to detect separate tag and correct calculation of the next version
 - 🐛 Test both other and fix_commits values for patch increment (major=0)
 
 ## [0.1.0] - 2022-06-25
 
-### Documentation
+### Changed
 
 - 📝 Update documentation for semantic module to refer to semver standard
 
-### Features
+### Added
 
 - ✨ Add Semantic version struct and methods to display and increment components
 - ✨ Add error module for nextsv library
@@ -536,20 +534,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add module references to library and testing code in main, settings updates
 - ✨ create function to calculate next semantic version
 
-### Miscellaneous Tasks
+### Changed
 
 - ✨ Initial announcement to reserve crate name
 - Add CI to test and check the code
 - Update security and changelog notices
 - Add cargo release pre-release replacements
 
-### Refactor
+### Changed
 
 - 🎨 Refactor into library and binary
 - Tuning updates
 
-<!-- generated by git-cliff -->
-<!-- next-url -->
 [Unreleased]: https://github.com/jerusdp/nextsv/compare/v0.8.5...HEAD
 [0.8.5]: https://github.com/jerus-org/nextsv/compare/v0.8.4...v0.8.5
 [0.8.4]: https://github.com/jerus-org/nextsv/compare/v0.8.3...v0.8.4
