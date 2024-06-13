@@ -462,7 +462,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.1] - 2022-07-11
 
-## Fixed
+### Fixed
 
 - Errors found after cargo release run
 
