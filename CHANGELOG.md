@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependencies: update snapbox requirement from 0.5.9 to 0.6.10(pr [#141](https://github.com/jerus-org/nextsv/pull/141))
 - Dependencies: update rstest requirement from 0.19.0 to 0.21.0(pr [#139](https://github.com/jerus-org/nextsv/pull/139))
+- Dependencies: update github/codeql-action action to v3(pr [#146](https://github.com/jerus-org/nextsv/pull/146))
 
 ## [0.8.5] - 2024-06-11
 
