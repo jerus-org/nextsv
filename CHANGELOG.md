@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dependencies: update rstest requirement from 0.19.0 to 0.21.0(pr [#139](https://github.com/jerus-org/nextsv/pull/139))
 - Dependencies: update github/codeql-action action to v3(pr [#146](https://github.com/jerus-org/nextsv/pull/146))
 - Dependencies: update rust crate git2 to 0.19.0(pr [#145](https://github.com/jerus-org/nextsv/pull/145))
+- Dependencies: update actions/checkout action to v4.1.7(pr [#144](https://github.com/jerus-org/nextsv/pull/144))
 
 ## [0.8.5] - 2024-06-11
 
