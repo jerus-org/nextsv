@@ -1,4 +1,3 @@
-<!-- markdownlint-disable MD024 -->
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -7,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Added
+
+- add support for pcu to ci script(pr [#143](https://github.com/jerus-org/nextsv/pull/143))
 
 ## [0.8.5] - 2024-06-11
 
@@ -28,34 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0] - 2024-04-30
 
-### Fixed
-
-- Return type should be answer
-- Missing ";"
-- Spelling of output in description of set_env
-- Scorecards to depend on github token only
-- Set publish_results false for scorecards (testing cosign issue)
-- Move rust security check to Circle CI
-- Added missing build and ci types to TypeHierarchy parse
-- Removed second treatment of threshold in reporting method
-- Made tag refs optional
-- Fix default for level to true so that level is set by default
-- Adding a fix for a patch bump
-- Adding a fix for a patch bump
-- Adding a fix for a patch bump
-- Refactor next_version.rs to use semantic_version field in Bump::Custom
-- [**breaking**] Check option needs to be at the top level so that it can be applied to calculate and require
-- [**breaking**] Remove set-env feature as not workable as thought
-
-### Changed
-
-- Update code in doc comment
-- Updated doc tests and removed deleted Answer type
-- Added documentation for CalculationConfig
-- Documentation review and revision for completeness
-- Scenarios describing usage
-- Scenarios describing usage
-
 ### Added
 
 - Export Answer type
@@ -68,6 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update code in doc comment
+- Updated doc tests and removed deleted Answer type
+- Added documentation for CalculationConfig
+- Documentation review and revision for completeness
+- Scenarios describing usage
+- Scenarios describing usage
 - Licensing scanning only required once.
 - Update MSRV to 1.64
 - Replace default implementation with derive
@@ -101,9 +82,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump github/codeql-action from 1 to 3
 - Bump ossf/scorecard-action from 2.1.1 to 2.3.1
 - Bump actions/upload-artifact from 4.3.1 to 4.3.3
-
-### Changed
-
 - Answer type to store result of calculation
 - Configure error for cli output
 - Configure error for cli output
@@ -120,9 +98,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed semantic to version and included semantic as part of the overall module.
 - Implemented a cleaner approach to calculation.
 - Commit type handling in test_repo_with_commit function
-
-### Changed
-
 - Update tests with new feature
 - Update cli tests
 - Update expected results from trycmd tests
@@ -153,14 +128,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Scenario with first production pre-releases
 - Move out git_utils fto test_utils crate
 - Move out git_utils fto test_utils crate
-
-### Changed
-
 - Test to make work; prep for env variable
 - Update CI to use 1.70 as min rust
 - Update minimum rust to 1.73
 - Updated Minimum rust version to 1.74
 - Updated circle ci config to use new cli
+
+### Fixed
+
+- Return type should be answer
+- Missing ";"
+- Spelling of output in description of set_env
+- Scorecards to depend on github token only
+- Set publish_results false for scorecards (testing cosign issue)
+- Move rust security check to Circle CI
+- Added missing build and ci types to TypeHierarchy parse
+- Removed second treatment of threshold in reporting method
+- Made tag refs optional
+- Fix default for level to true so that level is set by default
+- Adding a fix for a patch bump
+- Adding a fix for a patch bump
+- Adding a fix for a patch bump
+- Refactor next_version.rs to use semantic_version field in Bump::Custom
+- [**breaking**] Check option needs to be at the top level so that it can be applied to calculate and require
+- [**breaking**] Remove set-env feature as not workable as thought
 
 ## [0.7.9] - 2022-12-21
 
@@ -170,6 +161,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.6] - 2022-12-16
 
+### Added
+
+- Add check option
+
+### Changed
+
+- Feature set as list
+- Fix typo in comment
+- Update github/codeql-action action to v2.1.35
+- Build script to gate let_else
+- Update rust crate trycmd to 0.14.5
+- Update ossf/scorecard-action digest to b8b2b68
+- Update github/codeql-action digest to 62b14cb
+- Make check option optional
+- Correct log level of to info
+- Return output from calculate
+- Implementation of type hierarchy checking
+- Fix breaking test as test incorrect
+- Update tests for trycmd
+- Align tests with code changes
+- Split release job into two
+- Fix release ready script
+- Debug verbosity for nextsv
+- Use check in  CI
+
 ### Fixed
 
 - Case where major is 0
@@ -177,53 +193,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Correct Enforcelevel values
 - Update rust crate env_logger to 0.10.0
 
-### Changed
-
-- Feature set as list
-- Fix typo in comment
-
-### Added
-
-- Add check option
-
-### Changed
-
-- Update github/codeql-action action to v2.1.35
-- Build script to gate let_else
-- Update rust crate trycmd to 0.14.5
-- Update ossf/scorecard-action digest to b8b2b68
-- Update github/codeql-action digest to 62b14cb
-
-### Changed
-
-- Make check option optional
-- Correct log level of to info
-- Return output from calculate
-- Implementation of type hierarchy checking
-
-### Changed
-
-- Fix breaking test as test incorrect
-- Update tests for trycmd
-- Align tests with code changes
-
-### Changed
-
-- Split release job into two
-- Fix release ready script
-- Debug verbosity for nextsv
-- Use check in  CI
-
 ## [0.7.5] - 2022-12-05
 
 ## [0.7.4] - 2022-11-19
-
-### Fixed
-
-- Check  backwards
-- Rename of variable
-- Update rust crate clap to 4.0.26
-- Update rust crate env_logger to 0.9.3
 
 ### Changed
 
@@ -239,23 +211,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update rust crate trycmd to 0.14.4
 - Update ossf/scorecard-action action to v2
 - Release
-
-### Changed
-
 - Update cmd line tests as without updates the test should fail
 - Removing testing title
 - Correct required file check
 
-## [0.7.3] - 2022-11-05
-
 ### Fixed
 
-- Update rust crate clap to 3.2.23
-- Update rust crate env_logger to 0.9.1
-- Update rust crate git2 to 0.15.0
-- Update rust crate clap to v4
-- Update rust crate clap to v4
-- Adapt to Clap 4.0
+- Check  backwards
+- Rename of variable
+- Update rust crate clap to 4.0.26
+- Update rust crate env_logger to 0.9.3
+
+## [0.7.3] - 2022-11-05
 
 ### Changed
 
@@ -269,10 +236,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update actions/checkout digest to 1f9a0c2
 - Update
 - Release
-
-### Changed
-
 - Add tests for CLI expected outputs
+
+### Fixed
+
+- Update rust crate clap to 3.2.23
+- Update rust crate env_logger to 0.9.1
+- Update rust crate git2 to 0.15.0
+- Update rust crate clap to v4
+- Update rust crate clap to v4
+- Adapt to Clap 4.0
 
 ## [0.7.2] - 2022-09-24
 
@@ -281,10 +254,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release
 
 ## [0.7.1] - 2022-09-18
-
-### Fixed
-
-- Clippy lint failure on not deriving Eq
 
 ### Changed
 
@@ -295,17 +264,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update nextsv calculation
 - Update enforce flag to -e
 - Release
-
-### Changed
-
 - Rename require-level enforce-level
-
-## [0.7.0] - 2022-08-22
 
 ### Fixed
 
-- Files check as part of the calculation
-- Pass vec and not reference to vec
+- Clippy lint failure on not deriving Eq
+
+## [0.7.0] - 2022-08-22
 
 ### Added
 
@@ -326,32 +291,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - (ci) remove redundant rustup in docs job
-
-### Changed
-
 - Simplify options
 - Rename commits walk_commits
 - Trace file names found
 - Use HashSet
 
+### Fixed
+
+- Files check as part of the calculation
+- Pass vec and not reference to vec
+
 ## [0.6.2] - 2022-08-20
 
 ## [0.6.1] - 2022-08-14
-
-### Fixed
-
-- (docs) minimum rust release graphic
 
 ### Changed
 
 - Release
 
-## [0.6.0] - 2022-08-14
-
 ### Fixed
 
-- (docs) update min rust version to 1.60
-- (crate) update rust-version to 1.60
+- (docs) minimum rust release graphic
+
+## [0.6.0] - 2022-08-14
 
 ### Added
 
@@ -361,42 +323,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - (ci) remove rustup
 - Release
+- Remove installs included in custom executor
+
+### Fixed
+
+- (docs) update min rust version to 1.60
+- (crate) update rust-version to 1.60
+
+## [0.5.2] - 2022-08-08
 
 ### Changed
 
-- Remove installs included in custom executor
-
-## [0.5.2] - 2022-08-08
+- If test publish only not none
+- Release
+- Add else block to halt instead of fail.
 
 ### Fixed
 
 - Allow none as valid response
 - Clippy lint on unused Level
 
-### Changed
-
-- If test publish only not none
-- Release
-
-### Changed
-
-- Add else block to halt instead of fail.
-
 ## [0.5.1] - 2022-08-07
-
-### Fixed
-
-- Registry must be a https:// link not a ssh link
-- Correct specification of registry
-
-### Changed
-
-- (ci) update address for crates.io
-- Release
-
-### Fixed
-
-- Align documentation tests
 
 ### Added
 
@@ -409,11 +356,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- (ci) update address for crates.io
+- Release
 - 🎨 Check using nextsv to fail quickly
 - Update Changelogs
-
-### Changed
-
 - 🎨 Remove count fields from the struct
 - 🎨 replace old methods with new
 - 🎨 replace specific functions with generic in verbosity
@@ -427,16 +373,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Feature flags no longer required
 - Update call to nextsv in CI
 
-## [0.4.0] - 2022-07-31
-
 ### Fixed
 
-- Update rust crate clap to 3.2.11
-- Update rust crate clap to 3.2.12
-- Update rust crate git-conventional to 0.12.0
-- Update rust crate clap to 3.2.13
-- Update rust crate clap to 3.2.14
-- 🐛 Spelling error in error text
+- Registry must be a https:// link not a ssh link
+- Correct specification of registry
+- Align documentation tests
+
+## [0.4.0] - 2022-07-31
 
 ### Added
 
@@ -460,6 +403,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update ossf/scorecard-action digest to 3155d13
 - ✨ Add workflow to check  for and release
 
+### Fixed
+
+- Update rust crate clap to 3.2.11
+- Update rust crate clap to 3.2.12
+- Update rust crate git-conventional to 0.12.0
+- Update rust crate clap to 3.2.13
+- Update rust crate clap to 3.2.14
+- 🐛 Spelling error in error text
+
 ## [0.3.1] - 2022-07-11
 
 ### Fixed
@@ -467,15 +419,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Errors found after cargo release run
 
 ## [0.3.0] - 2022-07-11
-
-### Fixed
-
-- Fix errors in drafted Level code
-- 🐛 replace tag identification using 'v' with prefix variable
-
-### Changed
-
-- ✨ Commit based changelog using git cliff application
 
 ### Added
 
@@ -487,16 +430,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- ✨ Commit based changelog using git cliff application
 - 🎨 separate version calculation into a dedicated function version
 - 🎨 move level printing code to separate function for level
 - 🎨 Two subcommands for version and level output
 - 🎨 Tidy off testing aids
 
-## [0.2.0] - 2022-06-27
-
 ### Fixed
 
-- 🐛 Set lower components to 0 on increment
+- Fix errors in drafted Level code
+- 🐛 replace tag identification using 'v' with prefix variable
+
+## [0.2.0] - 2022-06-27
 
 ### Added
 
@@ -509,6 +454,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 📝 Update release version in Cargo.toml to 0.1.1
 - Update version in Cargo.toml to 0.2.0
 
+### Fixed
+
+- 🐛 Set lower components to 0 on increment
+
 ## [0.1.1] - 2022-06-26
 
 ### Fixed
@@ -517,10 +466,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🐛 Test both other and fix_commits values for patch increment (major=0)
 
 ## [0.1.0] - 2022-06-25
-
-### Changed
-
-- 📝 Update documentation for semantic module to refer to semver standard
 
 ### Added
 
@@ -536,40 +481,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- 📝 Update documentation for semantic module to refer to semver standard
 - ✨ Initial announcement to reserve crate name
 - Add CI to test and check the code
 - Update security and changelog notices
 - Add cargo release pre-release replacements
-
-### Changed
-
 - 🎨 Refactor into library and binary
 - Tuning updates
 
-[Unreleased]: https://github.com/jerusdp/nextsv/compare/v0.8.5...HEAD
-[0.8.5]: https://github.com/jerus-org/nextsv/compare/v0.8.4...v0.8.5
-[0.8.4]: https://github.com/jerus-org/nextsv/compare/v0.8.3...v0.8.4
-[0.8.3]: https://github.com/jerus-org/nextsv/compare/v0.8.2...v0.8.3
-[0.8.2]: https://github.com/jerus-org/nextsv/compare/v0.8.1...v0.8.2
-[0.8.1]: https://github.com/jerus-org/nextsv/compare/v0.8.0...v0.8.1
-[0.8.0]: https://github.com/jerus-org/nextsv/compare/v0.7.9...v0.8.0
-[0.7.9]: https://github.com/jerus-org/nextsv/compare/v0.7.8...v0.7.9
-[0.7.8]: https://github.com/jerus-org/nextsv/compare/v0.7.7...v0.7.8
-[0.7.7]: https://github.com/jerus-org/nextsv/compare/v0.7.6...v0.7.7
-[0.7.5]: https://github.com/jerus-org/nextsv/compare/v0.7.4...v0.7.5
-[0.7.4]: https://github.com/jerus-org/nextsv/compare/v0.7.3...v0.7.4
-[0.7.3]: https://github.com/jerus-org/nextsv/compare/v0.7.2...v0.7.3
-[0.7.2]: https://github.com/jerus-org/nextsv/compare/v0.7.1...v0.7.2
-[0.7.1]: https://github.com/jerus-org/nextsv/compare/v0.7.0...v0.7.1
-[0.7.0]: https://github.com/jerus-org/nextsv/compare/v0.6.2...v0.7.0
-[0.6.2]: https://github.com/jerus-org/nextsv/compare/v0.6.1...v0.6.2
-[0.6.1]: https://github.com/jerus-org/nextsv/compare/v0.6.0...v0.6.1
-[0.6.0]: https://github.com/jerus-org/nextsv/compare/v0.5.2...v0.6.0
-[0.5.2]: https://github.com/jerus-org/nextsv/compare/v0.5.1...v0.5.2
-[0.5.1]: https://github.com/jerus-org/nextsv/compare/v0.5.0...v0.5.1
-[0.4.0]: https://github.com/jerus-org/nextsv/compare/v0.3.1...V0.4.0
-[0.3.1]: https://github.com/jerus-org/nextsv/compare/v0.3.0...v0.3.1
-[0.3.0]: https://github.com/jerus-org/nextsv/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/jerudp/nextsv/compare/v0.1.1...v0.2.0
-[0.1.1]: https://github.com/jerudp/nextsv/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/jerudp/nextsv/compare/...v0.1.0
+[Unreleased]: https://github.com/jerudp/nextsv/compare/0.8.5...HEAD
+[0.8.5]: https://github.com/jerudp/nextsv/compare/0.8.4...0.8.5
+[0.8.4]: https://github.com/jerudp/nextsv/compare/0.8.3...0.8.4
+[0.8.3]: https://github.com/jerudp/nextsv/compare/0.8.2...0.8.3
+[0.8.2]: https://github.com/jerudp/nextsv/compare/0.8.1...0.8.2
+[0.8.1]: https://github.com/jerudp/nextsv/compare/0.8.0...0.8.1
+[0.8.0]: https://github.com/jerudp/nextsv/compare/0.7.9...0.8.0
+[0.7.9]: https://github.com/jerudp/nextsv/compare/0.7.8...0.7.9
+[0.7.8]: https://github.com/jerudp/nextsv/compare/0.7.7...0.7.8
+[0.7.7]: https://github.com/jerudp/nextsv/compare/0.7.6...0.7.7
+[0.7.6]: https://github.com/jerudp/nextsv/compare/0.7.5...0.7.6
+[0.7.5]: https://github.com/jerudp/nextsv/compare/0.7.4...0.7.5
+[0.7.4]: https://github.com/jerudp/nextsv/compare/0.7.3...0.7.4
+[0.7.3]: https://github.com/jerudp/nextsv/compare/0.7.2...0.7.3
+[0.7.2]: https://github.com/jerudp/nextsv/compare/0.7.1...0.7.2
+[0.7.1]: https://github.com/jerudp/nextsv/compare/0.7.0...0.7.1
+[0.7.0]: https://github.com/jerudp/nextsv/compare/0.6.2...0.7.0
+[0.6.2]: https://github.com/jerudp/nextsv/compare/0.6.1...0.6.2
+[0.6.1]: https://github.com/jerudp/nextsv/compare/0.6.0...0.6.1
+[0.6.0]: https://github.com/jerudp/nextsv/compare/0.5.2...0.6.0
+[0.5.2]: https://github.com/jerudp/nextsv/compare/0.5.1...0.5.2
+[0.5.1]: https://github.com/jerudp/nextsv/compare/0.4.0...0.5.1
+[0.4.0]: https://github.com/jerudp/nextsv/compare/0.3.1...0.4.0
+[0.3.1]: https://github.com/jerudp/nextsv/compare/0.3.0...0.3.1
+[0.3.0]: https://github.com/jerudp/nextsv/compare/0.2.0...0.3.0
+[0.2.0]: https://github.com/jerudp/nextsv/compare/0.1.1...0.2.0
+[0.1.1]: https://github.com/jerudp/nextsv/compare/0.1.0...0.1.1
+[0.1.0]: https://github.com/jerudp/nextsv/releases/tag/0.1.0
