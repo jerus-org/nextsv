@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - add support for pcu to ci script(pr [#143](https://github.com/jerus-org/nextsv/pull/143))
 
+### Security
+
+- Dependencies: update snapbox requirement from 0.5.9 to 0.6.10(pr [#141](https://github.com/jerus-org/nextsv/pull/141))
+
 ## [0.8.5] - 2024-06-11
 
 ### Fixed
