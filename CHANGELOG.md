@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dependencies: update actions/checkout action to v4.1.7(pr [#144](https://github.com/jerus-org/nextsv/pull/144))
 - Dependencies: update github/codeql-action action to v3.25.11(pr [#147])
 - Dependencies: update actions/upload-artifact action to v4.3.4(pr [#148])
+- Dependencies: update github/codeql-action action to v3.25.12(pr [#149])
 
 ## [0.8.5] - 2024-06-11
 
@@ -501,6 +502,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#147]: https://github.com/jerus-org/nextsv/pull/147
 [#148]: https://github.com/jerus-org/nextsv/pull/148
+[#149]: https://github.com/jerus-org/nextsv/pull/149
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/0.8.5...HEAD
 [0.8.5]: https://github.com/jerus-org/nextsv/compare/0.8.4...0.8.5
 [0.8.4]: https://github.com/jerus-org/nextsv/compare/0.8.3...0.8.4
