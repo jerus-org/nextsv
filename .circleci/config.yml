@@ -4,116 +4,30 @@ parameters:
   min-rust-version:
     type: string
     default: "1.74"
+  fingerprint:
+    type: string
+    default: SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
+  validation-flag:
+    type: boolean
+    default: false
+    description: "If true, the validation pipeline will be executed."
+  success-flag:
+    type: boolean
+    default: false
+    description: "If true, the success pipeline will be executed."
+
+orbs:
+  toolkit: jerus-org/circleci-toolkit@0.22.0
 
 executors:
   rust-env:
     docker:
-      - image: jerusdp/ci-rust:<< pipeline.parameters.min-rust-version >>
-
-commands:
-  cargo-build:
-    parameters:
-      rust-version:
-        default: "stable"
-        type: string
-    steps:
-      - run:
-          name: Check build <<parameters.rust-version>>
-          command: |
-            cargo +<<parameters.rust-version>> check --all-features
-
-  gpg-key:
-    steps:    
-      - run:
-          name: import GPG key
-          command: |
-            echo -e $BOT_GPG_KEY \
-              | base64 --decode --ignore-garbage \
-              | gpg --batch --allow-secret-key-import --import 
-            gpg --fingerprint
-            echo $BOT_TRUST | gpg --import-ownertrust
-            gpg --fingerprint
-
-  git-config:
-    steps:
-      - run:
-          name: Configure git for user and signing
-          command: |
-            git config --global user.email "$BOT_USER_EMAIL"
-            git config --global user.name "$BOT_USER_NAME"
-            git config --global gpg.program gpg
-            git config --global user.signingkey "$BOT_SIGN_KEY"
-            git config --global commit.gpgsign true
+      - image: jerusdp/ci-rust:<<pipeline.parameters.min-rust-version>>
+  base-env:
+    docker:
+      - image: jerusdp/ci-rust:base
 
 jobs:
-  required-builds:
-    executor: rust-env
-    steps:
-      - checkout
-      - run: cargo --version
-      - cargo-build
-      - cargo-build:
-          rust-version: "stable"
-      - cargo-build:
-          rust-version: << pipeline.parameters.min-rust-version >>
-
-  optional-builds:
-    executor: rust-env
-    steps:
-      - checkout
-      - cargo-build:
-          rust-version: "nightly"
-      - cargo-build:
-          rust-version: "beta"
-
-  basic-tests:
-    executor: rust-env
-    steps:
-      - checkout
-      - run: cargo --version
-      - run:
-          name: Check formatting for code
-          command: |
-            rustfmt --version
-            cargo fmt --all -- --check
-      - run:
-          name: Check idiomatic code use with Clippy
-          command: "cargo clippy --all --tests --all-features -- -D warnings"
-      - run:
-          name: Test crate with no features specified
-          command: "cargo test"
-
-  docs:
-    executor: rust-env
-    environment:
-      RUSTDOCFLAGS: --cfg docsrs -Dwarnings
-    steps:
-      - checkout
-      - run:
-          name: Test generation of all of the documentation for the crate
-          command: |
-            cargo +nightly doc --lib --no-deps --all-features --document-private-items
-  
-  pr-changelog-update:
-    executor: rust-env
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: 
-            - SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
-      - run:
-          name: Remove original SSH key from agent 
-          command: |
-            ssh-add -l
-            ssh-add -d ~/.ssh/id_rsa.pub
-            ssh-add -l
-      - gpg-key
-      - git-config
-      - run:
-          name: Update changelog
-          command: |
-            pcu -vv
-
   security:
     executor: rust-env
     steps:
@@ -127,61 +41,73 @@ jobs:
           command: |
             cargo audit -D warnings
 
-  make-release:
-    executor: rust-env
-    steps:
-      - checkout
-      - run:
-          name: import GPG key
-          command: |
-            echo -e $GPG2 | gpg --batch --no-tty --import --yes
-      - run:
-          name: Configure git for user and signing
-          command: |
-            git config user.email "$USER_EMAIL"
-            git config user.name "$USER_NAME"
-            git config --global gpg.program gpg
-            git config --global user.signingkey 9F13CF618E462C69
-      - run:
-          name: Publish update
-          command: |
-            set -exo pipefail
-            export NEXTSV_LEVEL=$(nextsv -q -c other require -f CHANGES.md -f CHANGELOG.md feature)
-            if [ $NEXTSV_LEVEL != "none" ] ; then 
-              cargo release changes
-              cargo release -vv --execute --no-confirm --sign-tag "$NEXTSV_LEVEL"
-            else 
-              echo "Not ready to release yet."
-            fi
-
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  build-test-docs:
+  check_last_commit:
     when:
-      not:
-        equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+      and:
+        - not:
+            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - not: << pipeline.parameters.success-flag >>
+        - not: << pipeline.parameters.validation-flag >>
+
     jobs:
-      - required-builds
-      - basic-tests
-      - docs
-      - optional-builds
+      - toolkit/choose_pipeline:
+          name: choose pipeline based on committer
+          context: bot-check
+
+  validation:
+    when:
+      and:
+        - not:
+            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - not: << pipeline.parameters.success-flag >>
+        - << pipeline.parameters.validation-flag >>
+    jobs:
+      - toolkit/required_builds:
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+      - toolkit/optional_builds:
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+      - toolkit/test_doc_build:
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+      - toolkit/common_tests:
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+      - toolkit/idiomatic_rust:
+          min_rust_version: << pipeline.parameters.min-rust-version >>
       - security
-      - pr-changelog-update:
+      - toolkit/update_changelog:
           requires:
-            - required-builds
-            - basic-tests
-            - docs
-            - optional-builds
+            - toolkit/common_tests
+            - toolkit/required_builds
+            - toolkit/test_doc_build
+            - toolkit/idiomatic_rust
             - security
           context:
             - release
+            - bot-check
+          ssh_fingerprint: << pipeline.parameters.fingerprint >>
+          min_rust_version: << pipeline.parameters.min-rust-version >>
 
-  release-check:
+  on_success:
+    when:
+      and:
+        - not:
+            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - << pipeline.parameters.success-flag >>
+        - not: << pipeline.parameters.validation-flag >>
+
+    jobs:
+      - toolkit/end_success
+
+  release:
     when:
       and:
         - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
         - equal: ["release check", << pipeline.schedule.name >>]
+        - not: << pipeline.parameters.success-flag >>
+        - not: << pipeline.parameters.validation-flag >>
     jobs:
-      - make-release
-# VS Code Extension Version: 1.4.0
+      - toolkit/make_release:
+          context:
+            - release
+          ssh_fingerprint: << pipeline.parameters.fingerprint >>
+          min_rust_version: << pipeline.parameters.min-rust-version >>
