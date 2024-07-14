@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - ci-adopt toolkit(pr [#150])
+- chore-simplify pre-release replacements in CHANGELOG.md and remove CHANGES.md replacements(pr [#151])
 
 ### Security
 
@@ -508,6 +509,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#148]: https://github.com/jerus-org/nextsv/pull/148
 [#149]: https://github.com/jerus-org/nextsv/pull/149
 [#150]: https://github.com/jerus-org/nextsv/pull/150
+[#151]: https://github.com/jerus-org/nextsv/pull/151
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/0.8.5...HEAD
 [0.8.5]: https://github.com/jerus-org/nextsv/compare/0.8.4...0.8.5
 [0.8.4]: https://github.com/jerus-org/nextsv/compare/0.8.3...0.8.4
