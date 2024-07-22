@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - chore-switch to custom renovate config(pr [#154])
 
+### Security
+
+- Dependencies: update github/codeql-action action to v3.25.13(pr [#153])
+
 ## [0.8.7] - 2024-07-20
 
 ### Changed
@@ -524,6 +528,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#151]: https://github.com/jerus-org/nextsv/pull/151
 [#152]: https://github.com/jerus-org/nextsv/pull/152
 [#154]: https://github.com/jerus-org/nextsv/pull/154
+[#153]: https://github.com/jerus-org/nextsv/pull/153
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/0.8.7...HEAD
 [0.8.7]: https://github.com/jerus-org/nextsv/compare/0.8.6...0.8.7
 [0.8.6]: https://github.com/jerus-org/nextsv/compare/0.8.5...0.8.6
