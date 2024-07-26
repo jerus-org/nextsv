@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - chore-switch to custom renovate config(pr [#154])
+- ci-update circleci-toolkit version from 0.23.0 to 0.24.1(pr [#156])
 
 ### Security
 
@@ -531,6 +532,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#154]: https://github.com/jerus-org/nextsv/pull/154
 [#153]: https://github.com/jerus-org/nextsv/pull/153
 [#155]: https://github.com/jerus-org/nextsv/pull/155
+[#156]: https://github.com/jerus-org/nextsv/pull/156
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/0.8.7...HEAD
 [0.8.7]: https://github.com/jerus-org/nextsv/compare/0.8.6...0.8.7
 [0.8.6]: https://github.com/jerus-org/nextsv/compare/0.8.5...0.8.6
