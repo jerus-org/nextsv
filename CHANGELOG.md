@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- Dependencies: update ossf/scorecard-action action to v2.4.0(pr [#158])
+
 ## [0.8.8] - 2024-07-27
 
 ### Changed
@@ -533,7 +539,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#153]: https://github.com/jerus-org/nextsv/pull/153
 [#155]: https://github.com/jerus-org/nextsv/pull/155
 [#156]: https://github.com/jerus-org/nextsv/pull/156
-[0.8.8]: https://github.com/jerus-org/nextsv/compare/0.8.7...v0.8.8
+[#158]: https://github.com/jerus-org/nextsv/pull/158
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/0.8.8...HEAD
+[0.8.8]: https://github.com/jerus-org/nextsv/compare/0.8.7...0.8.8
 [0.8.7]: https://github.com/jerus-org/nextsv/compare/0.8.6...0.8.7
 [0.8.6]: https://github.com/jerus-org/nextsv/compare/0.8.5...0.8.6
 [0.8.5]: https://github.com/jerus-org/nextsv/compare/0.8.4...0.8.5
