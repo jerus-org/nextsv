@@ -70,7 +70,7 @@ fn test_repo_with_commit(
         "fix", "chore", "ci", "revert", "docs", "style", "refactor", "perf", "test", "custom",
         "build", "feat", "breaking"
     )]
-    mut commit_type: &str,
+    commit_type: &str,
     #[case] arguments: &str,
 ) {
     // select expected result
@@ -136,9 +136,12 @@ fn test_repo_with_commit(
     println!("temp_dir: {:?}", temp_dir);
 
     // setup the change conditions
-    if commit_type == "breaking" {
-        commit_type = "fix!";
+    let commit_type = if commit_type == "breaking" {
+        "fix!"
+    } else {
+        commit_type
     };
+
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
@@ -173,7 +176,7 @@ fn test_repo_with_commit_and_force_bump(
         "fix", "chore", "ci", "revert", "docs", "style", "refactor", "perf", "test", "custom",
         "build", "feat", "breaking"
     )]
-    mut commit_type: &str,
+    commit_type: &str,
     #[case] arguments: &str,
     #[values("major", "minor", "patch", "first", "release", "rc", "beta", "alpha")]
     force_bump: &str,
@@ -331,9 +334,12 @@ fn test_repo_with_commit_and_force_bump(
     println!("temp_dir: {:?}", temp_dir);
 
     // setup the change conditions
-    if commit_type == "breaking" {
-        commit_type = "fix!";
+    let commit_type = if commit_type == "breaking" {
+        "fix!"
+    } else {
+        commit_type
     };
+
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
@@ -371,7 +377,7 @@ fn test_repo_with_commit_and_check(
         "fix", "chore", "ci", "revert", "docs", "style", "refactor", "perf", "test", "custom",
         "build", "feat", "breaking"
     )]
-    mut commit_type: &str,
+    commit_type: &str,
     #[case] arguments: &str,
     #[values("other", "fix", "feature", "breaking")] check: &str,
 ) {
@@ -705,9 +711,12 @@ fn test_repo_with_commit_and_check(
     println!("temp_dir: {:?}", temp_dir);
 
     // setup the change conditions
-    if commit_type == "breaking" {
-        commit_type = "fix!";
+    let commit_type = if commit_type == "breaking" {
+        "fix!"
+    } else {
+        commit_type
     };
+
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
@@ -746,7 +755,7 @@ fn test_repo_with_commit_and_enforce_test_file(
         "fix", "chore", "ci", "revert", "docs", "style", "refactor", "perf", "test", "custom",
         "build", "feat", "breaking"
     )]
-    mut commit_type: &str,
+    commit_type: &str,
     #[case] arguments: &str,
     #[values("test.txt", "missing.txt", "first-file -f test.txt")] file: &str,
     #[values("other", "fix", "feature", "breaking")] check: &str,
@@ -1076,9 +1085,12 @@ fn test_repo_with_commit_and_enforce_test_file(
     println!("temp_dir: {:?}", temp_dir);
 
     // setup the change conditions
-    if commit_type == "breaking" {
-        commit_type = "fix!";
+    let commit_type = if commit_type == "breaking" {
+        "fix!"
+    } else {
+        commit_type
     };
+
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
@@ -1118,7 +1130,7 @@ fn test_repo_custom_version_prefix_with_commit(
         "fix", "chore", "ci", "revert", "docs", "style", "refactor", "perf", "test", "custom",
         "build", "feat", "breaking"
     )]
-    mut commit_type: &str,
+    commit_type: &str,
     #[case] arguments: &str,
     #[values("ver", "version_", "rel", "v")] prefix: &str,
 ) {
@@ -1186,9 +1198,12 @@ fn test_repo_custom_version_prefix_with_commit(
     println!("temp_dir: {:?}", temp_dir);
 
     // setup the change conditions
-    if commit_type == "breaking" {
-        commit_type = "fix!";
+    let commit_type = if commit_type == "breaking" {
+        "fix!"
+    } else {
+        commit_type
     };
+
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
@@ -1227,7 +1242,7 @@ fn test_repo_bump_only_with_commit(
         "fix", "chore", "ci", "revert", "docs", "style", "refactor", "perf", "test", "custom",
         "build", "feat", "breaking"
     )]
-    mut commit_type: &str,
+    commit_type: &str,
     #[case] arguments: &str,
 ) {
     // select expected result
@@ -1293,9 +1308,12 @@ fn test_repo_bump_only_with_commit(
     println!("temp_dir: {:?}", temp_dir);
 
     // setup the change conditions
-    if commit_type == "breaking" {
-        commit_type = "fix!";
+    let commit_type = if commit_type == "breaking" {
+        "fix!"
+    } else {
+        commit_type
     };
+
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
@@ -1330,7 +1348,7 @@ fn test_repo_number_only_with_commit(
         "fix", "chore", "ci", "revert", "docs", "style", "refactor", "perf", "test", "custom",
         "build", "feat", "breaking"
     )]
-    mut commit_type: &str,
+    commit_type: &str,
     #[case] arguments: &str,
 ) {
     // select expected result
@@ -1396,9 +1414,12 @@ fn test_repo_number_only_with_commit(
     println!("temp_dir: {:?}", temp_dir);
 
     // setup the change conditions
-    if commit_type == "breaking" {
-        commit_type = "fix!";
+    let commit_type = if commit_type == "breaking" {
+        "fix!"
+    } else {
+        commit_type
     };
+
     let message = format!("{}: {}", commit_type, "test commit");
     println!("message: {:?}", message);
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
