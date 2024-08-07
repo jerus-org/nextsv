@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: update github/codeql-action action to v3.26.0(pr [#164])
+- Dependencies: update rstest requirement from 0.21.0 to 0.22.0(pr [#162])
 
 ## [0.8.11] - 2024-08-03
 
@@ -563,6 +564,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#159]: https://github.com/jerus-org/nextsv/pull/159
 [#160]: https://github.com/jerus-org/nextsv/pull/160
 [#164]: https://github.com/jerus-org/nextsv/pull/164
+[#162]: https://github.com/jerus-org/nextsv/pull/162
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/0.8.11...HEAD
 [0.8.11]: https://github.com/jerus-org/nextsv/compare/0.8.10...0.8.11
 [0.8.10]: https://github.com/jerus-org/nextsv/compare/0.8.9...0.8.10
