@@ -32,7 +32,7 @@ log4rs_test_utils = { version = "0.2.3", default-features = false, features = [
     "test_logging",
 ] }
 map-macro = "0.3.0"
-rstest = "0.21.0"
+rstest = "0.22.0"
 snapbox = { version = "0.6.10", features = ["cmd"] }
 test_utils = { path = "test-utils" }
 trycmd = "0.15.0"
