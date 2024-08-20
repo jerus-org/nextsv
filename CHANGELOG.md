@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- Dependencies: bump github/codeql-action from 3.26.2 to 3.26.3(pr [#168])
+
 ## [0.8.13] - 2024-08-17
 
 ### Security
@@ -576,38 +582,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#163]: https://github.com/jerus-org/nextsv/pull/163
 [#165]: https://github.com/jerus-org/nextsv/pull/165
 [#166]: https://github.com/jerus-org/nextsv/pull/166
-[0.8.13]: https://github.com/jerus-org/nextsv/compare/0.8.12...v0.8.13
-[0.8.12]: https://github.com/jerus-org/nextsv/compare/0.8.11...0.8.12
-[0.8.11]: https://github.com/jerus-org/nextsv/compare/0.8.10...0.8.11
-[0.8.10]: https://github.com/jerus-org/nextsv/compare/0.8.9...0.8.10
-[0.8.9]: https://github.com/jerus-org/nextsv/compare/0.8.8...0.8.9
-[0.8.8]: https://github.com/jerus-org/nextsv/compare/0.8.7...0.8.8
-[0.8.7]: https://github.com/jerus-org/nextsv/compare/0.8.6...0.8.7
-[0.8.6]: https://github.com/jerus-org/nextsv/compare/0.8.5...0.8.6
-[0.8.5]: https://github.com/jerus-org/nextsv/compare/0.8.4...0.8.5
-[0.8.4]: https://github.com/jerus-org/nextsv/compare/0.8.3...0.8.4
-[0.8.3]: https://github.com/jerus-org/nextsv/compare/0.8.2...0.8.3
-[0.8.2]: https://github.com/jerus-org/nextsv/compare/0.8.1...0.8.2
-[0.8.1]: https://github.com/jerus-org/nextsv/compare/0.8.0...0.8.1
-[0.8.0]: https://github.com/jerus-org/nextsv/compare/0.7.9...0.8.0
-[0.7.9]: https://github.com/jerus-org/nextsv/compare/0.7.8...0.7.9
-[0.7.8]: https://github.com/jerus-org/nextsv/compare/0.7.7...0.7.8
-[0.7.7]: https://github.com/jerus-org/nextsv/compare/0.7.6...0.7.7
-[0.7.6]: https://github.com/jerus-org/nextsv/compare/0.7.5...0.7.6
-[0.7.5]: https://github.com/jerus-org/nextsv/compare/0.7.4...0.7.5
-[0.7.4]: https://github.com/jerus-org/nextsv/compare/0.7.3...0.7.4
-[0.7.3]: https://github.com/jerus-org/nextsv/compare/0.7.2...0.7.3
-[0.7.2]: https://github.com/jerus-org/nextsv/compare/0.7.1...0.7.2
-[0.7.1]: https://github.com/jerus-org/nextsv/compare/0.7.0...0.7.1
-[0.7.0]: https://github.com/jerus-org/nextsv/compare/0.6.2...0.7.0
-[0.6.2]: https://github.com/jerus-org/nextsv/compare/0.6.1...0.6.2
-[0.6.1]: https://github.com/jerus-org/nextsv/compare/0.6.0...0.6.1
-[0.6.0]: https://github.com/jerus-org/nextsv/compare/0.5.2...0.6.0
-[0.5.2]: https://github.com/jerus-org/nextsv/compare/0.5.1...0.5.2
-[0.5.1]: https://github.com/jerus-org/nextsv/compare/0.4.0...0.5.1
-[0.4.0]: https://github.com/jerus-org/nextsv/compare/0.3.1...0.4.0
-[0.3.1]: https://github.com/jerus-org/nextsv/compare/0.3.0...0.3.1
-[0.3.0]: https://github.com/jerus-org/nextsv/compare/0.2.0...0.3.0
-[0.2.0]: https://github.com/jerus-org/nextsv/compare/0.1.1...0.2.0
-[0.1.1]: https://github.com/jerus-org/nextsv/compare/0.1.0...0.1.1
-[0.1.0]: https://github.com/jerus-org/nextsv/releases/tag/0.1.0
+[#168]: https://github.com/jerus-org/nextsv/pull/168
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.13...HEAD
+[0.8.13]: https://github.com/jerus-org/nextsv/compare/v0.8.12...v0.8.13
+[0.8.12]: https://github.com/jerus-org/nextsv/compare/v0.8.11...v0.8.12
+[0.8.11]: https://github.com/jerus-org/nextsv/compare/v0.8.10...v0.8.11
+[0.8.10]: https://github.com/jerus-org/nextsv/compare/v0.8.9...v0.8.10
+[0.8.9]: https://github.com/jerus-org/nextsv/compare/v0.8.8...v0.8.9
+[0.8.8]: https://github.com/jerus-org/nextsv/compare/v0.8.7...v0.8.8
+[0.8.7]: https://github.com/jerus-org/nextsv/compare/v0.8.6...v0.8.7
+[0.8.6]: https://github.com/jerus-org/nextsv/compare/v0.8.5...v0.8.6
+[0.8.5]: https://github.com/jerus-org/nextsv/compare/v0.8.4...v0.8.5
+[0.8.4]: https://github.com/jerus-org/nextsv/compare/v0.8.3...v0.8.4
+[0.8.3]: https://github.com/jerus-org/nextsv/compare/v0.8.2...v0.8.3
+[0.8.2]: https://github.com/jerus-org/nextsv/compare/v0.8.1...v0.8.2
+[0.8.1]: https://github.com/jerus-org/nextsv/compare/v0.8.0...v0.8.1
+[0.8.0]: https://github.com/jerus-org/nextsv/compare/v0.7.9...v0.8.0
+[0.7.9]: https://github.com/jerus-org/nextsv/compare/v0.7.8...v0.7.9
+[0.7.8]: https://github.com/jerus-org/nextsv/compare/v0.7.7...v0.7.8
+[0.7.7]: https://github.com/jerus-org/nextsv/compare/v0.7.6...v0.7.7
+[0.7.6]: https://github.com/jerus-org/nextsv/compare/v0.7.5...v0.7.6
+[0.7.5]: https://github.com/jerus-org/nextsv/compare/v0.7.4...v0.7.5
+[0.7.4]: https://github.com/jerus-org/nextsv/compare/v0.7.3...v0.7.4
+[0.7.3]: https://github.com/jerus-org/nextsv/compare/v0.7.2...v0.7.3
+[0.7.2]: https://github.com/jerus-org/nextsv/compare/v0.7.1...v0.7.2
+[0.7.1]: https://github.com/jerus-org/nextsv/compare/v0.7.0...v0.7.1
+[0.7.0]: https://github.com/jerus-org/nextsv/compare/v0.6.2...v0.7.0
+[0.6.2]: https://github.com/jerus-org/nextsv/compare/v0.6.1...v0.6.2
+[0.6.1]: https://github.com/jerus-org/nextsv/compare/v0.6.0...v0.6.1
+[0.6.0]: https://github.com/jerus-org/nextsv/compare/v0.5.2...v0.6.0
+[0.5.2]: https://github.com/jerus-org/nextsv/compare/v0.5.1...v0.5.2
+[0.5.1]: https://github.com/jerus-org/nextsv/compare/v0.4.0...v0.5.1
+[0.4.0]: https://github.com/jerus-org/nextsv/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/jerus-org/nextsv/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/jerus-org/nextsv/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/jerus-org/nextsv/compare/v0.1.1...v0.2.0
+[0.1.1]: https://github.com/jerus-org/nextsv/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/jerus-org/nextsv/releases/tag/v0.1.0
