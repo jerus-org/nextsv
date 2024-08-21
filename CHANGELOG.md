@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- deps: update github/codeql-action action to v3.26.4(pr [#169])
+
 ### Security
 
 - Dependencies: bump github/codeql-action from 3.26.2 to 3.26.3(pr [#168])
@@ -583,6 +587,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#165]: https://github.com/jerus-org/nextsv/pull/165
 [#166]: https://github.com/jerus-org/nextsv/pull/166
 [#168]: https://github.com/jerus-org/nextsv/pull/168
+[#169]: https://github.com/jerus-org/nextsv/pull/169
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.13...HEAD
 [0.8.13]: https://github.com/jerus-org/nextsv/compare/v0.8.12...v0.8.13
 [0.8.12]: https://github.com/jerus-org/nextsv/compare/v0.8.11...v0.8.12
