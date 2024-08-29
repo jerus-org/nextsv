@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - deps: update github/codeql-action action to v3.26.5(pr [#170])
+- deps: update github/codeql-action action to v3.26.6(pr [#171])
 
 ## [0.8.14] - 2024-08-24
 
@@ -595,6 +596,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#168]: https://github.com/jerus-org/nextsv/pull/168
 [#169]: https://github.com/jerus-org/nextsv/pull/169
 [#170]: https://github.com/jerus-org/nextsv/pull/170
+[#171]: https://github.com/jerus-org/nextsv/pull/171
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.14...HEAD
 [0.8.14]: https://github.com/jerus-org/nextsv/compare/v0.8.13...v0.8.14
 [0.8.13]: https://github.com/jerus-org/nextsv/compare/v0.8.12...v0.8.13
