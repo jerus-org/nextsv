@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- ci(circleci)-update toolkit orb to version 1.5.0 and add label_option parameter(pr [#173])
+
 ### Fixed
 
 - deps: update actions/upload-artifact action to v4.4.0(pr [#172])
@@ -604,6 +608,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#170]: https://github.com/jerus-org/nextsv/pull/170
 [#171]: https://github.com/jerus-org/nextsv/pull/171
 [#172]: https://github.com/jerus-org/nextsv/pull/172
+[#173]: https://github.com/jerus-org/nextsv/pull/173
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.15...HEAD
 [0.8.15]: https://github.com/jerus-org/nextsv/compare/v0.8.14...v0.8.15
 [0.8.14]: https://github.com/jerus-org/nextsv/compare/v0.8.13...v0.8.14
