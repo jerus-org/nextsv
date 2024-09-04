@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - deps: update actions/upload-artifact action to v4.4.0(pr [#172])
 
+### Security
+
+- Dependencies: update trycmd to version 0.15.7(pr [#175])
+
 ## [0.8.15] - 2024-08-31
 
 ### Fixed
@@ -614,6 +618,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#172]: https://github.com/jerus-org/nextsv/pull/172
 [#173]: https://github.com/jerus-org/nextsv/pull/173
 [#174]: https://github.com/jerus-org/nextsv/pull/174
+[#175]: https://github.com/jerus-org/nextsv/pull/175
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.15...HEAD
 [0.8.15]: https://github.com/jerus-org/nextsv/compare/v0.8.14...v0.8.15
 [0.8.14]: https://github.com/jerus-org/nextsv/compare/v0.8.13...v0.8.14
