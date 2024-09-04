@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ci(circleci)-update toolkit orb to version 1.5.0 and add label_option parameter(pr [#173])
 - chore-update thiserror dependency to version 1.0.63(pr [#176])
+- chore-remove commented-out PAT token and publishing instructions from scorecards.yml(pr [#178])
 
 ### Fixed
 
@@ -623,6 +624,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#175]: https://github.com/jerus-org/nextsv/pull/175
 [#176]: https://github.com/jerus-org/nextsv/pull/176
 [#177]: https://github.com/jerus-org/nextsv/pull/177
+[#178]: https://github.com/jerus-org/nextsv/pull/178
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.15...HEAD
 [0.8.15]: https://github.com/jerus-org/nextsv/compare/v0.8.14...v0.8.15
 [0.8.14]: https://github.com/jerus-org/nextsv/compare/v0.8.13...v0.8.14
