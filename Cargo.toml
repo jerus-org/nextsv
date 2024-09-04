@@ -35,7 +35,7 @@ map-macro = "0.3.0"
 rstest = "0.22.0"
 snapbox = { version = "0.6.10", features = ["cmd"] }
 test_utils = { path = "test-utils" }
-trycmd = "0.15.0"
+trycmd = "0.15.7"
 
 
 [lib]
