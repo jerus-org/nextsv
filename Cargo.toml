@@ -16,15 +16,15 @@ publish = true
 
 
 [dependencies]
-clap = { version = "4.0.30", features = ["derive"] }
-clap-verbosity-flag = "2.0.0"
+clap = { version = "4.5.16", features = ["derive"] }
+clap-verbosity-flag = "2.2.1"
 colored = "2.1.0"
-env_logger = "0.11.1"
-git-conventional = "0.12.0"
+env_logger = "0.11.5"
+git-conventional = "0.12.7"
 git2 = "0.19.0"
-log = "0.4.17"
-proc-exit = "2.0.0"
-regex = "1.10.4"
+log = "0.4.22"
+proc-exit = "2.0.2"
+regex = "1.10.6"
 thiserror = "1.0.63"
 
 [dev-dependencies]
