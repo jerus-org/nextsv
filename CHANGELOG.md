@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: update trycmd to version 0.15.7(pr [#175])
+- Dependencies: update dependencies in Cargo.toml(pr [#177])
 
 ## [0.8.15] - 2024-08-31
 
@@ -621,6 +622,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#174]: https://github.com/jerus-org/nextsv/pull/174
 [#175]: https://github.com/jerus-org/nextsv/pull/175
 [#176]: https://github.com/jerus-org/nextsv/pull/176
+[#177]: https://github.com/jerus-org/nextsv/pull/177
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.15...HEAD
 [0.8.15]: https://github.com/jerus-org/nextsv/compare/v0.8.14...v0.8.15
 [0.8.14]: https://github.com/jerus-org/nextsv/compare/v0.8.13...v0.8.14
