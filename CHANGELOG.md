@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add dependency dashboard and package grouping rules in renovate.json(pr [#174])
+
 ### Changed
 
 - ci(circleci)-update toolkit orb to version 1.5.0 and add label_option parameter(pr [#173])
@@ -609,6 +613,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#171]: https://github.com/jerus-org/nextsv/pull/171
 [#172]: https://github.com/jerus-org/nextsv/pull/172
 [#173]: https://github.com/jerus-org/nextsv/pull/173
+[#174]: https://github.com/jerus-org/nextsv/pull/174
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.15...HEAD
 [0.8.15]: https://github.com/jerus-org/nextsv/compare/v0.8.14...v0.8.15
 [0.8.14]: https://github.com/jerus-org/nextsv/compare/v0.8.13...v0.8.14
