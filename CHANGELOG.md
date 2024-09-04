@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - ci(circleci)-update toolkit orb to version 1.5.0 and add label_option parameter(pr [#173])
+- chore-update thiserror dependency to version 1.0.63(pr [#176])
 
 ### Fixed
 
@@ -619,6 +620,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#173]: https://github.com/jerus-org/nextsv/pull/173
 [#174]: https://github.com/jerus-org/nextsv/pull/174
 [#175]: https://github.com/jerus-org/nextsv/pull/175
+[#176]: https://github.com/jerus-org/nextsv/pull/176
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.15...HEAD
 [0.8.15]: https://github.com/jerus-org/nextsv/compare/v0.8.14...v0.8.15
 [0.8.14]: https://github.com/jerus-org/nextsv/compare/v0.8.13...v0.8.14
