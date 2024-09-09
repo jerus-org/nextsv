@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - chore-remove commented-out PAT token instructions from scorecards.yml(pr [#179])
 
+### Security
+
+- Dependencies: update rust crate clap to 4.5.17(pr [#181])
+
 ## [0.8.16] - 2024-09-07
 
 ### Added
@@ -632,6 +636,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#177]: https://github.com/jerus-org/nextsv/pull/177
 [#178]: https://github.com/jerus-org/nextsv/pull/178
 [#179]: https://github.com/jerus-org/nextsv/pull/179
+[#181]: https://github.com/jerus-org/nextsv/pull/181
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.16...HEAD
 [0.8.16]: https://github.com/jerus-org/nextsv/compare/v0.8.15...v0.8.16
 [0.8.15]: https://github.com/jerus-org/nextsv/compare/v0.8.14...v0.8.15
