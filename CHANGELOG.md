@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dependencies: update rust crate uuid to 1.10.0(pr [#183])
 - Dependencies: update rust crate autocfg to 1.3.0(pr [#180])
 - Dependencies: update rust crate snapbox to 0.6.17(pr [#182])
+- Dependencies: update github/codeql-action action to v3.26.7(pr [#184])
 
 ## [0.8.16] - 2024-09-07
 
@@ -643,6 +644,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#183]: https://github.com/jerus-org/nextsv/pull/183
 [#180]: https://github.com/jerus-org/nextsv/pull/180
 [#182]: https://github.com/jerus-org/nextsv/pull/182
+[#184]: https://github.com/jerus-org/nextsv/pull/184
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.16...HEAD
 [0.8.16]: https://github.com/jerus-org/nextsv/compare/v0.8.15...v0.8.16
 [0.8.15]: https://github.com/jerus-org/nextsv/compare/v0.8.14...v0.8.15
