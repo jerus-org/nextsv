@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- Dependencies: update rust crate clap to 4.5.18(pr [#186])
+
 ## [0.8.18] - 2024-09-21
 
 ### Security
@@ -652,6 +658,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#182]: https://github.com/jerus-org/nextsv/pull/182
 [#184]: https://github.com/jerus-org/nextsv/pull/184
 [#185]: https://github.com/jerus-org/nextsv/pull/185
+[#186]: https://github.com/jerus-org/nextsv/pull/186
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.18...HEAD
 [0.8.18]: https://github.com/jerus-org/nextsv/compare/v0.8.17...v0.8.18
 [0.8.17]: https://github.com/jerus-org/nextsv/compare/v0.8.16...v0.8.17
 [0.8.16]: https://github.com/jerus-org/nextsv/compare/v0.8.15...v0.8.16
