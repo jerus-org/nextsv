@@ -59,7 +59,8 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/idiomatic_rust:
           min_rust_version: << pipeline.parameters.min-rust-version >>
-      - toolkit/security
+      - toolkit/security:
+          context: SonarCloud
       - toolkit/update_changelog:
           requires:
             - toolkit/common_tests
