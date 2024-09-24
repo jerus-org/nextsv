@@ -17,7 +17,7 @@ parameters:
     description: "If true, the success pipeline will be executed."
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@1.5.0
+  toolkit: jerus-org/circleci-toolkit@1.9.2
 
 executors:
   rust-env:
@@ -59,7 +59,8 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/idiomatic_rust:
           min_rust_version: << pipeline.parameters.min-rust-version >>
-      - toolkit/security
+      - toolkit/security:
+          context: SonarCloud
       - toolkit/update_changelog:
           requires:
             - toolkit/common_tests
