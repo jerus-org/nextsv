@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- update renovate config to enable jerus-org/circleci-toolkit with source URL(pr [#191])
+
 ### Changed
 
 - chore(circleci)-update toolkit orb version to 1.9.2(pr [#188])
@@ -668,6 +672,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#187]: https://github.com/jerus-org/nextsv/pull/187
 [#188]: https://github.com/jerus-org/nextsv/pull/188
 [#189]: https://github.com/jerus-org/nextsv/pull/189
+[#191]: https://github.com/jerus-org/nextsv/pull/191
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.18...HEAD
 [0.8.18]: https://github.com/jerus-org/nextsv/compare/v0.8.17...v0.8.18
 [0.8.17]: https://github.com/jerus-org/nextsv/compare/v0.8.16...v0.8.17
