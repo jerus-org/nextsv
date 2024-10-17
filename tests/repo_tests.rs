@@ -1113,16 +1113,16 @@ fn test_repo_with_commit_and_enforce_test_file(
 }
 
 #[rstest]
-#[case::non_production_commit("0.1.0", "-n -vvvv -p")]
-#[case::production_commit("1.1.0", "-n -vvv -p")]
-#[case::non_production_pre_release_alpha_commit("0.1.0-alpha.2", "-n -p")]
-#[case::production_pre_release_alpha_commit("1.1.0-alpha.3", "-n -p")]
-#[case::non_production_pre_release_beta_commit("0.1.0-beta.4", "-n -p")]
-#[case::production_pre_release_beta_commit("1.1.0-beta.5", "-n -p")]
-#[case::non_production_pre_release_rc_commit("0.1.0-rc.6", "-n -p")]
-#[case::production_pre_release_rc_commit("1.1.0-rc.7", "-n -p")]
-#[case::non_production_pre_release_pre_commit("0.1.0-pre.8", "-n -p")]
-#[case::production_pre_release_pre_commit("1.1.0-pre.9", "-n -p")]
+#[case::non_production_commit("0.1.0", "-n -vvvv")]
+#[case::production_commit("1.1.0", "-n -vvv")]
+#[case::non_production_pre_release_alpha_commit("0.1.0-alpha.2", "-n")]
+#[case::production_pre_release_alpha_commit("1.1.0-alpha.3", "-n")]
+#[case::non_production_pre_release_beta_commit("0.1.0-beta.4", "-n")]
+#[case::production_pre_release_beta_commit("1.1.0-beta.5", "-n")]
+#[case::non_production_pre_release_rc_commit("0.1.0-rc.6", "-n")]
+#[case::production_pre_release_rc_commit("1.1.0-rc.7", "-n")]
+#[case::non_production_pre_release_pre_commit("0.1.0-pre.8", "-n")]
+#[case::production_pre_release_pre_commit("1.1.0-pre.9", "-n")]
 #[trace]
 fn test_repo_custom_version_prefix_with_commit(
     #[case] current_version: &str,
@@ -1131,7 +1131,7 @@ fn test_repo_custom_version_prefix_with_commit(
         "build", "feat", "breaking"
     )]
     commit_type: &str,
-    #[case] arguments: &str,
+    #[case] arguments_root: &str,
     #[values("ver", "version_", "rel", "v")] prefix: &str,
 ) {
     // select expected result
@@ -1210,10 +1210,10 @@ fn test_repo_custom_version_prefix_with_commit(
     println!("commit result: {:?}", result);
 
     // execute the test
-    let mut arguments = arguments.to_string();
-    arguments.push(' ');
-    arguments.push_str(prefix);
+    let mut arguments = arguments_root.to_string();
     arguments.push_str(" calculate");
+    arguments.push_str(" -p ");
+    arguments.push_str(prefix);
     let test_result = execute_test(&arguments, &temp_dir);
 
     // tidy up the test environment

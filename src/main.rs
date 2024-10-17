@@ -18,9 +18,7 @@ struct Cli {
     /// Report the version number
     #[arg(short = 'n', long)]
     number: bool,
-    /// Prefix string to identify version number tags
-    #[arg(short, long, value_parser, default_value = "v")]
-    prefix: String,
+
     /// Check level meets minimum for setting
     ///
     /// This option can be used to check the calculated level
@@ -33,7 +31,7 @@ struct Cli {
 #[derive(Subcommand, Debug)]
 enum Commands {
     #[clap(name = "calculate", about = "Calculate the next version number")]
-    Calculate,
+    Calculate(Calculate),
     #[clap(name = "force", about = "Force the bump level")]
     Force(Force),
     #[clap(
@@ -42,6 +40,18 @@ enum Commands {
     )]
     Require(Require),
 }
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Calculate {
+    /// Prefix string to identify version number tags
+    #[arg(short, long, value_parser, default_value = "v")]
+    prefix: String,
+    /// Filter to commits in the specified sub directory only
+    #[arg(short, long)]
+    subdir: Option<String>,
+}
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Force {
@@ -60,6 +70,12 @@ struct Require {
     enforce: Hierarchy,
     #[arg(short, long)]
     files: Vec<OsString>,
+    /// Prefix string to identify version number tags
+    #[arg(short, long, value_parser, default_value = "v")]
+    prefix: String,
+    /// Filter to commits in the specified sub directory only
+    #[arg(short, long)]
+    subdir: Option<String>,
 }
 
 fn main() {
@@ -81,7 +97,6 @@ fn run() -> ExitResult {
     };
 
     let mut calculator_config = CalculatorConfig::new();
-    calculator_config = calculator_config.set_prefix(&args.prefix);
     calculator_config = calculator_config.set_bump_report(!args.no_bump);
     calculator_config = calculator_config.set_version_report(args.number);
 
@@ -97,8 +112,11 @@ fn run() -> ExitResult {
                 calculator_config = calculator_config.set_first_version();
             };
         }
-        Commands::Calculate => {}
+        Commands::Calculate(args) => {
+            calculator_config = calculator_config.set_prefix(&args.prefix);
+        }
         Commands::Require(args) => {
+            calculator_config = calculator_config.set_prefix(&args.prefix);
             calculator_config = calculator_config.add_required_files(args.files);
             calculator_config = calculator_config.set_required_enforcement(args.enforce);
         }
