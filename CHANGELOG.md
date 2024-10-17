@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- BREAKING: add subdir option to filter commits by subdirectory(pr [#214])
+
 ### Security
 
 - Dependencies: update github/codeql-action action to v3.26.13(pr [#211])
@@ -720,6 +724,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#208]: https://github.com/jerus-org/nextsv/pull/208
 [#211]: https://github.com/jerus-org/nextsv/pull/211
 [#213]: https://github.com/jerus-org/nextsv/pull/213
+[#214]: https://github.com/jerus-org/nextsv/pull/214
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.21...HEAD
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
 [0.8.20]: https://github.com/jerus-org/nextsv/compare/v0.8.19...v0.8.20
