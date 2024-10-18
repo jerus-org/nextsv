@@ -85,7 +85,7 @@ impl CalculatorConfig {
     /// # use nextsv::CalculatorConfig;
     ///     let calculator = CalculatorConfig::new()
     ///         .set_prefix("crate2-v")
-    ///         .set_subdir("crate2")
+    ///         .set_subdir(Some("crate2"))
     ///         .build()?;
     ///
     ///     calculator.report();
