@@ -1,5 +1,6 @@
 mod bump;
 mod change_bump;
+mod commit;
 mod config;
 mod conventional;
 mod force_bump;
@@ -47,6 +48,7 @@ impl Calculator {
         let conventional = ConventionalCommits::walk_back_commits_to_tag_reference(
             &repo,
             current_version.to_string().as_str(),
+            config.subdir.as_deref(),
         )?;
 
         let test_level: Hierarchy = conventional.top_type.as_ref().into();

@@ -6,7 +6,9 @@ use std::{
     ffi::OsString,
 };
 
-use git2::{DiffOptions, Repository, TreeWalkMode, TreeWalkResult};
+use git2::{Repository, TreeWalkMode, TreeWalkResult};
+
+use super::commit::Commit;
 
 use crate::Error;
 
@@ -30,6 +32,7 @@ impl ConventionalCommits {
     pub(crate) fn walk_back_commits_to_tag_reference(
         repo: &Repository,
         reference: &str,
+        subdir: Option<&str>,
     ) -> Result<Self, Error> {
         log::debug!("repo opened to find conventional commits");
         log::debug!("Searching for the tag: `{}`", reference);
@@ -80,13 +83,43 @@ impl ConventionalCommits {
         });
 
         let mut conventional_commits = ConventionalCommits::new();
+        let mut file_names = HashSet::new();
 
         let mut tree_flag = true;
         // Walk back through the commits to collect the commit summary and identitfy conventional commits
         for commit in revwalk.flatten() {
-            // Get the summary for the conventional commits vec
-            log::trace!("commit found: `{}`", &commit.summary().unwrap_or_default());
+            let cmt = Commit::new(commit.clone(), repo);
+            let summary = cmt.message();
+            log::debug!("commit found: `{}`", summary);
+
+            if summary.starts_with("Merge") {
+                log::debug!("Exiting loop as Merge commit found");
+                continue;
+            }
+
+            let files = cmt.files();
+            log::debug!("files found: `{:#?}`", files);
+
+            if let Some(subdir) = subdir {
+                log::debug!("subdir: `{}`", subdir);
+                let qualified_files: Vec<_> = files
+                    .iter()
+                    .filter(|file| file.to_str().unwrap().contains(subdir))
+                    .collect();
+                if qualified_files.is_empty() {
+                    log::debug!("Exiting loop because `{}` not found", subdir);
+                    continue;
+                }
+            }
+
             conventional_commits.push(&commit);
+
+            for path in files {
+                if let Some(os_string) = path.file_name() {
+                    file_names.insert(OsString::from(os_string));
+                }
+            }
+
             if tree_flag {
                 let tree = commit.tree().unwrap();
                 let mut all_files = HashSet::new();
@@ -97,20 +130,21 @@ impl ConventionalCommits {
                     TreeWalkResult::Ok
                 })?;
                 conventional_commits.all_files = all_files;
-                let mut diff_options = DiffOptions::new();
-                let diff =
-                    repo.diff_tree_to_tree(Some(&tag_tree), Some(&tree), Some(&mut diff_options))?;
-                let mut files = HashSet::new();
-                diff.print(git2::DiffFormat::NameOnly, |delta, _hunk, _line| {
-                    let file = delta.new_file().path().unwrap().file_name().unwrap();
-                    log::trace!("file found: {:?}", file);
-                    files.insert(file.to_os_string());
-                    true
-                })?;
-                conventional_commits.changed_files = files;
+                // let mut diff_options = DiffOptions::new();
+                // let diff =
+                //     repo.diff_tree_to_tree(Some(&tag_tree), Some(&tree), Some(&mut diff_options))?;
+                // let mut files = HashSet::new();
+                // diff.print(git2::DiffFormat::NameOnly, |delta, _hunk, _line| {
+                //     let file = delta.new_file().path().unwrap().file_name().unwrap();
+                //     log::debug!("file found: {:?}", file);
+                //     files.insert(file.to_os_string());
+                //     true
+                // })?;
                 tree_flag = false;
             }
         }
+        conventional_commits.changed_files = file_names;
+        log::debug!("conventional commits found: {:#?}", conventional_commits);
 
         Ok(conventional_commits)
     }

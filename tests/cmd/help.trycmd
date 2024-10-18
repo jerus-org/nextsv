@@ -23,11 +23,6 @@ Options:
   -n, --number
           Report the version number
 
-  -p, --prefix <PREFIX>
-          Prefix string to identify version number tags
-          
-          [default: v]
-
   -c, --check <CHECK>
           Check level meets minimum for setting
           
@@ -60,14 +55,13 @@ Commands:
   help       Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...       Increase logging verbosity
-  -q, --quiet...         Decrease logging verbosity
-  -b, --no-bump          Do not report version bump
-  -n, --number           Report the version number
-  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
-  -c, --check <CHECK>    Check level meets minimum for setting [possible values: other, fix, feature, breaking]
-  -h, --help             Print help (see more with '--help')
-  -V, --version          Print version
+  -v, --verbose...     Increase logging verbosity
+  -q, --quiet...       Decrease logging verbosity
+  -b, --no-bump        Do not report version bump
+  -n, --number         Report the version number
+  -c, --check <CHECK>  Check level meets minimum for setting [possible values: other, fix, feature, breaking]
+  -h, --help           Print help (see more with '--help')
+  -V, --version        Print version
 
 ```
 
@@ -78,9 +72,12 @@ Calculate the next version number
 Usage: nextsv calculate [OPTIONS]
 
 Options:
-  -v, --verbose...  Increase logging verbosity
-  -q, --quiet...    Decrease logging verbosity
-  -h, --help        Print help
+  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
+  -v, --verbose...       Increase logging verbosity
+  -q, --quiet...         Decrease logging verbosity
+  -s, --subdir <SUBDIR>  Filter to commits in the specified sub directory only
+  -h, --help             Print help
+  -V, --version          Print version
 
 ```
 
@@ -124,11 +121,13 @@ Commands:
   help      Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...     Increase logging verbosity
-  -q, --quiet...       Decrease logging verbosity
-  -f, --files <FILES>  
-  -h, --help           Print help
-  -V, --version        Print version
+  -v, --verbose...       Increase logging verbosity
+  -q, --quiet...         Decrease logging verbosity
+  -f, --files <FILES>    
+  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
+  -s, --subdir <SUBDIR>  Filter to commits in the specified sub directory only
+  -h, --help             Print help
+  -V, --version          Print version
 
 ```
 
@@ -139,9 +138,12 @@ Calculate the next version number
 Usage: nextsv calculate [OPTIONS]
 
 Options:
-  -v, --verbose...  Increase logging verbosity
-  -q, --quiet...    Decrease logging verbosity
-  -h, --help        Print help
+  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
+  -v, --verbose...       Increase logging verbosity
+  -q, --quiet...         Decrease logging verbosity
+  -s, --subdir <SUBDIR>  Filter to commits in the specified sub directory only
+  -h, --help             Print help
+  -V, --version          Print version
 
 ```
 
@@ -185,11 +187,13 @@ Commands:
   help      Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...     Increase logging verbosity
-  -q, --quiet...       Decrease logging verbosity
-  -f, --files <FILES>  
-  -h, --help           Print help
-  -V, --version        Print version
+  -v, --verbose...       Increase logging verbosity
+  -q, --quiet...         Decrease logging verbosity
+  -f, --files <FILES>    
+  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
+  -s, --subdir <SUBDIR>  Filter to commits in the specified sub directory only
+  -h, --help             Print help
+  -V, --version          Print version
 
 ```
 ```
@@ -206,13 +210,12 @@ Commands:
   help       Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...       Increase logging verbosity
-  -q, --quiet...         Decrease logging verbosity
-  -b, --no-bump          Do not report version bump
-  -n, --number           Report the version number
-  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
-  -c, --check <CHECK>    Check level meets minimum for setting [possible values: other, fix, feature, breaking]
-  -h, --help             Print help (see more with '--help')
-  -V, --version          Print version
+  -v, --verbose...     Increase logging verbosity
+  -q, --quiet...       Decrease logging verbosity
+  -b, --no-bump        Do not report version bump
+  -n, --number         Report the version number
+  -c, --check <CHECK>  Check level meets minimum for setting [possible values: other, fix, feature, breaking]
+  -h, --help           Print help (see more with '--help')
+  -V, --version        Print version
 
 ```
