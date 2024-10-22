@@ -11,6 +11,8 @@ use crate::{Calculator, Error, ForceBump, Hierarchy};
 pub struct CalculatorConfig {
     /// Required: version number prefix
     pub(crate) prefix: String,
+    /// Optional: subdir filter for subordinate packages
+    pub(crate) subdir: Option<String>,
     /// Optional: Force the calculation to return the specified bump level
     pub(crate) force: Option<ForceBump>,
     /// Optional: Force the first version to be calculated as 1.0.0
@@ -60,6 +62,38 @@ impl CalculatorConfig {
     /// ```
     pub fn set_prefix(mut self, version_prefix: &str) -> Self {
         self.prefix = version_prefix.to_string();
+        self
+    }
+
+    /// Set the optional subdir for commit analysis.
+    ///
+    /// The subdir identifies a string by which the commits will be filtered.
+    /// The objective of the filtering is to limit the calculation to commits related
+    /// to one crate within a worlspace.
+    ///
+    /// # Example
+    ///
+    /// Where you have a crate called crate2 in a workspace and wish to calculate the
+    /// version for that crate only.
+    ///
+    /// Note:
+    ///
+    /// A version prefix should be used to identify the relevent crate version tag.
+    ///
+    /// ```no_run
+    /// # fn main() -> Result<(),nextsv::Error> {
+    /// # use nextsv::CalculatorConfig;
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("crate2-v")
+    ///         .set_subdir(Some("crate2"))
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn set_subdir(mut self, subdir: Option<&str>) -> Self {
+        self.subdir = subdir.map(|subdir| subdir.to_string());
         self
     }
 
@@ -292,6 +326,7 @@ mod test {
     fn default_calculator_config() -> CalculatorConfig {
         CalculatorConfig {
             prefix: String::from(""),
+            subdir: None,
             force: None,
             force_first_version: false,
             report_bump: true,
