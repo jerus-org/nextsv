@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: update crate dependencies to latest versions(pr [#215])
+- Dependencies: update rust crate thiserror to 1.0.65(pr [#217])
 
 ## [0.8.22] - 2024-10-19
 
@@ -732,6 +733,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#213]: https://github.com/jerus-org/nextsv/pull/213
 [#214]: https://github.com/jerus-org/nextsv/pull/214
 [#215]: https://github.com/jerus-org/nextsv/pull/215
+[#217]: https://github.com/jerus-org/nextsv/pull/217
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.22...HEAD
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
