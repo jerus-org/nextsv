@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - BREAKING: add subdir option to filter commits by subdirectory(pr [#214])
 
+### Security
+
+- Dependencies: update crate dependencies to latest versions(pr [#215])
+
 ## [0.8.22] - 2024-10-19
 
 ### Security
@@ -727,6 +731,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#211]: https://github.com/jerus-org/nextsv/pull/211
 [#213]: https://github.com/jerus-org/nextsv/pull/213
 [#214]: https://github.com/jerus-org/nextsv/pull/214
+[#215]: https://github.com/jerus-org/nextsv/pull/215
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.22...HEAD
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
