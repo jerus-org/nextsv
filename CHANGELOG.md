@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependencies: update crate dependencies to latest versions(pr [#215])
 - Dependencies: update rust crate thiserror to 1.0.65(pr [#217])
+- Dependencies: update github/codeql-action action to v3.27.0(pr [#216])
 
 ## [0.8.22] - 2024-10-19
 
@@ -734,6 +735,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#214]: https://github.com/jerus-org/nextsv/pull/214
 [#215]: https://github.com/jerus-org/nextsv/pull/215
 [#217]: https://github.com/jerus-org/nextsv/pull/217
+[#216]: https://github.com/jerus-org/nextsv/pull/216
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.22...HEAD
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
