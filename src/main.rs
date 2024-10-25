@@ -118,6 +118,7 @@ fn run() -> ExitResult {
         Commands::Calculate(args) => {
             calculator_config = calculator_config.set_prefix(&args.prefix);
             calculator_config = calculator_config.set_subdir(args.subdir.as_deref());
+            calculator_config = calculator_config.set_package(args.package.as_deref());
         }
         Commands::Require(args) => {
             calculator_config = calculator_config.set_prefix(&args.prefix);
