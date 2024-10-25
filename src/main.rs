@@ -50,7 +50,8 @@ struct Calculate {
     /// Filter to commits in the specified sub directory only
     #[arg(short, long)]
     subdir: Option<String>,
-    /// Calculate for specific workspace package
+    /// Set subdir filter based on specific workspace package
+    /// (takes priority over --subdir)
     #[clap(short = 'k', long)]
     pub package: Option<String>,
 }
