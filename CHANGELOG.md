@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - BREAKING: add subdir option to filter commits by subdirectory(pr [#214])
 
+### Changed
+
+- Reorg into workspace for nextsv and test-utils(pr [#221])
+
 ### Security
 
 - Dependencies: update crate dependencies to latest versions(pr [#215])
@@ -740,6 +744,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#216]: https://github.com/jerus-org/nextsv/pull/216
 [#218]: https://github.com/jerus-org/nextsv/pull/218
 [#219]: https://github.com/jerus-org/nextsv/pull/219
+[#221]: https://github.com/jerus-org/nextsv/pull/221
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.22...HEAD
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
