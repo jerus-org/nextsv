@@ -5,7 +5,7 @@ use cargo_toml::Manifest;
 
 /// Represents the Cargo.toml of the workspace
 ///
-/// See https://doc.rust-lang.org/cargo/reference/manifest.html#the-workspace
+/// See <https://doc.rust-lang.org/cargo/reference/manifest.html#the-workspace>
 ///  
 #[derive(Debug, Clone)]
 pub struct Workspace {
