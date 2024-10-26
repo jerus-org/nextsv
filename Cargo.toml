@@ -3,8 +3,6 @@ members = ["crates/nextsv", "crates/test-utils"]
 resolver = "2"
 
 [workspace.package]
-name = "nextsv"
-version = "0.8.22"
 edition = "2021"
 authors = ["jerusdp <jrussell@jerus.ie>"]
 rust-version = "1.74"
