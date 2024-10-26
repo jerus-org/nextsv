@@ -19,9 +19,11 @@ impl Workspace {
     /// # Example
     ///     
     /// ```no_run
+    /// # use std::path::Path;
     /// # fn main() -> Result<(),nextsv::Error> {
     /// # use nextsv::Workspace;
-    ///     let workspace = Workspace::new("./Cargo.toml")?;
+    ///     let path = Path::new("./Cargo.toml");
+    ///     let workspace = Workspace::new(path)?;
     /// # Ok(())
     /// # }
     /// ```
@@ -36,9 +38,11 @@ impl Workspace {
     /// # Example
     ///     
     /// ```no_run
+    /// # use std::path::Path;
     /// # fn main() -> Result<(),nextsv::Error> {
     /// # use nextsv::Workspace;
-    ///     let workspace = Workspace::new("./Cargo.toml")?;
+    ///     let path = Path::new("./Cargo.toml");
+    ///     let workspace = Workspace::new(path)?;
     ///     let packages = workspace.packages();
     /// # Ok(())
     /// # }
