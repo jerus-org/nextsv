@@ -49,6 +49,7 @@ impl Calculator {
             &repo,
             current_version.to_string().as_str(),
             config.subdir.as_deref(),
+            config.package.as_deref(),
         )?;
 
         let test_level: Hierarchy = conventional.top_type.as_ref().into();
