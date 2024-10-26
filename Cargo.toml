@@ -16,6 +16,7 @@ publish = true
 
 
 [dependencies]
+cargo_toml = "0.20.5"
 clap = { version = "4.5.20", features = ["derive"] }
 clap-verbosity-flag = "2.2.2"
 colored = "2.1.0"
