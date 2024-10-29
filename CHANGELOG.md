@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - add commands for GitHub and Cargo release processes(pr [#225])
 
+### Fixed
+
+- nextsv: update version to 0.8.22 in Cargo and documentation(pr [#227])
+
 ## [9.0.1] - 2024-10-29
 
 ### Added
@@ -758,6 +762,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#223]: https://github.com/jerus-org/nextsv/pull/223
 [#224]: https://github.com/jerus-org/nextsv/pull/224
 [#225]: https://github.com/jerus-org/nextsv/pull/225
+[#227]: https://github.com/jerus-org/nextsv/pull/227
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v9.0.1...HEAD
 [9.0.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...v9.0.1
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
