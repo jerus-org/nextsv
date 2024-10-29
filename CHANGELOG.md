@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add commands for GitHub and Cargo release processes(pr [#225])
 - BREAKING: add subdir option to filter commits by subdirectory(pr [#214])
 
+### Fixed
+
+- nextsv: update version to 0.8.22 in Cargo and documentation(pr [#227])
+
 ### Changed
 
 - Reorg into workspace for nextsv and test-utils(pr [#221])
@@ -754,6 +758,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#223]: https://github.com/jerus-org/nextsv/pull/223
 [#224]: https://github.com/jerus-org/nextsv/pull/224
 [#225]: https://github.com/jerus-org/nextsv/pull/225
+[#227]: https://github.com/jerus-org/nextsv/pull/227
 [#226]: https://github.com/jerus-org/nextsv/pull/226
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.22...HEAD
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
