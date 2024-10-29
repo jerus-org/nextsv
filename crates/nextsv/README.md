@@ -119,6 +119,6 @@ To use the library add the crate to dependencies in the project's Cargo.toml.
 ```toml
 
 [dependencies]
-nextsv = "9.0.1"
+nextsv = "0.8.22"
 
 ```
