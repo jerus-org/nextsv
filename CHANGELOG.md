@@ -5,16 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- Dependencies: update rust crate snapbox to 0.6.19(pr [#228])
+
 ## [0.9.1] - 2024-10-29
 
 ### Added
 
 - add commands for GitHub and Cargo release processes(pr [#225])
 - BREAKING: add subdir option to filter commits by subdirectory(pr [#214])
-
-### Fixed
-
-- nextsv: update version to 0.8.22 in Cargo and documentation(pr [#227])
 
 ### Changed
 
@@ -23,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - chore-rename CHANGELOG.md to crates/nextsv/CHANGELOG.md(pr [#223])
 - chore-rename release.toml to crates/nextsv/release.toml(pr [#224])
 - Fix-version-numbering(pr [#226])
+
+### Fixed
+
+- nextsv: update version to 0.8.22 in Cargo and documentation(pr [#227])
 
 ### Security
 
@@ -760,7 +766,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#225]: https://github.com/jerus-org/nextsv/pull/225
 [#227]: https://github.com/jerus-org/nextsv/pull/227
 [#226]: https://github.com/jerus-org/nextsv/pull/226
-[0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...nextsv-v0.9.1
+[#228]: https://github.com/jerus-org/nextsv/pull/228
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...v0.9.1
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
 [0.8.20]: https://github.com/jerus-org/nextsv/compare/v0.8.19...v0.8.20
