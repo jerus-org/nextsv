@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Reorg into workspace for nextsv and test-utils(pr [#221])
+- ci(circleci)-update config to specify version 9.0.1(pr [#222])
 
 ### Security
 
@@ -745,6 +746,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#218]: https://github.com/jerus-org/nextsv/pull/218
 [#219]: https://github.com/jerus-org/nextsv/pull/219
 [#221]: https://github.com/jerus-org/nextsv/pull/221
+[#222]: https://github.com/jerus-org/nextsv/pull/222
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.22...HEAD
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
