@@ -367,5 +367,5 @@ workflows:
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
           specific_version: true
-          version: "9.0.2"
+          version: "0.9.1"
           package: nextsv
