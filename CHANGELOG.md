@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ci(circleci)-update config to specify version 9.0.1(pr [#222])
 - chore-rename CHANGELOG.md to crates/nextsv/CHANGELOG.md(pr [#223])
 - chore-rename release.toml to crates/nextsv/release.toml(pr [#224])
+- Fix-version-numbering(pr [#226])
 
 ### Security
 
@@ -758,7 +759,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#224]: https://github.com/jerus-org/nextsv/pull/224
 [#225]: https://github.com/jerus-org/nextsv/pull/225
 [#227]: https://github.com/jerus-org/nextsv/pull/227
-[Unreleased]: https://github.com/jerus-org/nextsv/compare/v9.0.1...HEAD
+[#226]: https://github.com/jerus-org/nextsv/pull/226
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.22...HEAD
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
 [0.8.20]: https://github.com/jerus-org/nextsv/compare/v0.8.19...v0.8.20
