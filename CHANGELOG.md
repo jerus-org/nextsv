@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- chore(ci)-remove hardcoded version from CircleCI config(pr [#233])
+
 ## [0.9.2] - 2024-10-30
 
 ### Changed
@@ -781,7 +787,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#230]: https://github.com/jerus-org/nextsv/pull/230
 [#231]: https://github.com/jerus-org/nextsv/pull/231
 [#232]: https://github.com/jerus-org/nextsv/pull/232
-[0.9.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...nextsv-v0.9.2
+[#233]: https://github.com/jerus-org/nextsv/pull/233
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.2...HEAD
+[0.9.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...v0.9.1
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
