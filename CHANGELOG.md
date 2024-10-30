@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - chore-update CircleCI toolkit orb and comment out unused configurations(pr [#230])
+- chore-remove commented-out code from CircleCI config and update version to 0.9.2(pr [#232])
 
 ### Fixed
 
@@ -779,6 +780,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#229]: https://github.com/jerus-org/nextsv/pull/229
 [#230]: https://github.com/jerus-org/nextsv/pull/230
 [#231]: https://github.com/jerus-org/nextsv/pull/231
+[#232]: https://github.com/jerus-org/nextsv/pull/232
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.1...HEAD
 [0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...v0.9.1
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
