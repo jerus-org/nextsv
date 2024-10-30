@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add option to calculate for specific workspace package(pr [#220])
+
 ### Changed
 
 - chore(ci)-remove hardcoded version from CircleCI config(pr [#233])
@@ -788,6 +792,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#231]: https://github.com/jerus-org/nextsv/pull/231
 [#232]: https://github.com/jerus-org/nextsv/pull/232
 [#233]: https://github.com/jerus-org/nextsv/pull/233
+[#220]: https://github.com/jerus-org/nextsv/pull/220
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.2...HEAD
 [0.9.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...v0.9.1
