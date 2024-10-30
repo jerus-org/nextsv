@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [9.0.2] - 2024-10-30
+## [Unreleased]
 
 ### Changed
 
 - chore-update CircleCI toolkit orb and comment out unused configurations(pr [#230])
+
+### Fixed
+
+- downgrade nextsv version to 0.9.1 and update dependencies in Cargo.lock(pr [#231])
 
 ### Security
 
@@ -774,7 +778,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#228]: https://github.com/jerus-org/nextsv/pull/228
 [#229]: https://github.com/jerus-org/nextsv/pull/229
 [#230]: https://github.com/jerus-org/nextsv/pull/230
-[9.0.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...nextsv-v9.0.2
+[#231]: https://github.com/jerus-org/nextsv/pull/231
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.1...HEAD
 [0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...v0.9.1
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
