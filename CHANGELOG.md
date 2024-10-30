@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: update rust crate snapbox to 0.6.19(pr [#228])
+- Dependencies: update rust crate trycmd to 0.15.8(pr [#229])
 
 ## [0.9.1] - 2024-10-29
 
@@ -767,6 +768,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#227]: https://github.com/jerus-org/nextsv/pull/227
 [#226]: https://github.com/jerus-org/nextsv/pull/226
 [#228]: https://github.com/jerus-org/nextsv/pull/228
+[#229]: https://github.com/jerus-org/nextsv/pull/229
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.1...HEAD
 [0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...v0.9.1
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
