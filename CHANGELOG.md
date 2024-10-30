@@ -7,10 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- chore(ci)-remove hardcoded version from CircleCI config(pr [#233])
+
+## [0.9.2] - 2024-10-30
+
+### Changed
+
+- chore-update CircleCI toolkit orb and comment out unused configurations(pr [#230])
+- chore-remove commented-out code from CircleCI config and update version to 0.9.2(pr [#232])
+
+### Fixed
+
+- downgrade nextsv version to 0.9.1 and update dependencies in Cargo.lock(pr [#231])
+
+### Security
+
+- Dependencies: update rust crate snapbox to 0.6.19(pr [#228])
+- Dependencies: update rust crate trycmd to 0.15.8(pr [#229])
+
+## [0.9.1] - 2024-10-29
+
 ### Added
 
+- add commands for GitHub and Cargo release processes(pr [#225])
 - BREAKING: add subdir option to filter commits by subdirectory(pr [#214])
-- add option to calculate for specific workspace package(pr [#220])
+
+### Changed
+
+- Reorg into workspace for nextsv and test-utils(pr [#221])
+- ci(circleci)-update config to specify version 9.0.1(pr [#222])
+- chore-rename CHANGELOG.md to crates/nextsv/CHANGELOG.md(pr [#223])
+- chore-rename release.toml to crates/nextsv/release.toml(pr [#224])
+- Fix-version-numbering(pr [#226])
+
+### Fixed
+
+- nextsv: update version to 0.8.22 in Cargo and documentation(pr [#227])
 
 ### Security
 
@@ -741,8 +775,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#216]: https://github.com/jerus-org/nextsv/pull/216
 [#218]: https://github.com/jerus-org/nextsv/pull/218
 [#219]: https://github.com/jerus-org/nextsv/pull/219
-[#220]: https://github.com/jerus-org/nextsv/pull/220
-[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.8.22...HEAD
+[#221]: https://github.com/jerus-org/nextsv/pull/221
+[#222]: https://github.com/jerus-org/nextsv/pull/222
+[#223]: https://github.com/jerus-org/nextsv/pull/223
+[#224]: https://github.com/jerus-org/nextsv/pull/224
+[#225]: https://github.com/jerus-org/nextsv/pull/225
+[#227]: https://github.com/jerus-org/nextsv/pull/227
+[#226]: https://github.com/jerus-org/nextsv/pull/226
+[#228]: https://github.com/jerus-org/nextsv/pull/228
+[#229]: https://github.com/jerus-org/nextsv/pull/229
+[#230]: https://github.com/jerus-org/nextsv/pull/230
+[#231]: https://github.com/jerus-org/nextsv/pull/231
+[#232]: https://github.com/jerus-org/nextsv/pull/232
+[#233]: https://github.com/jerus-org/nextsv/pull/233
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.2...HEAD
+[0.9.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...v0.9.2
+[0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...v0.9.1
 [0.8.22]: https://github.com/jerus-org/nextsv/compare/v0.8.21...v0.8.22
 [0.8.21]: https://github.com/jerus-org/nextsv/compare/v0.8.20...v0.8.21
 [0.8.20]: https://github.com/jerus-org/nextsv/compare/v0.8.19...v0.8.20

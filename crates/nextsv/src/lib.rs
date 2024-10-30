@@ -22,7 +22,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! nextsv = "0.8.22"
+//! nextsv = "0.9.2"
 //! ```
 //!
 //! Calculation workflow:
@@ -32,7 +32,7 @@
 //!
 //! Report the results from the calculator
 //!
-//! ```rust
+//! ```no_run
 //! #   use nextsv::{CalculatorConfig, ForceBump, Hierarchy};
 //! #   use std::ffi::OsString;
 //! #

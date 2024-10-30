@@ -17,15 +17,7 @@ parameters:
     description: "If true, the success pipeline will be executed."
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@1.14.0
-
-executors:
-  rust-env:
-    docker:
-      - image: jerusdp/ci-rust:<<pipeline.parameters.min-rust-version>>
-  base-env:
-    docker:
-      - image: jerusdp/ci-rust:base
+  toolkit: jerus-org/circleci-toolkit@1.15.0
 
 workflows:
   check_last_commit:
@@ -106,3 +98,5 @@ workflows:
             - bot-check
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
+          specific_version: true
+          package: nextsv

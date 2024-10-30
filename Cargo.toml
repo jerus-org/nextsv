@@ -1,21 +1,14 @@
-workspace = { members = ["test-utils"] }
+[workspace]
+members = ["crates/nextsv", "crates/test-utils"]
+resolver = "2"
 
-[package]
-name = "nextsv"
-version = "0.8.22"
+[workspace.package]
 edition = "2021"
 authors = ["jerusdp <jrussell@jerus.ie>"]
 rust-version = "1.74"
-description = "Next semantic version calculator"
-license = "MIT"
-readme = "README.md"
 repository = "https://github.com/jerusdp/nextsv"
-keywords = ["semantic", "version", "calculator"]
-include = ["**/*.rs", "Cargo.toml", "README.md", "LICENSE", "CHANGES.md"]
-publish = true
 
-
-[dependencies]
+[workspace.dependencies]
 cargo_toml = "0.20.5"
 clap = { version = "4.5.20", features = ["derive"] }
 clap-verbosity-flag = "2.2.2"
@@ -27,29 +20,11 @@ log = "0.4.22"
 proc-exit = "2.0.2"
 regex = "1.11.1"
 thiserror = "1.0.65"
-
-[dev-dependencies]
 log4rs_test_utils = { version = "0.2.3", default-features = false, features = [
     "test_logging",
 ] }
 map-macro = "0.3.0"
 rstest = "0.23.0"
-snapbox = { version = "0.6.18", features = ["cmd"] }
-test_utils = { path = "test-utils" }
-trycmd = "0.15.7"
-
-
-[lib]
-name = "nextsv"
-path = "src/lib.rs"
-
-[[bin]]
-name = "nextsv"
-path = "src/main.rs"
-
-[build-dependencies]
+snapbox = { version = "0.6.19", features = ["cmd"] }
+trycmd = "0.15.8"
 autocfg = "1.4.0"
-
-[package.metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
