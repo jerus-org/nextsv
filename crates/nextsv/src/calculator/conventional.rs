@@ -4,13 +4,14 @@
 use std::{
     collections::{HashMap, HashSet},
     ffi::OsString,
+    path::Path,
 };
 
 use git2::{Repository, TreeWalkMode, TreeWalkResult};
 
 use super::commit::Commit;
 
-use crate::Error;
+use crate::{Error, Workspace};
 
 use super::{Hierarchy, TopType};
 
@@ -33,7 +34,10 @@ impl ConventionalCommits {
         repo: &Repository,
         reference: &str,
         subdir: Option<&str>,
+        package: Option<&str>,
     ) -> Result<Self, Error> {
+        let subdir = get_subdir_for_package(package, subdir);
+
         log::debug!("repo opened to find conventional commits");
         log::debug!("Searching for the tag: `{}`", reference);
         let tag_commit = match repo.find_reference(reference) {
@@ -100,7 +104,7 @@ impl ConventionalCommits {
             let files = cmt.files();
             log::debug!("files found: `{:#?}`", files);
 
-            if let Some(subdir) = subdir {
+            if let Some(subdir) = &subdir {
                 log::debug!("subdir: `{}`", subdir);
                 let qualified_files: Vec<_> = files
                     .iter()
@@ -191,6 +195,35 @@ impl ConventionalCommits {
     }
 }
 
+fn get_subdir_for_package(package: Option<&str>, subdir: Option<&str>) -> Option<String> {
+    if package.is_none() {
+        if let Some(subidr) = subdir {
+            let s = subidr.to_string();
+            return Some(s);
+        } else {
+            return None;
+        }
+    };
+
+    let rel_package = package.unwrap();
+    log::info!("Running release for package: {}", rel_package);
+
+    let path = Path::new("./Cargo.toml");
+    let workspace = Workspace::new(path).unwrap();
+
+    let packages = workspace.packages();
+
+    if let Some(packages) = packages {
+        for package in packages {
+            log::debug!("Found workspace package: {}", package.name);
+            if package.name != rel_package {
+                continue;
+            }
+            return Some(package.member);
+        }
+    };
+    None
+}
 #[cfg(test)]
 mod tests {
     use std::cmp::Ordering;

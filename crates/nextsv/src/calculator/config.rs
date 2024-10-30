@@ -13,6 +13,8 @@ pub struct CalculatorConfig {
     pub(crate) prefix: String,
     /// Optional: subdir filter for subordinate packages
     pub(crate) subdir: Option<String>,
+    /// Optional: package to calculate from workspace
+    pub(crate) package: Option<String>,
     /// Optional: Force the calculation to return the specified bump level
     pub(crate) force: Option<ForceBump>,
     /// Optional: Force the first version to be calculated as 1.0.0
@@ -94,6 +96,36 @@ impl CalculatorConfig {
     /// ```
     pub fn set_subdir(mut self, subdir: Option<&str>) -> Self {
         self.subdir = subdir.map(|subdir| subdir.to_string());
+        self
+    }
+
+    /// Set the optional package for workspace subset.
+    ///
+    /// The package identifies a subset of a workspace to consider when calculating the next version.
+    ///
+    /// # Example
+    ///
+    /// Where you have a crate called crate2 in a workspace and wish to calculate the
+    /// version for that crate only.
+    ///
+    /// Note:
+    ///
+    /// A version prefix should be used to identify the relevent crate version tag.
+    ///
+    /// ```no_run
+    /// # fn main() -> Result<(),nextsv::Error> {
+    /// # use nextsv::CalculatorConfig;
+    ///     let calculator = CalculatorConfig::new()
+    ///         .set_prefix("crate2-v")
+    ///         .set_package(Some("crate2"))
+    ///         .build()?;
+    ///
+    ///     calculator.report();
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn set_package(mut self, subdir: Option<&str>) -> Self {
+        self.package = subdir.map(|package| package.to_string());
         self
     }
 
@@ -327,6 +359,7 @@ mod test {
         CalculatorConfig {
             prefix: String::from(""),
             subdir: None,
+            package: None,
             force: None,
             force_first_version: false,
             report_bump: true,

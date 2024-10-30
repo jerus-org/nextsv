@@ -101,7 +101,9 @@ mod error;
 #[cfg(test)]
 mod test_utils;
 mod version;
+mod workspace;
 
 pub use calculator::{Calculator, CalculatorConfig, ForceBump, Hierarchy};
 pub use error::Error;
+pub use workspace::Workspace;
 // pub use version::VersionTag;

@@ -72,12 +72,13 @@ Calculate the next version number
 Usage: nextsv calculate [OPTIONS]
 
 Options:
-  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
-  -v, --verbose...       Increase logging verbosity
-  -q, --quiet...         Decrease logging verbosity
-  -s, --subdir <SUBDIR>  Filter to commits in the specified sub directory only
-  -h, --help             Print help
-  -V, --version          Print version
+  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
+  -v, --verbose...         Increase logging verbosity
+  -q, --quiet...           Decrease logging verbosity
+  -s, --subdir <SUBDIR>    Filter to commits in the specified sub directory only
+  -k, --package <PACKAGE>  Set subdir filter based on specific workspace package (takes priority over --subdir)
+  -h, --help               Print help
+  -V, --version            Print version
 
 ```
 
@@ -138,12 +139,13 @@ Calculate the next version number
 Usage: nextsv calculate [OPTIONS]
 
 Options:
-  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
-  -v, --verbose...       Increase logging verbosity
-  -q, --quiet...         Decrease logging verbosity
-  -s, --subdir <SUBDIR>  Filter to commits in the specified sub directory only
-  -h, --help             Print help
-  -V, --version          Print version
+  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
+  -v, --verbose...         Increase logging verbosity
+  -q, --quiet...           Decrease logging verbosity
+  -s, --subdir <SUBDIR>    Filter to commits in the specified sub directory only
+  -k, --package <PACKAGE>  Set subdir filter based on specific workspace package (takes priority over --subdir)
+  -h, --help               Print help
+  -V, --version            Print version
 
 ```
 

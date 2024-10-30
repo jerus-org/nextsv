@@ -67,6 +67,9 @@ pub enum Error {
     /// Error passed up from convert TryFrom
     #[error("0:?")]
     TryFromIntError(#[from] std::num::TryFromIntError),
+    /// Error passed up from cargo_toml
+    #[error("cargo_toml error says: {0:?}")]
+    Toml(#[from] cargo_toml::Error),
 }
 
 impl From<Error> for Exit {

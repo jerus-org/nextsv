@@ -50,6 +50,10 @@ struct Calculate {
     /// Filter to commits in the specified sub directory only
     #[arg(short, long)]
     subdir: Option<String>,
+    /// Set subdir filter based on specific workspace package
+    /// (takes priority over --subdir)
+    #[clap(short = 'k', long)]
+    pub package: Option<String>,
 }
 
 #[derive(Parser, Debug)]
@@ -115,6 +119,7 @@ fn run() -> ExitResult {
         Commands::Calculate(args) => {
             calculator_config = calculator_config.set_prefix(&args.prefix);
             calculator_config = calculator_config.set_subdir(args.subdir.as_deref());
+            calculator_config = calculator_config.set_package(args.package.as_deref());
         }
         Commands::Require(args) => {
             calculator_config = calculator_config.set_prefix(&args.prefix);
