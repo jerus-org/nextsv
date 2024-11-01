@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - chore(ci)-remove hardcoded version from CircleCI config(pr [#233])
 
+### Security
+
+- Dependencies: update rust crate thiserror to 1.0.66(pr [#234])
+
 ## [0.9.2] - 2024-10-30
 
 ### Changed
@@ -793,6 +797,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#232]: https://github.com/jerus-org/nextsv/pull/232
 [#233]: https://github.com/jerus-org/nextsv/pull/233
 [#220]: https://github.com/jerus-org/nextsv/pull/220
+[#234]: https://github.com/jerus-org/nextsv/pull/234
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.2...HEAD
 [0.9.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.8.22...v0.9.1
