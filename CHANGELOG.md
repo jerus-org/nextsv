@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- ci-remove specific_version parameter from CircleCI config(pr [#236])
+
 ### Security
 
 - Dependencies: update rust crate thiserror to 1.0.67(pr [#235])
@@ -805,6 +809,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#220]: https://github.com/jerus-org/nextsv/pull/220
 [#234]: https://github.com/jerus-org/nextsv/pull/234
 [#235]: https://github.com/jerus-org/nextsv/pull/235
+[#236]: https://github.com/jerus-org/nextsv/pull/236
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.10.0...HEAD
 [0.10.0]: https://github.com/jerus-org/nextsv/compare/v0.9.2...v0.10.0
 [0.9.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...v0.9.2
