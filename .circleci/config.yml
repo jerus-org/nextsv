@@ -56,19 +56,17 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/test_doc_build:
           min_rust_version: << pipeline.parameters.min-rust-version >>
-      - toolkit/common_tests:
-          min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/idiomatic_rust:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/security:
           context: SonarCloud
       - toolkit/update_changelog:
           requires:
-            - toolkit/common_tests
             - toolkit/required_builds
             - toolkit/test_doc_build
             - toolkit/idiomatic_rust
             - toolkit/security
+            - toolkit/code_coverage
           context:
             - release
             - bot-check
