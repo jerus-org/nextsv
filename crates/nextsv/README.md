@@ -8,6 +8,7 @@
 [![Docs][docs-badge]][docs-url]
 [![BuyMeaCoffee][bmac-badge]][bmac-url]
 [![GitHubSponsors][ghub-badge]][ghub-url]
+[![codecov][codecov-badge]][codecov-url]
 
 [crates-badge]: https://img.shields.io/crates/v/nextsv.svg
 [crates-url]: https://crates.io/crates/nextsv
@@ -25,6 +26,8 @@
 [bmac-url]: https://buymeacoffee.com/jerusdp
 [ghub-badge]: https://img.shields.io/badge/sponsor-30363D?logo=GitHub-Sponsors&logoColor=#white
 [ghub-url]: https://github.com/sponsors/jerusdp
+[codecov-badge]: https://codecov.io/gh/jerus-org/nextsv/graph/badge.svg?token=JL9HSHV4QR
+[codecov-url]: https://codecov.io/gh/jerus-org/nextsv
 
 A utility to calculate the level of change and the next semantic version number based on the conventional commits since the last version tag.
 

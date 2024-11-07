@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - ci-update CircleCI toolkit orb and add code coverage step(pr [#239])
+- docs-add codecov badge to README.md(pr [#242])
 
 ### Security
 
@@ -822,6 +823,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#236]: https://github.com/jerus-org/nextsv/pull/236
 [#238]: https://github.com/jerus-org/nextsv/pull/238
 [#239]: https://github.com/jerus-org/nextsv/pull/239
+[#242]: https://github.com/jerus-org/nextsv/pull/242
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.11.0...HEAD
 [0.11.0]: https://github.com/jerus-org/nextsv/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/jerus-org/nextsv/compare/v0.9.2...v0.10.0
