@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: bump thiserror from 1.0.67 to 1.0.68(pr [#238])
+- Dependencies: update dependency toolkit to v1.18.0(pr [#241])
 
 ## [0.11.0] - 2024-11-04
 
@@ -817,6 +818,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#235]: https://github.com/jerus-org/nextsv/pull/235
 [#236]: https://github.com/jerus-org/nextsv/pull/236
 [#238]: https://github.com/jerus-org/nextsv/pull/238
+[#241]: https://github.com/jerus-org/nextsv/pull/241
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.11.0...HEAD
 [0.11.0]: https://github.com/jerus-org/nextsv/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/jerus-org/nextsv/compare/v0.9.2...v0.10.0
