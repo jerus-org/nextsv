@@ -119,9 +119,17 @@ impl Semantic {
 #[cfg(test)]
 mod tests {
 
+    use log::LevelFilter;
     use rstest::rstest;
 
     use super::*;
+
+    fn get_test_logger() {
+        let mut builder = env_logger::Builder::new();
+        builder.filter(None, LevelFilter::Debug);
+        builder.format_timestamp_secs().format_module_path(false);
+        let _ = builder.try_init();
+    }
 
     #[test]
     fn bump_patch_version_number_by_one() {
@@ -215,10 +223,7 @@ mod tests {
         #[case] build_meta_data: &str,
         #[case] expected: &str,
     ) {
-        use log::LevelFilter;
-        use log4rs_test_utils::test_logging;
-
-        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
+        get_test_logger();
 
         let pre_release = if !pre_release.is_empty() {
             Some(PreRelease::new(pre_release))

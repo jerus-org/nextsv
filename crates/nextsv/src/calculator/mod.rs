@@ -318,14 +318,22 @@ impl Calculator {
 #[cfg(test)]
 mod test {
     use log::LevelFilter;
-    use log4rs_test_utils::test_logging;
+    // use log4rs_test_utils::test_logging;
     use rstest::rstest;
+    // use test_log::test;
 
     use crate::calculator::{bump::Bump, NextVersion, Route};
     use crate::test_utils;
     use crate::test_utils::*;
     use crate::version::PreRelease;
     use crate::ForceBump;
+
+    fn get_test_logger() {
+        let mut builder = env_logger::Builder::new();
+        builder.filter(None, LevelFilter::Debug);
+        builder.format_timestamp_secs().format_module_path(false);
+        let _ = builder.try_init();
+    }
 
     #[rstest]
     #[case::feature("feat", "patch", "0.7.10")]
@@ -414,7 +422,7 @@ mod test {
         )]
         commit: ConventionalType,
     ) {
-        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
+        get_test_logger();
         let current_version =
             test_utils::gen_current_version("v", 0, 7, 9, Some(PreRelease::new("alpha.1")), None);
         let conventional = test_utils::gen_conventional_commit(commit, false);
@@ -437,7 +445,7 @@ mod test {
         )]
         commit: ConventionalType,
     ) {
-        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
+        get_test_logger();
         let current_version = test_utils::gen_current_version("v", 1, 7, 9, None, None);
         let conventional = test_utils::gen_conventional_commit(commit, true);
 
@@ -450,7 +458,7 @@ mod test {
 
     #[test]
     fn promote_to_version_one() {
-        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
+        get_test_logger();
         let current_version = test_utils::gen_current_version("v", 0, 7, 9, None, None);
 
         let force = ForceBump::First;

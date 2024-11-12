@@ -206,9 +206,15 @@ mod test {
     use crate::test_utils::*;
     use crate::version::{PreRelease, VersionTag};
     use log::LevelFilter;
-    use log4rs_test_utils::test_logging;
 
     use rstest::rstest;
+
+    fn get_test_logger() {
+        let mut builder = env_logger::Builder::new();
+        builder.filter(None, LevelFilter::Debug);
+        builder.format_timestamp_secs().format_module_path(false);
+        let _ = builder.try_init();
+    }
 
     #[rstest]
     #[case::none(0, 0, 0, "", "0.0.0")]
@@ -250,7 +256,7 @@ mod test {
             Bump::Major, Bump::Alpha, Bump::Beta, Bump::Rc, Bump::Release, Bump::Custom("pre".to_string()), Bump::First) ]
         bump: Bump,
     ) {
-        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
+        get_test_logger();
 
         let current_version = VersionTag::parse(tag, "v").unwrap();
         let mut change_bump = None;
