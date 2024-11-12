@@ -249,12 +249,20 @@ fn version_number_valid(tag: &str, version_prefix: &str) -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
 
+    use log::LevelFilter;
     use rstest::rstest;
 
     use crate::test_utils::*;
     use crate::version::PreRelease;
 
     use super::*;
+
+    fn get_test_logger() {
+        let mut builder = env_logger::Builder::new();
+        builder.filter(None, LevelFilter::Debug);
+        builder.format_timestamp_secs().format_module_path(false);
+        let _ = builder.try_init();
+    }
 
     fn version_tag_example_one() -> VersionTag {
         let pre_release = PreRelease::new("alpha.4");
@@ -358,10 +366,7 @@ mod tests {
     #[case::alphanumeric_build("refs/tags/v2.0.0-pre.2+circle.14", "v", true)]
     #[case::no_refs("v2.0.0-pre.2+circle.14", "v", true)]
     fn test_parse_value(#[case] input: &str, #[case] version_prefix: &str, #[case] expected: bool) {
-        use log::LevelFilter;
-        use log4rs_test_utils::test_logging;
-
-        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
+        get_test_logger();
 
         let result = VersionTag::parse(input, version_prefix);
         log::debug!("the result is:{:?}", result);
@@ -412,10 +417,7 @@ mod tests {
         #[case] expected_result: &str,
         #[case] expected_pass: bool,
     ) {
-        use log::LevelFilter;
-        use log4rs_test_utils::test_logging;
-
-        test_logging::init_logging_once_for(vec![], LevelFilter::Debug, None);
+        get_test_logger();
 
         let result = version_number_valid(input, version_prefix);
         println!("result: {result:?}");

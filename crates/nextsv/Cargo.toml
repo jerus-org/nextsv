@@ -27,7 +27,6 @@ regex.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
-log4rs_test_utils.workspace = true
 map-macro.workspace = true
 rstest.workspace = true
 snapbox.workspace = true
