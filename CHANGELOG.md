@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependencies: update github/codeql-action action to v3.27.5(pr [#254])
 - Dependencies: update rust crate clap-verbosity-flag to 2.2.3(pr [#255])
+- Dependencies: update rust crate clap-verbosity-flag to v3(pr [#256])
 
 ## [0.13.0] - 2024-11-16
 
@@ -863,6 +864,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#253]: https://github.com/jerus-org/nextsv/pull/253
 [#254]: https://github.com/jerus-org/nextsv/pull/254
 [#255]: https://github.com/jerus-org/nextsv/pull/255
+[#256]: https://github.com/jerus-org/nextsv/pull/256
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.13.0...HEAD
 [0.13.0]: https://github.com/jerus-org/nextsv/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/jerus-org/nextsv/compare/v0.11.0...v0.12.0
