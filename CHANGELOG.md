@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- Dependencies: update github/codeql-action action to v3.27.6(pr [#258])
+
 ## [0.15.0] - 2024-11-30
 
 ### Security
@@ -872,7 +878,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#255]: https://github.com/jerus-org/nextsv/pull/255
 [#256]: https://github.com/jerus-org/nextsv/pull/256
 [#257]: https://github.com/jerus-org/nextsv/pull/257
-[0.15.0]: https://github.com/jerus-org/nextsv/compare/v0.14.0...nextsv-v0.15.0
+[#258]: https://github.com/jerus-org/nextsv/pull/258
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/jerus-org/nextsv/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/jerus-org/nextsv/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/jerus-org/nextsv/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/jerus-org/nextsv/compare/v0.11.0...v0.12.0
