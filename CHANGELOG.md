@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: bump chrono from 0.4.38 to 0.4.39(pr [#262])
+- Dependencies: bump thiserror from 2.0.4 to 2.0.6(pr [#263])
 
 ## [0.16.0] - 2024-12-07
 
@@ -892,6 +893,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#260]: https://github.com/jerus-org/nextsv/pull/260
 [#261]: https://github.com/jerus-org/nextsv/pull/261
 [#262]: https://github.com/jerus-org/nextsv/pull/262
+[#263]: https://github.com/jerus-org/nextsv/pull/263
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.16.0...HEAD
 [0.16.0]: https://github.com/jerus-org/nextsv/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/jerus-org/nextsv/compare/v0.14.0...v0.15.0
