@@ -80,6 +80,10 @@ struct Require {
     /// Filter to commits in the specified sub directory only
     #[arg(short, long)]
     subdir: Option<String>,
+    /// Set subdir filter based on specific workspace package
+    /// (takes priority over --subdir)
+    #[clap(short = 'k', long)]
+    pub package: Option<String>,
 }
 
 fn main() {
@@ -124,6 +128,7 @@ fn run() -> ExitResult {
         Commands::Require(args) => {
             calculator_config = calculator_config.set_prefix(&args.prefix);
             calculator_config = calculator_config.set_subdir(args.subdir.as_deref());
+            calculator_config = calculator_config.set_package(args.package.as_deref());
             calculator_config = calculator_config.add_required_files(args.files);
             calculator_config = calculator_config.set_required_enforcement(args.enforce);
         }
