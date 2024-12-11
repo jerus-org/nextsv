@@ -122,13 +122,14 @@ Commands:
   help      Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...       Increase logging verbosity
-  -q, --quiet...         Decrease logging verbosity
-  -f, --files <FILES>    
-  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
-  -s, --subdir <SUBDIR>  Filter to commits in the specified sub directory only
-  -h, --help             Print help
-  -V, --version          Print version
+  -v, --verbose...         Increase logging verbosity
+  -q, --quiet...           Decrease logging verbosity
+  -f, --files <FILES>      
+  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
+  -s, --subdir <SUBDIR>    Filter to commits in the specified sub directory only
+  -k, --package <PACKAGE>  Set subdir filter based on specific workspace package (takes priority over --subdir)
+  -h, --help               Print help
+  -V, --version            Print version
 
 ```
 
@@ -189,13 +190,14 @@ Commands:
   help      Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...       Increase logging verbosity
-  -q, --quiet...         Decrease logging verbosity
-  -f, --files <FILES>    
-  -p, --prefix <PREFIX>  Prefix string to identify version number tags [default: v]
-  -s, --subdir <SUBDIR>  Filter to commits in the specified sub directory only
-  -h, --help             Print help
-  -V, --version          Print version
+  -v, --verbose...         Increase logging verbosity
+  -q, --quiet...           Decrease logging verbosity
+  -f, --files <FILES>      
+  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
+  -s, --subdir <SUBDIR>    Filter to commits in the specified sub directory only
+  -k, --package <PACKAGE>  Set subdir filter based on specific workspace package (takes priority over --subdir)
+  -h, --help               Print help
+  -V, --version            Print version
 
 ```
 ```
