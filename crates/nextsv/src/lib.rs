@@ -22,7 +22,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! nextsv = "0.16.0"
+//! nextsv = "0.17.0"
 //! ```
 //!
 //! Calculation workflow:
