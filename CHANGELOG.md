@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add package option to set subdir filter based on workspace package(pr [#264])
+
 ### Security
 
 - Dependencies: bump chrono from 0.4.38 to 0.4.39(pr [#262])
@@ -894,6 +898,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#261]: https://github.com/jerus-org/nextsv/pull/261
 [#262]: https://github.com/jerus-org/nextsv/pull/262
 [#263]: https://github.com/jerus-org/nextsv/pull/263
+[#264]: https://github.com/jerus-org/nextsv/pull/264
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.16.0...HEAD
 [0.16.0]: https://github.com/jerus-org/nextsv/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/jerus-org/nextsv/compare/v0.14.0...v0.15.0
