@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: update dependency toolkit to v1.20.2(pr [#266])
+- Dependencies: update github/codeql-action action to v3.27.9(pr [#265])
 
 ## [0.17.0] - 2024-12-11
 
@@ -906,6 +907,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#263]: https://github.com/jerus-org/nextsv/pull/263
 [#264]: https://github.com/jerus-org/nextsv/pull/264
 [#266]: https://github.com/jerus-org/nextsv/pull/266
+[#265]: https://github.com/jerus-org/nextsv/pull/265
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.17.0...HEAD
 [0.17.0]: https://github.com/jerus-org/nextsv/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/jerus-org/nextsv/compare/v0.15.0...v0.16.0
