@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: bump clap-verbosity-flag from 3.0.1 to 3.0.2(pr [#269])
+- Dependencies: bump snapbox from 0.6.20 to 0.6.21(pr [#270])
 
 ## [0.18.0] - 2024-12-13
 
@@ -920,6 +921,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#265]: https://github.com/jerus-org/nextsv/pull/265
 [#267]: https://github.com/jerus-org/nextsv/pull/267
 [#269]: https://github.com/jerus-org/nextsv/pull/269
+[#270]: https://github.com/jerus-org/nextsv/pull/270
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.18.0...HEAD
 [0.18.0]: https://github.com/jerus-org/nextsv/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/jerus-org/nextsv/compare/v0.16.0...v0.17.0
