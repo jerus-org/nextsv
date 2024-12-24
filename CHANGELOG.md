@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: bump github/codeql-action from 3.27.9 to 3.28.0(pr [#275])
+- Dependencies: bump env_logger from 0.11.5 to 0.11.6(pr [#276])
 
 ## [0.19.0] - 2024-12-21
 
@@ -942,6 +943,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#273]: https://github.com/jerus-org/nextsv/pull/273
 [#274]: https://github.com/jerus-org/nextsv/pull/274
 [#275]: https://github.com/jerus-org/nextsv/pull/275
+[#276]: https://github.com/jerus-org/nextsv/pull/276
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.0...HEAD
 [0.19.0]: https://github.com/jerus-org/nextsv/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/jerus-org/nextsv/compare/v0.17.0...v0.18.0
