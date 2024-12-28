@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - chore(circleci)-update toolkit orb and add github release step(pr [#274])
 
+### Fixed
+
+- circleci: update key name from cargo_package to package in config file(pr [#279])
+
 ### Security
 
 - Dependencies: bump github/codeql-action from 3.27.9 to 3.28.0(pr [#275])
@@ -948,6 +952,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#276]: https://github.com/jerus-org/nextsv/pull/276
 [#277]: https://github.com/jerus-org/nextsv/pull/277
 [#278]: https://github.com/jerus-org/nextsv/pull/278
+[#279]: https://github.com/jerus-org/nextsv/pull/279
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.0...HEAD
 [0.19.0]: https://github.com/jerus-org/nextsv/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/jerus-org/nextsv/compare/v0.17.0...v0.18.0

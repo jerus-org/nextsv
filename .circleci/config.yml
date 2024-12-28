@@ -108,4 +108,4 @@ workflows:
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
           when_cargo_release: false
-          cargo_package: nextsv
+          package: nextsv
