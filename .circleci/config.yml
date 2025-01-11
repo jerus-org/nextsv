@@ -100,12 +100,3 @@ workflows:
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
           when_github_release: false
-      - toolkit/make_release:
-          name: github release
-          context:
-            - release
-            - bot-check
-          ssh_fingerprint: << pipeline.parameters.fingerprint >>
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          when_cargo_release: false
-          package: nextsv
