@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: bump github/codeql-action from 3.28.0 to 3.28.1(pr [#287])
+- Dependencies: bump actions/upload-artifact from 4.5.0 to 4.6.0(pr [#286])
 
 ## [0.19.3] - 2025-01-11
 
@@ -985,6 +986,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#284]: https://github.com/jerus-org/nextsv/pull/284
 [#285]: https://github.com/jerus-org/nextsv/pull/285
 [#287]: https://github.com/jerus-org/nextsv/pull/287
+[#286]: https://github.com/jerus-org/nextsv/pull/286
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.3...HEAD
 [0.19.3]: https://github.com/jerus-org/nextsv/compare/v0.19.2...v0.19.3
 [0.19.2]: https://github.com/jerus-org/nextsv/compare/v0.19.1...v0.19.2
