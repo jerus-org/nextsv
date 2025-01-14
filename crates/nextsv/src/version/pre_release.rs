@@ -47,13 +47,13 @@ impl PreRelease {
             (pre_release.to_string(), None)
         };
         let mut pre_type = PreReleaseType::Custom;
-        if label.to_ascii_lowercase() == "alpha" {
+        if label.eq_ignore_ascii_case("alpha") {
             pre_type = PreReleaseType::Alpha;
         }
-        if label.to_ascii_lowercase() == "beta" {
+        if label.eq_ignore_ascii_case("beta") {
             pre_type = PreReleaseType::Beta;
         }
-        if label.to_ascii_lowercase() == "rc" {
+        if label.eq_ignore_ascii_case("rc") {
             pre_type = PreReleaseType::Rc;
         }
         PreRelease {
