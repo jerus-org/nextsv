@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - chore(ci)-remove deprecated github release step from CircleCI config(pr [#285])
 - refactor-use eq_ignore_ascii_case for pre-release label comparison(pr [#289])
 - chore(circleci)-update toolkit orb to version 2.0.0(pr [#290])
+- docs-add MIT license file(pr [#291])
 
 ### Security
 
@@ -993,6 +994,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#288]: https://github.com/jerus-org/nextsv/pull/288
 [#289]: https://github.com/jerus-org/nextsv/pull/289
 [#290]: https://github.com/jerus-org/nextsv/pull/290
+[#291]: https://github.com/jerus-org/nextsv/pull/291
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.3...HEAD
 [0.19.3]: https://github.com/jerus-org/nextsv/compare/v0.19.2...v0.19.3
 [0.19.2]: https://github.com/jerus-org/nextsv/compare/v0.19.1...v0.19.2
