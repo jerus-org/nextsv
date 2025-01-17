@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dependencies: bump thiserror from 2.0.10 to 2.0.11(pr [#288])
 - Dependencies: update rust crate log to 0.4.25(pr [#293])
 - Dependencies: update rust crate uuid to 1.12.0(pr [#294])
+- Dependencies: update rust crate colored to v3(pr [#295])
 
 ## [0.19.3] - 2025-01-11
 
@@ -1001,6 +1002,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#292]: https://github.com/jerus-org/nextsv/pull/292
 [#293]: https://github.com/jerus-org/nextsv/pull/293
 [#294]: https://github.com/jerus-org/nextsv/pull/294
+[#295]: https://github.com/jerus-org/nextsv/pull/295
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.3...HEAD
 [0.19.3]: https://github.com/jerus-org/nextsv/compare/v0.19.2...v0.19.3
 [0.19.2]: https://github.com/jerus-org/nextsv/compare/v0.19.1...v0.19.2
