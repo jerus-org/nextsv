@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [9.1.4] - 2025-01-20
 
 ### Changed
 
@@ -1005,7 +1005,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#294]: https://github.com/jerus-org/nextsv/pull/294
 [#295]: https://github.com/jerus-org/nextsv/pull/295
 [#296]: https://github.com/jerus-org/nextsv/pull/296
-[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.3...HEAD
+[9.1.4]: https://github.com/jerus-org/nextsv/compare/v0.19.3...nextsv-v9.1.4
 [0.19.3]: https://github.com/jerus-org/nextsv/compare/v0.19.2...v0.19.3
 [0.19.2]: https://github.com/jerus-org/nextsv/compare/v0.19.1...v0.19.2
 [0.19.1]: https://github.com/jerus-org/nextsv/compare/v0.19.0...v0.19.1
