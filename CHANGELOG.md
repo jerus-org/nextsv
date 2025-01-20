@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - chore(circleci)-update toolkit orb to version 2.0.0(pr [#290])
 - docs-add MIT license file(pr [#291])
 - chore-remove dependabot configuration file(pr [#292])
+- ci(circleci)-update config for release workflow and toolkit(pr [#296])
 
 ### Security
 
@@ -1003,6 +1004,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#293]: https://github.com/jerus-org/nextsv/pull/293
 [#294]: https://github.com/jerus-org/nextsv/pull/294
 [#295]: https://github.com/jerus-org/nextsv/pull/295
+[#296]: https://github.com/jerus-org/nextsv/pull/296
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.3...HEAD
 [0.19.3]: https://github.com/jerus-org/nextsv/compare/v0.19.2...v0.19.3
 [0.19.2]: https://github.com/jerus-org/nextsv/compare/v0.19.1...v0.19.2
