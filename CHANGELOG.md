@@ -7,13 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Security
-
-- Dependencies: update github/codeql-action action to v3.28.4(pr [#297])
-- Dependencies: update rust crate clap to 4.5.27(pr [#298])
-
-## [9.1.4] - 2025-01-20
-
 ### Changed
 
 - chore(ci)-remove deprecated github release step from CircleCI config(pr [#285])
@@ -22,9 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - docs-add MIT license file(pr [#291])
 - chore-remove dependabot configuration file(pr [#292])
 - ci(circleci)-update config for release workflow and toolkit(pr [#296])
+- 🔧 chore(version): rollback version from 9.1.4 to 0.19.3(pr [#299])
 
 ### Security
 
+- Dependencies: update github/codeql-action action to v3.28.4(pr [#297])
+- Dependencies: update rust crate clap to 4.5.27(pr [#298])
 - Dependencies: bump github/codeql-action from 3.28.0 to 3.28.1(pr [#287])
 - Dependencies: bump actions/upload-artifact from 4.5.0 to 4.6.0(pr [#286])
 - Dependencies: bump thiserror from 2.0.10 to 2.0.11(pr [#288])
@@ -1014,8 +1010,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#296]: https://github.com/jerus-org/nextsv/pull/296
 [#297]: https://github.com/jerus-org/nextsv/pull/297
 [#298]: https://github.com/jerus-org/nextsv/pull/298
-[Unreleased]: https://github.com/jerus-org/nextsv/compare/v9.1.4...HEAD
-[9.1.4]: https://github.com/jerus-org/nextsv/compare/v0.19.3...v9.1.4
+[#299]: https://github.com/jerus-org/nextsv/pull/299
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.3...HEAD
 [0.19.3]: https://github.com/jerus-org/nextsv/compare/v0.19.2...v0.19.3
 [0.19.2]: https://github.com/jerus-org/nextsv/compare/v0.19.1...v0.19.2
 [0.19.1]: https://github.com/jerus-org/nextsv/compare/v0.19.0...v0.19.1
