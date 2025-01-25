@@ -57,7 +57,7 @@ Run in your project directory and check the version
 
 ```console
 $ nextsv --version
-nextsv 9.1.4
+nextsv 0.19.3
 
 ```
 
