@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - docs-add MIT license file(pr [#291])
 - chore-remove dependabot configuration file(pr [#292])
 - ci(circleci)-update config for release workflow and toolkit(pr [#296])
+- 🔧 chore(version): rollback version from 9.1.4 to 0.19.3(pr [#299])
 
 ### Security
 
@@ -1009,7 +1010,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#296]: https://github.com/jerus-org/nextsv/pull/296
 [#297]: https://github.com/jerus-org/nextsv/pull/297
 [#298]: https://github.com/jerus-org/nextsv/pull/298
-[Unreleased]: https://github.com/jerus-org/nextsv/compare/v9.1.4...HEAD
+[#299]: https://github.com/jerus-org/nextsv/pull/299
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.3...HEAD
 [0.19.3]: https://github.com/jerus-org/nextsv/compare/v0.19.2...v0.19.3
 [0.19.2]: https://github.com/jerus-org/nextsv/compare/v0.19.1...v0.19.2
 [0.19.1]: https://github.com/jerus-org/nextsv/compare/v0.19.0...v0.19.1
