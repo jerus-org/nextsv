@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: update github/codeql-action action to v3.28.8(pr [#300])
+- Dependencies: update rust crate git-conventional to 0.12.9(pr [#301])
 
 ## [0.19.4] - 2025-01-25
 
@@ -1018,6 +1019,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#298]: https://github.com/jerus-org/nextsv/pull/298
 [#299]: https://github.com/jerus-org/nextsv/pull/299
 [#300]: https://github.com/jerus-org/nextsv/pull/300
+[#301]: https://github.com/jerus-org/nextsv/pull/301
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.4...HEAD
 [0.19.4]: https://github.com/jerus-org/nextsv/compare/v0.19.3...v0.19.4
 [0.19.3]: https://github.com/jerus-org/nextsv/compare/v0.19.2...v0.19.3
