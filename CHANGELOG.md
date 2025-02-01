@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- 👷 ci(circleci): add package parameter to build configuration(pr [#303])
+
 ## [0.19.5] - 2025-02-01
 
 ### Security
@@ -1022,7 +1028,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#300]: https://github.com/jerus-org/nextsv/pull/300
 [#301]: https://github.com/jerus-org/nextsv/pull/301
 [#302]: https://github.com/jerus-org/nextsv/pull/302
-[0.19.5]: https://github.com/jerus-org/nextsv/compare/v0.19.4...nextsv-v0.19.5
+[#303]: https://github.com/jerus-org/nextsv/pull/303
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.5...HEAD
+[0.19.5]: https://github.com/jerus-org/nextsv/compare/v0.19.4...v0.19.5
 [0.19.4]: https://github.com/jerus-org/nextsv/compare/v0.19.3...v0.19.4
 [0.19.3]: https://github.com/jerus-org/nextsv/compare/v0.19.2...v0.19.3
 [0.19.2]: https://github.com/jerus-org/nextsv/compare/v0.19.1...v0.19.2
