@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: update rust crate clap to 4.5.28(pr [#304])
+- Dependencies: update rust crate uuid to 1.13.1(pr [#305])
 
 ## [0.19.6] - 2025-02-01
 
@@ -1036,6 +1037,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#302]: https://github.com/jerus-org/nextsv/pull/302
 [#303]: https://github.com/jerus-org/nextsv/pull/303
 [#304]: https://github.com/jerus-org/nextsv/pull/304
+[#305]: https://github.com/jerus-org/nextsv/pull/305
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.6...HEAD
 [0.19.6]: https://github.com/jerus-org/nextsv/compare/v0.19.5...v0.19.6
 [0.19.5]: https://github.com/jerus-org/nextsv/compare/v0.19.4...v0.19.5
