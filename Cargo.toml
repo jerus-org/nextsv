@@ -25,5 +25,5 @@ thiserror = "2.0.11"
 map-macro = "0.3.0"
 rstest = "0.24.0"
 snapbox = { version = "0.6.21", features = ["cmd"] }
-trycmd = "0.15.8"
+trycmd = "0.15.9"
 autocfg = "1.4.0"
