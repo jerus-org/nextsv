@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- 👷 ci(circleci): add package parameter to save_next_version job(pr [#315])
 - 🐛 fix(calculator):  remove unnecessary take and correct typos(pr [#313])
 - ✨ fix(version): add package prefix support in version tag search(pr [#314])
+- 👷 ci(circleci): add package parameter to save_next_version job(pr [#315])
 - 📝 docs(CHANGELOG): remove duplicate version entry(pr [#316])
 
 ## [0.19.9] - 2025-02-22
