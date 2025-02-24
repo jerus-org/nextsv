@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ fix(version): add package prefix support in version tag search(pr [#314])
 - 👷 ci(circleci): add package parameter to save_next_version job(pr [#315])
 - 📝 docs(CHANGELOG): remove duplicate version entry(pr [#316])
+- 🔧 chore(dependencies): update nextsv package version(pr [#317])
 
 ## [0.19.9] - 2025-02-22
 
@@ -1078,6 +1079,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#314]: https://github.com/jerus-org/nextsv/pull/314
 [#315]: https://github.com/jerus-org/nextsv/pull/315
 [#316]: https://github.com/jerus-org/nextsv/pull/316
+[#317]: https://github.com/jerus-org/nextsv/pull/317
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.9...HEAD
 [0.19.9]: https://github.com/jerus-org/nextsv/compare/v0.19.8...v0.19.9
 [0.19.8]: https://github.com/jerus-org/nextsv/compare/v0.19.7...v0.19.8
