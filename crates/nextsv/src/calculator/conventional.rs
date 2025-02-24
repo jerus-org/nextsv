@@ -90,7 +90,7 @@ impl ConventionalCommits {
         let mut file_names = HashSet::new();
 
         let mut tree_flag = true;
-        // Walk back through the commits to collect the commit summary and identitfy conventional commits
+        // Walk back through the commits to collect the commit summary and identify conventional commits
         for commit in revwalk.flatten() {
             let cmt = Commit::new(commit.clone(), repo);
             let summary = cmt.message();
@@ -154,9 +154,9 @@ impl ConventionalCommits {
     }
 
     pub(crate) fn push(&mut self, commit: &git2::Commit) -> &Self {
-        if commit.summary().take().unwrap_or("No") != "No" {
+        if commit.summary().unwrap_or("No") != "No" {
             if let Ok(conventional) = git_conventional::Commit::parse(
-                commit.summary().take().unwrap_or("NotConventional"),
+                commit.summary().unwrap_or("NotConventional"),
             ) {
                 log::trace!(
                     "Commit: ({}) {} {}",
@@ -186,7 +186,6 @@ impl ConventionalCommits {
             self.commits.push(
                 commit
                     .summary()
-                    .take()
                     .unwrap_or("NotConventional")
                     .to_string(),
             );
@@ -197,8 +196,8 @@ impl ConventionalCommits {
 
 fn get_subdir_for_package(package: Option<&str>, subdir: Option<&str>) -> Option<String> {
     if package.is_none() {
-        if let Some(subidr) = subdir {
-            let s = subidr.to_string();
+        if let Some(subdir) = subdir {
+            let s = subdir.to_string();
             return Some(s);
         } else {
             return None;
