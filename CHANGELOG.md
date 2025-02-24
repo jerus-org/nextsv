@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - 🐛 fix(calculator):  remove unnecessary take and correct typos(pr [#313])
+- ✨ fix(version): add package prefix support in version tag search(pr [#314])
 
 ## [0.19.9] - 2025-02-22
 
@@ -1072,6 +1073,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#311]: https://github.com/jerus-org/nextsv/pull/311
 [#312]: https://github.com/jerus-org/nextsv/pull/312
 [#313]: https://github.com/jerus-org/nextsv/pull/313
+[#314]: https://github.com/jerus-org/nextsv/pull/314
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.9...HEAD
 [0.19.9]: https://github.com/jerus-org/nextsv/compare/v0.19.8...v0.19.9
 [0.19.8]: https://github.com/jerus-org/nextsv/compare/v0.19.7...v0.19.8
