@@ -4,6 +4,7 @@
         "Enforcelevel",
         "nextsv",
         "nfiles",
+        "nonbreaking",
         "proc",
         "reflog",
         "refs",
