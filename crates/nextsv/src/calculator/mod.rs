@@ -43,7 +43,9 @@ impl Calculator {
     pub(crate) fn execute(mut config: CalculatorConfig) -> Result<Self, Error> {
         let repo = Repository::open(".")?;
 
-        let current_version = VersionTag::find_in_repo(&repo, config.prefix.as_str())?;
+        let package = config.package.as_deref().unwrap_or_default();
+
+        let current_version = VersionTag::find_in_repo(&repo, package, config.prefix.as_str())?;
 
         let conventional = ConventionalCommits::walk_back_commits_to_tag_reference(
             &repo,
