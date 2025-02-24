@@ -9,14 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- 👷 ci(circleci): add package parameter to save_next_version job(pr [#315])
-
-## [9.1.1] - 2025-02-24
-
-### Changed
-
 - 🐛 fix(calculator):  remove unnecessary take and correct typos(pr [#313])
 - ✨ fix(version): add package prefix support in version tag search(pr [#314])
+- 👷 ci(circleci): add package parameter to save_next_version job(pr [#315])
+- 📝 docs(CHANGELOG): remove duplicate version entry(pr [#316])
 
 ## [0.19.9] - 2025-02-22
 
@@ -1081,8 +1077,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#313]: https://github.com/jerus-org/nextsv/pull/313
 [#314]: https://github.com/jerus-org/nextsv/pull/314
 [#315]: https://github.com/jerus-org/nextsv/pull/315
-[Unreleased]: https://github.com/jerus-org/nextsv/compare/v9.1.1...HEAD
-[9.1.1]: https://github.com/jerus-org/nextsv/compare/v0.19.9...v9.1.1
+[#316]: https://github.com/jerus-org/nextsv/pull/316
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.9...HEAD
 [0.19.9]: https://github.com/jerus-org/nextsv/compare/v0.19.8...v0.19.9
 [0.19.8]: https://github.com/jerus-org/nextsv/compare/v0.19.7...v0.19.8
 [0.19.7]: https://github.com/jerus-org/nextsv/compare/v0.19.6...v0.19.7
