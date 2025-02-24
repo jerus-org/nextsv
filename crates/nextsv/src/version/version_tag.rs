@@ -133,11 +133,17 @@ impl VersionTag {
 
     /// Find the latest version tag in a repo
     ///
-    pub(crate) fn find_in_repo(repo: &Repository, version_prefix: &str) -> Result<Self, Error> {
+    pub(crate) fn find_in_repo(repo: &Repository, package: &str, version_prefix: &str) -> Result<Self, Error> {
         log::debug!("Repository opened to find latest version tag.");
 
+        let package = if !package.is_empty() {
+            format!("{}-", package)
+        } else {
+            String::new()
+        };
+
         // Setup regex to test the tag for a version number: major.minor,patch
-        let re_version = format!(r"({}\d+\.\d+\.\d+)", version_prefix);
+        let re_version = format!(r"({package}{version_prefix}\d+\.\d+\.\d+)");
         log::debug!("Regex to search for version tags is: `{}`.", re_version);
         let re = match Regex::new(&re_version) {
             Ok(r) => r,
@@ -171,8 +177,7 @@ impl VersionTag {
             None => return Err(Error::NoVersionTag),
         };
         Ok(current_version)
-    }
-}
+    }}
 
 fn trace_items(versions: Vec<VersionTag>, prefix: &str) {
     log::trace!(
