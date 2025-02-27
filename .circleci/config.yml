@@ -108,6 +108,8 @@ workflows:
       - toolkit/save_next_version:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           package: nextsv
+          requires:
+            - toolkit/install_me
 
       - toolkit/make_release:
           requires:
