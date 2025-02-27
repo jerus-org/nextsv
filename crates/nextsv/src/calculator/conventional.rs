@@ -159,12 +159,11 @@ impl ConventionalCommits {
     pub(crate) fn push(&mut self, commit: &git2::Commit) -> &Self {
         if commit.summary().unwrap_or("No") != "No" {
             let summary = commit.summary().unwrap();
-            self.update_from_summary(summary)
-        } else {
-            self.commits
-                .push(commit.summary().unwrap_or("NotConventional").to_string());
-            self
+            self.update_from_summary(summary);
         }
+        self.commits
+            .push(commit.summary().unwrap_or("NotConventional").to_string());
+        self
     }
 
     fn update_from_summary(&mut self, summary: &str) -> &Self {
