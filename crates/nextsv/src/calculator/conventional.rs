@@ -1,6 +1,9 @@
 //! Represents a vector of conventional commits
 //!
 
+mod cmt_summary;
+use cmt_summary::CmtSummary;
+
 use std::{
     collections::{HashMap, HashSet},
     ffi::OsString,
@@ -155,41 +158,39 @@ impl ConventionalCommits {
 
     pub(crate) fn push(&mut self, commit: &git2::Commit) -> &Self {
         if commit.summary().unwrap_or("No") != "No" {
-            if let Ok(conventional) = git_conventional::Commit::parse(
-                commit.summary().unwrap_or("NotConventional"),
-            ) {
-                log::trace!(
-                    "Commit: ({}) {} {}",
-                    conventional.type_(),
-                    conventional.description(),
-                    Hierarchy::parse(&conventional.type_().to_string()).unwrap_or(Hierarchy::Other),
-                );
-                let counter = self
-                    .counts
-                    .entry(conventional.type_().to_string())
-                    .or_insert(0);
-                *counter += 1;
-
-                if !self.breaking {
-                    log::trace!("Not broken yet!");
-                    if conventional.breaking() {
-                        log::trace!("Breaking change found!");
-                        self.breaking = conventional.breaking();
-                        self.top_type = TopType::Breaking;
-                    } else if TopType::parse(conventional.type_().as_str()).unwrap() > self.top_type
-                    {
-                        self.top_type = TopType::parse(conventional.type_().as_str()).unwrap();
-                        log::trace!("New top type found {}!", self.top_type);
-                    };
-                }
-            }
-            self.commits.push(
-                commit
-                    .summary()
-                    .unwrap_or("NotConventional")
-                    .to_string(),
-            );
+            let summary = commit.summary().unwrap();
+            self.update_from_summary(summary);
         }
+        self.commits
+            .push(commit.summary().unwrap_or("NotConventional").to_string());
+        self
+    }
+
+    fn update_from_summary(&mut self, summary: &str) -> &Self {
+        let cmt_summary = CmtSummary::parse(summary).unwrap();
+        let commit_type = cmt_summary.type_string();
+
+        log::trace!(
+            "Commit: ({}) {} {}",
+            &commit_type,
+            cmt_summary.title,
+            Hierarchy::parse(&cmt_summary.type_.unwrap_or("".to_string()))
+                .unwrap_or(Hierarchy::Other),
+        );
+        let counter = self.counts.entry(commit_type.clone()).or_insert(0);
+        *counter += 1;
+
+        if !self.breaking {
+            log::trace!("Not broken yet!");
+            if cmt_summary.breaking {
+                log::trace!("Breaking change found!");
+                self.breaking = cmt_summary.breaking;
+                self.top_type = TopType::Breaking;
+            } else if TopType::parse(&commit_type).unwrap() > self.top_type {
+                self.top_type = TopType::parse(&commit_type).unwrap();
+                log::trace!("New top type found {}!", self.top_type);
+            };
+        };
         self
     }
 }
@@ -227,7 +228,17 @@ fn get_subdir_for_package(package: Option<&str>, subdir: Option<&str>) -> Option
 mod tests {
     use std::cmp::Ordering;
 
-    use crate::Hierarchy;
+    use log::LevelFilter;
+    use rstest::rstest;
+
+    use crate::{calculator::TopType, Hierarchy};
+
+    fn get_test_logger() {
+        let mut builder = env_logger::Builder::new();
+        builder.filter(None, LevelFilter::Trace);
+        builder.format_timestamp_secs().format_module_path(false);
+        let _ = builder.try_init();
+    }
 
     #[test]
     fn type_hierarchy_ordering() {
@@ -255,5 +266,279 @@ mod tests {
             let lhs = test.0;
             assert_eq!(test.2, lhs.cmp(&test.1));
         }
+    }
+
+    #[rstest]
+    #[case::feat_other_feat("feat: add new feature", TopType::Other, TopType::Feature)]
+    #[case::emoji_feat_other_feat("✨ feat: add new feature", TopType::Other, TopType::Feature)]
+    #[case::fix_other_fix("fix: fix an existing feature", TopType::Other, TopType::Fix)]
+    #[case::emoji_fix_other_fix("🐛 fix: fix an existing feature", TopType::Other, TopType::Fix)]
+    #[case::style_other_other("style: fix typo and lint issues", TopType::Other, TopType::Other)]
+    #[case::emoji_style_other_other(
+        "💄 style: fix typo and lint issues",
+        TopType::Other,
+        TopType::Other
+    )]
+    #[case::test_other_other("test: update tests", TopType::Other, TopType::Other)]
+    #[case::sec_other_fix(
+        "fix(security): Fix security vulnerability",
+        TopType::Other,
+        TopType::Fix
+    )]
+    #[case::chore_other_other("chore(deps): Update dependencies", TopType::Other, TopType::Other)]
+    #[case::emoji_chore_other_other(
+        "🔧 chore(deps): Update dependencies",
+        TopType::Other,
+        TopType::Other
+    )]
+    #[case::refactor_other_other(
+        "refactor(remove): Remove unused code",
+        TopType::Other,
+        TopType::Other
+    )]
+    #[case::emoji_refactor_other_other(
+        "♻️ refactor(remove): Remove unused code",
+        TopType::Other,
+        TopType::Other
+    )]
+    #[case::docs_other_other("docs(deprecate): Deprecate old API", TopType::Other, TopType::Other)]
+    #[case::emoji_docs_other_other(
+        "📚 docs(deprecate): Deprecate old API",
+        TopType::Other,
+        TopType::Other
+    )]
+    #[case::ci_other_other(
+        "ci(other-scope): Update CI configuration",
+        TopType::Other,
+        TopType::Other
+    )]
+    #[case::emoji_ci_other_other(
+        "👷 ci(other-scope): Update CI configuration",
+        TopType::Other,
+        TopType::Other
+    )]
+    #[case::test_other_breaking("test!: Update test cases", TopType::Other, TopType::Breaking)]
+    #[case::issue_172_other_other(
+        "chore(config.yml): update jerus-org/circleci-toolkit orb version to 0.4.0",
+        TopType::Other,
+        TopType::Other
+    )]
+    #[case::with_emoji_feat_other_other(
+        "✨ feat(ci): add optional flag for push failure handling",
+        TopType::Other,
+        TopType::Feature
+    )]
+    #[case::feat_fix_feat("feat: add new feature", TopType::Fix, TopType::Feature)]
+    #[case::emoji_feat_fix_feat("✨ feat: add new feature", TopType::Fix, TopType::Feature)]
+    #[case::fix_fix_fix("fix: fix an existing feature", TopType::Fix, TopType::Fix)]
+    #[case::emoji_fix_fix_fix("🐛 fix: fix an existing feature", TopType::Fix, TopType::Fix)]
+    #[case::style_fix_fix("style: fix typo and lint issues", TopType::Fix, TopType::Fix)]
+    #[case::emoji_style_fix_fix("💄 style: fix typo and lint issues", TopType::Fix, TopType::Fix)]
+    #[case::test_fix_fix("test: update tests", TopType::Fix, TopType::Fix)]
+    #[case::security_fix_fix(
+        "fix(security): Fix security vulnerability",
+        TopType::Fix,
+        TopType::Fix
+    )]
+    #[case::chore_fix_fix("chore(deps): Update dependencies", TopType::Fix, TopType::Fix)]
+    #[case::emoji_chore_fix_fix("🔧 chore(deps): Update dependencies", TopType::Fix, TopType::Fix)]
+    #[case::refactor_fix_fix("refactor(remove): Remove unused code", TopType::Fix, TopType::Fix)]
+    #[case::emoji_refactor_fix_fix(
+        "♻️ refactor(remove): Remove unused code",
+        TopType::Fix,
+        TopType::Fix
+    )]
+    #[case::docs_fix_fix("docs(deprecate): Deprecate old API", TopType::Fix, TopType::Fix)]
+    #[case::emoji_docs_fix_fix("📚 docs(deprecate): Deprecate old API", TopType::Fix, TopType::Fix)]
+    #[case::ci_fix_fix("ci(other-scope): Update CI configuration", TopType::Fix, TopType::Fix)]
+    #[case::emoji_ci_fix_fix(
+        "👷 ci(other-scope): Update CI configuration",
+        TopType::Fix,
+        TopType::Fix
+    )]
+    #[case::test_fix_breaking("test!: Update test cases", TopType::Fix, TopType::Breaking)]
+    #[case::issue_172_chore_fix_fix(
+        "chore(config.yml): update jerus-org/circleci-toolkit orb version to 0.4.0",
+        TopType::Fix,
+        TopType::Fix
+    )]
+    #[case::with_emoji_emoji_feat_fix_feat(
+        "✨ feat(ci): add optional flag for push failure handling",
+        TopType::Fix,
+        TopType::Feature
+    )]
+    #[case::feat_feat_feat("feat: add new feature", TopType::Feature, TopType::Feature)]
+    #[case::emoji_feat_feat_feat("✨ feat: add new feature", TopType::Feature, TopType::Feature)]
+    #[case::fix_feat_feat("fix: fix an existing feature", TopType::Feature, TopType::Feature)]
+    #[case::emoji_fix_feat_feat(
+        "🐛 fix: fix an existing feature",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::style_feat_feat("style: fix typo and lint issues", TopType::Feature, TopType::Feature)]
+    #[case::emoji_style_feat_feat(
+        "💄 style: fix typo and lint issues",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::test_feat_feat("test: update tests", TopType::Feature, TopType::Feature)]
+    #[case::security_feat_feat(
+        "fix(security): Fix security vulnerability",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::chore_feat_feat("chore(deps): Update dependencies", TopType::Feature, TopType::Feature)]
+    #[case::emoji_chore_feat_feat(
+        "🔧 chore(deps): Update dependencies",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::refactor_feat_feat(
+        "refactor(remove): Remove unused code",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::refactor_feat_feat(
+        "♻️ refactor(remove): Remove unused code",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::docs_feat_feat(
+        "docs(deprecate): Deprecate old API",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::emoji_docs_feat_feat(
+        "📚 docs(deprecate): Deprecate old API",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::ci_feat_feat(
+        "ci(other-scope): Update CI configuration",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::emoji_ci_feat_feat(
+        "👷 ci(other-scope): Update CI configuration",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::test_feat_breaking("test!: Update test cases", TopType::Feature, TopType::Breaking)]
+    #[case::issue_172_chore_feat_feat(
+        "chore(config.yml): update jerus-org/circleci-toolkit orb version to 0.4.0",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::with_emoji_emoji_feat_feat_feat(
+        "✨ feat(ci): add optional flag for push failure handling",
+        TopType::Feature,
+        TopType::Feature
+    )]
+    #[case::feat_breaking_breaking("feat: add new feature", TopType::Breaking, TopType::Breaking)]
+    #[case::emoji_feat_breaking_breaking(
+        "✨ feat: add new feature",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::fix_breaking_breaking(
+        "fix: fix an existing feature",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::emoji_fix_breaking_breaking(
+        "🐛 fix: fix an existing feature",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::style_breaking_breaking(
+        "style: fix typo and lint issues",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::emoji_style_breaking_breaking(
+        "💄 style: fix typo and lint issues",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::test_breaking_breaking("test: update tests", TopType::Breaking, TopType::Breaking)]
+    #[case::security_breaking_breaking(
+        "fix(security): Fix security vulnerability",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::chore_breaking_breaking(
+        "chore(deps): Update dependencies",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::emoji_chore_breaking_breaking(
+        "🔧 chore(deps): Update dependencies",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::refactor_breaking_breaking(
+        "refactor(remove): Remove unused code",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::emoji_refactor_breaking_breaking(
+        "♻️ refactor(remove): Remove unused code",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::docs_breaking_breaking(
+        "docs(deprecate): Deprecate old API",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::emoji_docs_breaking_breaking(
+        "📚 docs(deprecate): Deprecate old API",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::ci_breaking_breaking(
+        "ci(other-scope): Update CI configuration",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::emoji_ci_breaking_breaking(
+        "👷 ci(other-scope): Update CI configuration",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::test_breaking_breaking(
+        "test!: Update test cases",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::issue_172_chore_breaking_breaking(
+        "chore(config.yml): update jerus-org/circleci-toolkit orb version to 0.4.0",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    #[case::with_emoji_feat_breaking_breaking(
+        "✨ feat(ci): add optional flag for push failure handling",
+        TopType::Breaking,
+        TopType::Breaking
+    )]
+    fn test_calculate_kind_and_description(
+        #[case] title: &str,
+        #[case] base_top_type: TopType,
+        #[case] expected_top_type: TopType,
+    ) {
+        get_test_logger();
+
+        let mut con_commits = super::ConventionalCommits::new();
+        if TopType::Breaking == base_top_type {
+            con_commits.breaking = true;
+        }
+        con_commits.top_type = base_top_type;
+        con_commits.update_from_summary(title);
+
+        println!("Conventional commits: {:#?}", con_commits);
+
+        println!("Expected top type: {:#?}", expected_top_type);
+
+        assert_eq!(expected_top_type, con_commits.top_type);
     }
 }
