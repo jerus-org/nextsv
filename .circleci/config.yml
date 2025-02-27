@@ -21,7 +21,7 @@ parameters:
     description: "If true, the release workflow will be executed."
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@2.0.11
+  toolkit: jerus-org/circleci-toolkit@2.0.12
 
 workflows:
   check_last_commit:
@@ -103,13 +103,10 @@ workflows:
         - not: << pipeline.parameters.success-flag >>
         - not: << pipeline.parameters.validation-flag >>
     jobs:
-      - toolkit/install_me:
-          min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/save_next_version:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           package: nextsv
-          requires:
-            - toolkit/install_me
+          install_me: true
 
       - toolkit/make_release:
           requires:
