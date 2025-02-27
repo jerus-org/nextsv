@@ -40,9 +40,9 @@ pub enum Error {
     /// Missing required file found.
     #[error("Missing the required file(s): {0:?}.")]
     MissingRequiredFile(Vec<OsString>),
-    /// Not a valid Type Hierachy name.
-    #[error("{0} is not a valid type hierarchy namne.")]
-    NotTypeHierachyName(String),
+    /// Not a valid Type Hierarchy name.
+    #[error("{0} is not a valid type hierarchy name.")]
+    NotTypeHierarchyName(String),
     /// Corrupt version check regex. Check the `prefix` value.
     #[error("Version check regex error {0}. Check the `prefix` value.")]
     CorruptVersionRegex(regex::Error),
@@ -70,6 +70,9 @@ pub enum Error {
     /// Error passed up from cargo_toml
     #[error("cargo_toml error says: {0:?}")]
     Toml(#[from] cargo_toml::Error),
+    /// Error passed up from regex
+    #[error("regex error says: {0:?}")]
+    Regex(#[from] regex::Error),
 }
 
 impl From<Error> for Exit {
