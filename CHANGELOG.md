@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - 👷 ci(circleci)-update toolkit orb version and simplify workflow(pr [#319])
+- 👷 ci(circleci)-update toolkit orb and add path_to_crate(pr [#320])
 
 ## [0.19.10] - 2025-02-24
 
@@ -1092,6 +1093,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#317]: https://github.com/jerus-org/nextsv/pull/317
 [#318]: https://github.com/jerus-org/nextsv/pull/318
 [#319]: https://github.com/jerus-org/nextsv/pull/319
+[#320]: https://github.com/jerus-org/nextsv/pull/320
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.10...HEAD
 [0.19.10]: https://github.com/jerus-org/nextsv/compare/v0.19.9...v0.19.10
 [0.19.9]: https://github.com/jerus-org/nextsv/compare/v0.19.8...v0.19.9
