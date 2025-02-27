@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ✨ add CmtSummary struct for commit parsing(pr [#318])
 
+### Changed
+
+- 👷 ci(circleci)-update toolkit orb version and simplify workflow(pr [#319])
+
 ## [0.19.10] - 2025-02-24
 
 ### Changed
@@ -1087,6 +1091,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#316]: https://github.com/jerus-org/nextsv/pull/316
 [#317]: https://github.com/jerus-org/nextsv/pull/317
 [#318]: https://github.com/jerus-org/nextsv/pull/318
+[#319]: https://github.com/jerus-org/nextsv/pull/319
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.10...HEAD
 [0.19.10]: https://github.com/jerus-org/nextsv/compare/v0.19.9...v0.19.10
 [0.19.9]: https://github.com/jerus-org/nextsv/compare/v0.19.8...v0.19.9
