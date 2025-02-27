@@ -21,7 +21,7 @@ parameters:
     description: "If true, the release workflow will be executed."
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@2.0.12
+  toolkit: jerus-org/circleci-toolkit@2.0.13
 
 workflows:
   check_last_commit:
@@ -107,6 +107,7 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           package: nextsv
           install_me: true
+          path_to_crate: "./crates/nextsv"
 
       - toolkit/make_release:
           requires:
