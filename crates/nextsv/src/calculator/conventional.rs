@@ -109,10 +109,20 @@ impl ConventionalCommits {
 
             if let Some(subdir) = &subdir {
                 log::debug!("subdir: `{}`", subdir);
-                let qualified_files: Vec<_> = files
+                let dup_files = files.clone();
+                let root_files: Vec<_> = dup_files
+                    .iter()
+                    .filter(|file| !file.to_str().unwrap().contains("/"))
+                    .collect();
+                log::debug!("root files: `{:#?}`", root_files);
+                let mut qualified_files: Vec<_> = files
                     .iter()
                     .filter(|file| file.to_str().unwrap().contains(subdir))
                     .collect();
+                log::debug!("qualified files: `{:#?}`", qualified_files);
+                log::info!("Checking for root directory files changed in addition to {subdir}");
+                qualified_files.extend_from_slice(&root_files);
+
                 if qualified_files.is_empty() {
                     log::debug!("Exiting loop because `{}` not found", subdir);
                     continue;
