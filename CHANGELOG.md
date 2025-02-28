@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dependencies: update ossf/scorecard-action action to v2.4.1(pr [#324])
 - Dependencies: update rust crate chrono to 0.4.40(pr [#325])
 - Dependencies: update rust crate clap to 4.5.31(pr [#326])
+- Dependencies: update rust crate uuid to 1.15.1(pr [#327])
 
 ## [0.19.11] - 2025-02-27
 
@@ -1114,6 +1115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#324]: https://github.com/jerus-org/nextsv/pull/324
 [#325]: https://github.com/jerus-org/nextsv/pull/325
 [#326]: https://github.com/jerus-org/nextsv/pull/326
+[#327]: https://github.com/jerus-org/nextsv/pull/327
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.11...HEAD
 [0.19.11]: https://github.com/jerus-org/nextsv/compare/v0.19.10...v0.19.11
 [0.19.10]: https://github.com/jerus-org/nextsv/compare/v0.19.9...v0.19.10
