@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dependencies: update actions/upload-artifact action to v4.6.1(pr [#322])
 - Dependencies: update github/codeql-action action to v3.28.10(pr [#323])
 - Dependencies: update ossf/scorecard-action action to v2.4.1(pr [#324])
+- Dependencies: update rust crate chrono to 0.4.40(pr [#325])
 
 ## [0.19.11] - 2025-02-27
 
@@ -1110,6 +1111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#322]: https://github.com/jerus-org/nextsv/pull/322
 [#323]: https://github.com/jerus-org/nextsv/pull/323
 [#324]: https://github.com/jerus-org/nextsv/pull/324
+[#325]: https://github.com/jerus-org/nextsv/pull/325
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.11...HEAD
 [0.19.11]: https://github.com/jerus-org/nextsv/compare/v0.19.10...v0.19.11
 [0.19.10]: https://github.com/jerus-org/nextsv/compare/v0.19.9...v0.19.10
