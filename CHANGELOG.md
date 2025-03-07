@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependencies: update rust crate thiserror to 2.0.12(pr [#328])
 - Dependencies: update dependency toolkit to v2.1.0(pr [#329])
+- Dependencies: update rust crate rstest to 0.25.0(pr [#330])
 
 ## [0.19.12] - 2025-03-01
 
@@ -1125,6 +1126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#327]: https://github.com/jerus-org/nextsv/pull/327
 [#328]: https://github.com/jerus-org/nextsv/pull/328
 [#329]: https://github.com/jerus-org/nextsv/pull/329
+[#330]: https://github.com/jerus-org/nextsv/pull/330
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.12...HEAD
 [0.19.12]: https://github.com/jerus-org/nextsv/compare/v0.19.11...v0.19.12
 [0.19.11]: https://github.com/jerus-org/nextsv/compare/v0.19.10...v0.19.11
