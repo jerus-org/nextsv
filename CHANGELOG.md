@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- Dependencies: update rust crate thiserror to 2.0.12(pr [#328])
+
 ## [0.19.12] - 2025-03-01
 
 ### Security
@@ -1116,7 +1122,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#325]: https://github.com/jerus-org/nextsv/pull/325
 [#326]: https://github.com/jerus-org/nextsv/pull/326
 [#327]: https://github.com/jerus-org/nextsv/pull/327
-[0.19.12]: https://github.com/jerus-org/nextsv/compare/v0.19.11...nextsv-v0.19.12
+[#328]: https://github.com/jerus-org/nextsv/pull/328
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.12...HEAD
+[0.19.12]: https://github.com/jerus-org/nextsv/compare/v0.19.11...v0.19.12
 [0.19.11]: https://github.com/jerus-org/nextsv/compare/v0.19.10...v0.19.11
 [0.19.10]: https://github.com/jerus-org/nextsv/compare/v0.19.9...v0.19.10
 [0.19.9]: https://github.com/jerus-org/nextsv/compare/v0.19.8...v0.19.9
