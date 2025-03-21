@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: update dependency toolkit to v2.5.1(pr [#338])
+- Dependencies: update actions/upload-artifact action to v4.6.2(pr [#335])
 
 ## [0.19.14] - 2025-03-15
 
@@ -1147,6 +1148,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#333]: https://github.com/jerus-org/nextsv/pull/333
 [#334]: https://github.com/jerus-org/nextsv/pull/334
 [#338]: https://github.com/jerus-org/nextsv/pull/338
+[#335]: https://github.com/jerus-org/nextsv/pull/335
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.14...HEAD
 [0.19.14]: https://github.com/jerus-org/nextsv/compare/v0.19.13...v0.19.14
 [0.19.13]: https://github.com/jerus-org/nextsv/compare/v0.19.12...v0.19.13
