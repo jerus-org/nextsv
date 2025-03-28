@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dependencies: update github/codeql-action action to v3.28.13(pr [#340])
 - Dependencies: update rust crate clap to 4.5.34(pr [#341])
+- Dependencies: update rust crate log to 0.4.27(pr [#342])
 
 ## [0.19.15] - 2025-03-22
 
@@ -1164,6 +1165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#339]: https://github.com/jerus-org/nextsv/pull/339
 [#340]: https://github.com/jerus-org/nextsv/pull/340
 [#341]: https://github.com/jerus-org/nextsv/pull/341
+[#342]: https://github.com/jerus-org/nextsv/pull/342
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.15...HEAD
 [0.19.15]: https://github.com/jerus-org/nextsv/compare/v0.19.14...v0.19.15
 [0.19.14]: https://github.com/jerus-org/nextsv/compare/v0.19.13...v0.19.14
