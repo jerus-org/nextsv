@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- 👷 ci(circleci)-update circleci-toolkit orb version(pr [#348])
+
 ### Security
 
 - Dependencies: update rust crate clap to 4.5.36(pr [#346])
@@ -1191,6 +1195,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#345]: https://github.com/jerus-org/nextsv/pull/345
 [#346]: https://github.com/jerus-org/nextsv/pull/346
 [#347]: https://github.com/jerus-org/nextsv/pull/347
+[#348]: https://github.com/jerus-org/nextsv/pull/348
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.18...HEAD
 [0.19.18]: https://github.com/jerus-org/nextsv/compare/v0.19.17...v0.19.18
 [0.19.17]: https://github.com/jerus-org/nextsv/compare/v0.19.16...v0.19.17
