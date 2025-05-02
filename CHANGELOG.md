@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Dependencies: update rust crate chrono to 0.4.41(pr [#351])
+- Dependencies: update dependency toolkit to v2.10.7(pr [#352])
 
 ## [0.19.20] - 2025-04-26
 
@@ -1212,6 +1213,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#349]: https://github.com/jerus-org/nextsv/pull/349
 [#350]: https://github.com/jerus-org/nextsv/pull/350
 [#351]: https://github.com/jerus-org/nextsv/pull/351
+[#352]: https://github.com/jerus-org/nextsv/pull/352
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.20...HEAD
 [0.19.20]: https://github.com/jerus-org/nextsv/compare/v0.19.19...v0.19.20
 [0.19.19]: https://github.com/jerus-org/nextsv/compare/v0.19.18...v0.19.19
