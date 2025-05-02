@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Security
+
+- Dependencies: update rust crate chrono to 0.4.41(pr [#351])
+
 ## [0.19.20] - 2025-04-26
 
 ### Security
@@ -1205,7 +1211,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#348]: https://github.com/jerus-org/nextsv/pull/348
 [#349]: https://github.com/jerus-org/nextsv/pull/349
 [#350]: https://github.com/jerus-org/nextsv/pull/350
-[0.19.20]: https://github.com/jerus-org/nextsv/compare/v0.19.19...nextsv-v0.19.20
+[#351]: https://github.com/jerus-org/nextsv/pull/351
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.20...HEAD
+[0.19.20]: https://github.com/jerus-org/nextsv/compare/v0.19.19...v0.19.20
 [0.19.19]: https://github.com/jerus-org/nextsv/compare/v0.19.18...v0.19.19
 [0.19.18]: https://github.com/jerus-org/nextsv/compare/v0.19.17...v0.19.18
 [0.19.17]: https://github.com/jerus-org/nextsv/compare/v0.19.16...v0.19.17
