@@ -1,6 +1,6 @@
 [package]
 name = "nextsv"
-version = "0.19.21"
+version = "0.19.22"
 edition.workspace = true
 authors = ["jerusdp <jrussell@jerus.ie>"]
 rust-version.workspace = true
