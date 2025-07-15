@@ -16,10 +16,10 @@ impl CmtSummary {
             r"^(?P<emoji>.+\s)?(?P<type>[a-z]+)(?:\((?P<scope>.+)\))?(?P<breaking>!)?: (?P<description>.*)$$",
         )?;
 
-        log::debug!("String to parse: `{}`", title);
+        log::debug!("String to parse: `{title}`");
 
         let cmt_summary = if let Some(captures) = re.captures(title) {
-            log::debug!("Captures: {:#?}", captures);
+            log::debug!("Captures: {captures:#?}");
             let emoji = captures.name("emoji").map(|m| m.as_str().to_string());
             let type_ = captures.name("type").map(|m| m.as_str().to_string());
             let scope = captures.name("scope").map(|m| m.as_str().to_string());
@@ -46,7 +46,7 @@ impl CmtSummary {
             }
         };
 
-        log::debug!("Parsed title: {:?}", cmt_summary);
+        log::debug!("Parsed title: {cmt_summary:?}");
 
         Ok(cmt_summary)
     }
@@ -65,7 +65,7 @@ impl std::fmt::Display for CmtSummary {
             self.type_.clone().unwrap_or_default(),
             self.scope
                 .as_ref()
-                .map_or("".to_string(), |s| format!("({})", s)),
+                .map_or("".to_string(), |s| format!("({s})")),
             if self.breaking { "!" } else { "" },
             self.title
         )
