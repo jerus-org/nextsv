@@ -112,7 +112,7 @@ pub(crate) fn gen_conventional_commit(
     breaking: bool,
 ) -> ConventionalCommits {
     let mut counts = HashMap::new();
-    counts.insert(format!("{}", commit_type), 1);
+    counts.insert(format!("{commit_type}"), 1);
 
     let commits = vec![format!(
         "{}{} commit for testing purposes only",
