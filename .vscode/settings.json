@@ -10,6 +10,7 @@
         "refs",
         "revwalk",
         "signingkey",
+        "Timespec",
         "workdir"
     ],
     "conventionalCommits.scopes": [
@@ -22,5 +23,9 @@
         "cargo",
         "crate",
         "cmdline"
-    ]
+    ],
+    "sonarlint.connectedMode.project": {
+        "connectionId": "jerus-org",
+        "projectKey": "jerus-org_nextsv"
+    }
 }
