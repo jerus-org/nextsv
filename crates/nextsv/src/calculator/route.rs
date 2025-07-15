@@ -26,7 +26,7 @@ impl Route {
 impl fmt::Display for Route {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Route::PreRelease(pre_type) => write!(f, "{} pre release", pre_type),
+            Route::PreRelease(pre_type) => write!(f, "{pre_type} pre release"),
             Route::NonProd => write!(f, "non production"),
             Route::Prod => write!(f, "production"),
         }
