@@ -52,7 +52,7 @@ impl fmt::Display for Semantic {
         if let Some(build) = &self.build_meta_data {
             version = version + "+" + build
         }
-        write!(f, "{}", version)
+        write!(f, "{version}")
     }
 }
 
