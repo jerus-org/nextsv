@@ -12,7 +12,6 @@ keywords = ["semantic", "version", "calculator"]
 include = ["**/*.rs", "Cargo.toml", "README.md", "LICENSE", "CHANGES.md"]
 publish = true
 
-
 [dependencies]
 cargo_toml.workspace = true
 clap.workspace = true
@@ -34,7 +33,6 @@ snapbox.workspace = true
 test_utils = { path = "../test-utils" }
 trycmd.workspace = true
 
-
 [lib]
 name = "nextsv"
 path = "src/lib.rs"
@@ -49,3 +47,6 @@ autocfg.workspace = true
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true

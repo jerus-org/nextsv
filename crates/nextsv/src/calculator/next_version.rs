@@ -23,11 +23,7 @@ impl NextVersion {
         change_bump: Option<&ChangeBump>,
     ) -> (Self, Bump) {
         let mut next_version = current_version.clone();
-        log::debug!(
-            "Starting version: `{}`; bump level `{}`",
-            next_version,
-            bump
-        );
+        log::debug!("Starting version: `{next_version}`; bump level `{bump}`");
 
         let pre_release_flag = current_version.semantic_version.pre_release.is_some();
 
@@ -87,7 +83,10 @@ impl NextVersion {
                         next_version.version_mut().pre_release = Some(PreRelease::new("alpha.1"));
                         log::trace!("Checking for change bump");
                         if let Some(change_bump) = change_bump {
-                            log::info!("Making first pre-release on changes requring version bump: `{change_bump}`");
+                            log::info!(
+                                "Making first pre-release on changes requiring version bump: `{}`",
+                                change_bump
+                            );
                             match change_bump {
                                 ChangeBump::Major => {
                                     next_version.version_mut().major += 1;
@@ -179,7 +178,7 @@ impl NextVersion {
                         next_version.version_mut().increment_pre_release();
                     } else {
                         next_version.version_mut().pre_release =
-                            Some(PreRelease::new(format!("{}.1", s).as_str()));
+                            Some(PreRelease::new(format!("{s}.1").as_str()));
                     }
                 }
                 bump = Bump::Custom(next_version.semantic_version.to_string());

@@ -21,9 +21,11 @@ proc-exit = "2.0.2"
 regex = "1.11.1"
 thiserror = "2.0.12"
 
-
 map-macro = "0.3.0"
 rstest = "0.25.0"
 snapbox = { version = "0.6.21", features = ["cmd"] }
 trycmd = "0.15.9"
 autocfg = "1.4.0"
+
+[workspace.lints.clippy]
+uninlined_format_args = "allow"

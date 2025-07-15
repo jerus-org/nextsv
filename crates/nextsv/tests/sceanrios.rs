@@ -7,10 +7,10 @@ use test_utils::git_utils;
 
 fn execute_test(arguments: &str, temp_dir: &PathBuf) -> String {
     let cmd = cargo_bin!("nextsv");
-    println!("cmd: {:?}", cmd);
+    println!("cmd: {cmd:?}");
 
     let test_args: Vec<&str> = arguments.split_ascii_whitespace().collect();
-    println!("test_args: {:?}", test_args);
+    println!("test_args: {test_args:?}");
 
     let output = Command::new(cmd)
         .args(test_args)
@@ -22,13 +22,13 @@ fn execute_test(arguments: &str, temp_dir: &PathBuf) -> String {
     let test_result = String::from_utf8(output.stdout).unwrap();
     let stderr = String::from_utf8(output.stderr).unwrap();
 
-    println!("stdout:\n-------\n{}", test_result);
-    println!("stderr:\n-------\n{}", stderr);
+    println!("stdout:\n-------\n{test_result}");
+    println!("stderr:\n-------\n{stderr}");
     test_result
 }
 
 #[test]
-fn test_intitial_to_production() {
+fn test_initial_to_production() {
     // Scenario: Initial to Production
     //  - Create a new git repository with an initial version number.
     //  - Add a feature commit
@@ -40,7 +40,7 @@ fn test_intitial_to_production() {
     let version_prefix = "v";
     let arguments = "-n -vvv calculate";
 
-    let initial_version = format!("{}0.1.0", version_prefix);
+    let initial_version = format!("{version_prefix}0.1.0");
 
     // Create the initial directory with the initial version number.
     let (temp_dir, repo) = git_utils::create_test_git_directory(&initial_version);
@@ -110,24 +110,24 @@ fn test_intitial_to_production() {
     // Promote to production release
     let test_result_str = execute_test("-n force first", &temp_dir);
     let test_result = test_result_split(&test_result_str);
-    println!("test_result: {:?}", test_result_str);
+    println!("test_result: {test_result_str:?}");
 
     expected_result("1.0.0", "1.0.0", &test_result);
 
     // tidy up the test environment
     let result = std::fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 }
 
 #[test]
-fn test_intitial_to_production_with_pre_releases() {
+fn test_initial_to_production_with_pre_releases() {
     // Scenario: Initial to Production
 
     let version_prefix = "v";
     // let arguments = "-n -vvv";
     let arguments = "-n calculate";
 
-    let initial_version = format!("{}0.1.0", version_prefix);
+    let initial_version = format!("{version_prefix}0.1.0");
 
     // Create the initial directory with the initial version number.
     let (temp_dir, repo) = git_utils::create_test_git_directory(&initial_version);
@@ -269,26 +269,24 @@ fn test_intitial_to_production_with_pre_releases() {
     // Promote to production release
     let test_result_str = execute_test("-n -vvv force first", &temp_dir);
     let test_result = test_result_split(&test_result_str);
-    println!("test_result: {:?}", test_result_str);
+    println!("test_result: {test_result_str:?}");
 
     expected_result("1.0.0", "1.0.0", &test_result);
 
-    // panic!("test_intitial_to_production_with_pre_releases");
-
     // tidy up the test environment
     let result = std::fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 }
 
 #[test]
-fn test_intitial_to_production_with_production_pre_releases() {
+fn test_initial_to_production_with_production_pre_releases() {
     // Scenario: Initial to Production
 
     let version_prefix = "v";
     // let arguments = "-n calculate -vvv";
     let arguments = "-n calculate";
 
-    let initial_version = format!("{}0.1.0", version_prefix);
+    let initial_version = format!("{version_prefix}0.1.0");
 
     // Create the initial directory with the initial version number.
     let (temp_dir, repo) = git_utils::create_test_git_directory(&initial_version);
@@ -444,15 +442,13 @@ fn test_intitial_to_production_with_production_pre_releases() {
     // Release production release
     let test_result_str = execute_test("-n -vvv force release", &temp_dir);
     let test_result = test_result_split(&test_result_str);
-    println!("test_result: {:?}", test_result_str);
+    println!("test_result: {test_result_str:?}");
 
     expected_result("release", "1.0.0", &test_result);
 
-    // panic!("test_intitial_to_production_with_pre_releases");
-
     // tidy up the test environment
     let result = std::fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 }
 
 // Will require a custom pre-release option to enable this feature
@@ -509,12 +505,12 @@ fn add_feature(
     version_prefix: &str,
 ) {
     let result = git_utils::create_file_and_commit(repo, temp_dir.clone(), message, Some(feature));
-    println!("commit result: {:?}", result);
+    println!("commit result: {result:?}");
 
     // execute the test
     let test_result_str = execute_test(arguments, temp_dir);
     let test_result = test_result_split(&test_result_str);
-    println!("test_result: {:?}", test_result_str);
+    println!("test_result: {test_result_str:?}");
 
     expected_result(&expected.0, &expected.1, &test_result);
     add_tag(repo, &test_result.1, version_prefix);
@@ -522,11 +518,11 @@ fn add_feature(
 
 fn add_tag(repo: &Repository, version: &str, version_prefix: &str) {
     if let Ok(commit) = git_utils::find_last_commit(repo) {
-        println!("commit: {:?}", commit);
-        let tag = format!("{}{}", version_prefix, version);
+        println!("commit: {commit:?}");
+        let tag = format!("{version_prefix}{version}");
         repo.tag_lightweight(&tag, commit.as_object(), false)
             .unwrap();
-        println!("tagged commit `{:?}` with `{}`", commit, tag);
+        println!("tagged commit `{commit:?}` with `{tag}`");
     };
 }
 
@@ -540,12 +536,12 @@ fn update_feature(
     version_prefix: &str,
 ) {
     let result = git_utils::update_file_and_commit(repo, temp_dir.clone(), message, Some(feature));
-    println!("commit result: {:?}", result);
+    println!("commit result: {result:?}");
 
     // execute the test
     let test_result_str = execute_test(arguments, temp_dir);
     let test_result = test_result_split(&test_result_str);
-    println!("test_result: {:?}", test_result_str);
+    println!("test_result: {test_result_str:?}");
 
     expected_result(&expected.0, &expected.1, &test_result);
 

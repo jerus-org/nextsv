@@ -42,28 +42,28 @@ impl ConventionalCommits {
         let subdir = get_subdir_for_package(package, subdir);
 
         log::debug!("repo opened to find conventional commits");
-        log::debug!("Searching for the tag: `{}`", reference);
+        log::debug!("Searching for the tag: `{reference}`");
         let tag_commit = match repo.find_reference(reference) {
             Ok(reference) => match reference.peel_to_commit() {
                 Ok(commit) => commit,
                 Err(e) => {
-                    log::error!("Error finding the tag commit: {:?}", e);
+                    log::error!("Error finding the tag commit: {e:?}");
                     return Err(Error::Git2(e));
                 }
             },
             Err(e) => {
-                log::error!("Error finding the tag reference: {:?}", e);
+                log::error!("Error finding the tag reference: {e:?}");
                 return Err(Error::Git2(e));
             }
         };
         let tag_tree = match tag_commit.tree() {
             Ok(tree) => tree,
             Err(e) => {
-                log::error!("Error finding the tag tree: {:?}", e);
+                log::error!("Error finding the tag tree: {e:?}");
                 return Err(Error::Git2(e));
             }
         };
-        log::debug!("tag tree found: {:?}", tag_tree);
+        log::debug!("tag tree found: {tag_tree:?}");
 
         let mut revwalk = repo.revwalk()?;
         revwalk.set_sorting(git2::Sort::NONE)?;
@@ -97,7 +97,7 @@ impl ConventionalCommits {
         for commit in revwalk.flatten() {
             let cmt = Commit::new(commit.clone(), repo);
             let summary = cmt.message();
-            log::debug!("commit found: `{}`", summary);
+            log::debug!("commit found: `{summary}`");
 
             if summary.starts_with("Merge") {
                 log::debug!("Exiting loop as Merge commit found");
@@ -105,26 +105,26 @@ impl ConventionalCommits {
             }
 
             let files = cmt.files();
-            log::debug!("files found: `{:#?}`", files);
+            log::debug!("files found: `{files:#?}`");
 
             if let Some(subdir) = &subdir {
-                log::debug!("subdir: `{}`", subdir);
+                log::debug!("subdir: `{subdir}`");
                 let dup_files = files.clone();
                 let root_files: Vec<_> = dup_files
                     .iter()
                     .filter(|file| !file.to_str().unwrap().contains("/"))
                     .collect();
-                log::debug!("root files: `{:#?}`", root_files);
+                log::debug!("root files: `{root_files:#?}`");
                 let mut qualified_files: Vec<_> = files
                     .iter()
                     .filter(|file| file.to_str().unwrap().contains(subdir))
                     .collect();
-                log::debug!("qualified files: `{:#?}`", qualified_files);
+                log::debug!("qualified files: `{qualified_files:#?}`");
                 log::info!("Checking for root directory files changed in addition to {subdir}");
                 qualified_files.extend_from_slice(&root_files);
 
                 if qualified_files.is_empty() {
-                    log::debug!("Exiting loop because `{}` not found", subdir);
+                    log::debug!("Exiting loop because `{subdir}` not found");
                     continue;
                 }
             }
@@ -161,7 +161,7 @@ impl ConventionalCommits {
             }
         }
         conventional_commits.changed_files = file_names;
-        log::debug!("conventional commits found: {:#?}", conventional_commits);
+        log::debug!("conventional commits found: {conventional_commits:#?}");
 
         Ok(conventional_commits)
     }
@@ -216,7 +216,7 @@ fn get_subdir_for_package(package: Option<&str>, subdir: Option<&str>) -> Option
     };
 
     let rel_package = package.unwrap();
-    log::info!("Running release for package: {}", rel_package);
+    log::info!("Running release for package: {rel_package}");
 
     let path = Path::new("./Cargo.toml");
     let workspace = Workspace::new(path).unwrap();
@@ -545,9 +545,9 @@ mod tests {
         con_commits.top_type = base_top_type;
         con_commits.update_from_summary(title);
 
-        println!("Conventional commits: {:#?}", con_commits);
+        println!("Conventional commits: {con_commits:#?}");
 
-        println!("Expected top type: {:#?}", expected_top_type);
+        println!("Expected top type: {expected_top_type:#?}");
 
         assert_eq!(expected_top_type, con_commits.top_type);
     }

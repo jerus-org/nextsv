@@ -37,11 +37,11 @@ impl fmt::Display for PreRelease {
 
 impl PreRelease {
     pub(crate) fn new(pre_release: &str) -> PreRelease {
-        log::debug!("PreRelease::new({})", pre_release);
+        log::debug!("PreRelease::new({pre_release})");
         let (label, counter) = if let Some((label, number)) = pre_release.rsplit_once('.') {
             match number.parse::<u32>() {
                 Ok(n) => (label.to_string(), Some(n)),
-                Err(_) => (format!("{}.{}", label, number), None),
+                Err(_) => (format!("{label}.{number}"), None),
             }
         } else {
             (pre_release.to_string(), None)
