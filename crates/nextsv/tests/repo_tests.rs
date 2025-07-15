@@ -9,10 +9,10 @@ use test_utils::git_utils;
 
 fn execute_test(arguments: &str, temp_dir: &PathBuf) -> String {
     let cmd = cargo_bin!("nextsv");
-    println!("cmd: {:?}", cmd);
+    println!("cmd: {cmd:?}");
 
     let test_args: Vec<&str> = arguments.split_ascii_whitespace().collect();
-    println!("test_args: {:?}", test_args);
+    println!("test_args: {test_args:?}");
 
     let output = Command::new(cmd)
         .args(test_args)
@@ -24,8 +24,8 @@ fn execute_test(arguments: &str, temp_dir: &PathBuf) -> String {
     let test_result = String::from_utf8(output.stdout).unwrap();
     let stderr = String::from_utf8(output.stderr).unwrap();
 
-    println!("stdout:\n-------\n{}", test_result);
-    println!("stderr:\n-------\n{}", stderr);
+    println!("stdout:\n-------\n{test_result}");
+    println!("stderr:\n-------\n{stderr}");
     test_result
 }
 
@@ -34,7 +34,7 @@ fn test_repo_no_changes() {
     let expected = "none\n";
 
     let (temp_dir, _repo) = git_utils::create_test_git_directory("v0.1.0");
-    println!("temp_dir: {:?}", temp_dir);
+    println!("temp_dir: {temp_dir:?}");
 
     let output = Command::new(cargo_bin!("nextsv"))
         .arg("calculate")
@@ -44,11 +44,11 @@ fn test_repo_no_changes() {
 
     let test_result = String::from_utf8(output.stdout).unwrap();
 
-    println!("stdout: {}", test_result);
+    println!("stdout: {test_result}");
     println!("stderr: {}", String::from_utf8(output.stderr).unwrap());
 
     let result = fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
     assert_eq!(expected, test_result);
 }
 
@@ -133,7 +133,7 @@ fn test_repo_with_commit(
 
     // setup base state
     let (temp_dir, repo) = git_utils::create_test_git_directory(current_version);
-    println!("temp_dir: {:?}", temp_dir);
+    println!("temp_dir: {temp_dir:?}");
 
     // setup the change conditions
     let commit_type = if commit_type == "breaking" {
@@ -143,16 +143,16 @@ fn test_repo_with_commit(
     };
 
     let message = format!("{}: {}", commit_type, "test commit");
-    println!("message: {:?}", message);
+    println!("message: {message:?}");
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
-    println!("commit result: {:?}", result);
+    println!("commit result: {result:?}");
 
     // execute the test
     let test_result = execute_test(arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 
     // assess the result
     assert_eq!(expected, test_result);
@@ -331,7 +331,7 @@ fn test_repo_with_commit_and_force_bump(
 
     // setup base state
     let (temp_dir, repo) = git_utils::create_test_git_directory(current_version);
-    println!("temp_dir: {:?}", temp_dir);
+    println!("temp_dir: {temp_dir:?}");
 
     // setup the change conditions
     let commit_type = if commit_type == "breaking" {
@@ -341,9 +341,9 @@ fn test_repo_with_commit_and_force_bump(
     };
 
     let message = format!("{}: {}", commit_type, "test commit");
-    println!("message: {:?}", message);
+    println!("message: {message:?}");
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
-    println!("commit result: {:?}", result);
+    println!("commit result: {result:?}");
 
     // execute the test
     let mut arguments = arguments.to_string();
@@ -353,7 +353,7 @@ fn test_repo_with_commit_and_force_bump(
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 
     // assess the result
     assert_eq!(expected, test_result);
@@ -708,7 +708,7 @@ fn test_repo_with_commit_and_check(
 
     // setup base state
     let (temp_dir, repo) = git_utils::create_test_git_directory(current_version);
-    println!("temp_dir: {:?}", temp_dir);
+    println!("temp_dir: {temp_dir:?}");
 
     // setup the change conditions
     let commit_type = if commit_type == "breaking" {
@@ -718,9 +718,9 @@ fn test_repo_with_commit_and_check(
     };
 
     let message = format!("{}: {}", commit_type, "test commit");
-    println!("message: {:?}", message);
+    println!("message: {message:?}");
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
-    println!("commit result: {:?}", result);
+    println!("commit result: {result:?}");
 
     // execute the test
     let mut arguments = arguments.to_string();
@@ -731,7 +731,7 @@ fn test_repo_with_commit_and_check(
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 
     // assess the result
     assert_eq!(expected, test_result);
@@ -1082,7 +1082,7 @@ fn test_repo_with_commit_and_enforce_test_file(
 
     // setup base state
     let (temp_dir, repo) = git_utils::create_test_git_directory(current_version);
-    println!("temp_dir: {:?}", temp_dir);
+    println!("temp_dir: {temp_dir:?}");
 
     // setup the change conditions
     let commit_type = if commit_type == "breaking" {
@@ -1092,9 +1092,9 @@ fn test_repo_with_commit_and_enforce_test_file(
     };
 
     let message = format!("{}: {}", commit_type, "test commit");
-    println!("message: {:?}", message);
+    println!("message: {message:?}");
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
-    println!("commit result: {:?}", result);
+    println!("commit result: {result:?}");
 
     // execute the test
     let mut arguments = arguments.to_string();
@@ -1106,7 +1106,7 @@ fn test_repo_with_commit_and_enforce_test_file(
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 
     // assess the result
     assert_eq!(expected, test_result);
@@ -1193,9 +1193,9 @@ fn test_repo_custom_version_prefix_with_commit(
     };
 
     // setup base state
-    let version = format!("{}{}", prefix, current_version);
+    let version = format!("{prefix}{current_version}");
     let (temp_dir, repo) = git_utils::create_test_git_directory(&version);
-    println!("temp_dir: {:?}", temp_dir);
+    println!("temp_dir: {temp_dir:?}");
 
     // setup the change conditions
     let commit_type = if commit_type == "breaking" {
@@ -1205,9 +1205,9 @@ fn test_repo_custom_version_prefix_with_commit(
     };
 
     let message = format!("{}: {}", commit_type, "test commit");
-    println!("message: {:?}", message);
+    println!("message: {message:?}");
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
-    println!("commit result: {:?}", result);
+    println!("commit result: {result:?}");
 
     // execute the test
     let mut arguments = arguments_root.to_string();
@@ -1218,7 +1218,7 @@ fn test_repo_custom_version_prefix_with_commit(
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 
     // assess the result
     assert_eq!(expected, test_result);
@@ -1305,7 +1305,7 @@ fn test_repo_bump_only_with_commit(
 
     // setup base state
     let (temp_dir, repo) = git_utils::create_test_git_directory(current_version);
-    println!("temp_dir: {:?}", temp_dir);
+    println!("temp_dir: {temp_dir:?}");
 
     // setup the change conditions
     let commit_type = if commit_type == "breaking" {
@@ -1315,16 +1315,16 @@ fn test_repo_bump_only_with_commit(
     };
 
     let message = format!("{}: {}", commit_type, "test commit");
-    println!("message: {:?}", message);
+    println!("message: {message:?}");
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
-    println!("commit result: {:?}", result);
+    println!("commit result: {result:?}");
 
     // execute the test
     let test_result = execute_test(arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 
     // assess the result
     assert_eq!(expected, test_result);
@@ -1411,7 +1411,7 @@ fn test_repo_number_only_with_commit(
 
     // setup base state
     let (temp_dir, repo) = git_utils::create_test_git_directory(current_version);
-    println!("temp_dir: {:?}", temp_dir);
+    println!("temp_dir: {temp_dir:?}");
 
     // setup the change conditions
     let commit_type = if commit_type == "breaking" {
@@ -1421,16 +1421,16 @@ fn test_repo_number_only_with_commit(
     };
 
     let message = format!("{}: {}", commit_type, "test commit");
-    println!("message: {:?}", message);
+    println!("message: {message:?}");
     let result = git_utils::create_file_and_commit(&repo, temp_dir.clone(), &message, None);
-    println!("commit result: {:?}", result);
+    println!("commit result: {result:?}");
 
     // execute the test
     let test_result = execute_test(arguments, &temp_dir);
 
     // tidy up the test environment
     let result = fs::remove_dir_all(temp_dir);
-    println!("remove_dir_all result: {:?}", result);
+    println!("remove_dir_all result: {result:?}");
 
     // assess the result
     assert_eq!(expected, test_result);
