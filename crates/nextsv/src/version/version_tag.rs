@@ -94,15 +94,14 @@ impl VersionTag {
     /// the tag name can be parsed
     pub(crate) fn parse(tag: &str, version_prefix: &str) -> Result<Self, Error> {
         let re_tag = format!(
-            r"(?<refs>(refs/tags/)*)(?<tag_prefix>.*)(?<version_prefix>{})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$",
-            version_prefix
+            r"(?<refs>(refs/tags/)*)(?<tag_prefix>.*)(?<version_prefix>{version_prefix})(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)(?:-(?<pre_release>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?<build_meta_data>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
         );
 
         let re = Regex::new(&re_tag).unwrap();
 
         log::trace!("Parsing git tag `{tag}` into VersionTag");
         let caps_res = re.captures(tag);
-        log::trace!("Regex captures result: {:?}", caps_res);
+        log::trace!("Regex captures result: {caps_res:?}");
         let Some(caps) = caps_res else {
             version_number_valid(tag, version_prefix)?;
             panic!("Tag validation failed");
@@ -133,18 +132,22 @@ impl VersionTag {
 
     /// Find the latest version tag in a repo
     ///
-    pub(crate) fn find_in_repo(repo: &Repository, package: &str, version_prefix: &str) -> Result<Self, Error> {
+    pub(crate) fn find_in_repo(
+        repo: &Repository,
+        package: &str,
+        version_prefix: &str,
+    ) -> Result<Self, Error> {
         log::debug!("Repository opened to find latest version tag.");
 
         let package = if !package.is_empty() {
-            format!("{}-", package)
+            format!("{package}-")
         } else {
             String::new()
         };
 
         // Setup regex to test the tag for a version number: major.minor,patch
         let re_version = format!(r"({package}{version_prefix}\d+\.\d+\.\d+)");
-        log::debug!("Regex to search for version tags is: `{}`.", re_version);
+        log::debug!("Regex to search for version tags is: `{re_version}`.");
         let re = match Regex::new(&re_version) {
             Ok(r) => r,
             Err(e) => return Err(Error::CorruptVersionRegex(e)),
@@ -155,7 +158,7 @@ impl VersionTag {
             if let Ok(tag) = String::from_utf8(tag.to_owned()) {
                 log::trace!("Is git tag `{tag}` a version tag?");
                 if let Some(version) = re.captures(&tag) {
-                    log::trace!("Captured version: {:?}", version);
+                    log::trace!("Captured version: {version:?}");
                     let version = VersionTag::parse(&tag, version_prefix).unwrap();
                     versions.push(version);
                 }
@@ -177,15 +180,13 @@ impl VersionTag {
             None => return Err(Error::NoVersionTag),
         };
         Ok(current_version)
-    }}
+    }
+}
 
 fn trace_items(versions: Vec<VersionTag>, prefix: &str) {
-    log::trace!(
-        "Tags with semantic version numbers prefixed with `{}`",
-        prefix
-    );
+    log::trace!("Tags with semantic version numbers prefixed with `{prefix}`");
     for ver in &versions {
-        log::trace!("\t{}", ver);
+        log::trace!("\t{ver}");
     }
 }
 
@@ -374,7 +375,7 @@ mod tests {
         get_test_logger();
 
         let result = VersionTag::parse(input, version_prefix);
-        log::debug!("the result is:{:?}", result);
+        log::debug!("the result is:{result:?}");
         assert_eq!(expected, result.is_ok());
         if result.is_ok() {
             let version = result.unwrap();
