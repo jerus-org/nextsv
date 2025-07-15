@@ -78,7 +78,7 @@ impl Calculator {
                 }
 
                 if !missing_files.is_empty() {
-                    log::error!("Missing required files: {:?}", missing_files);
+                    log::error!("Missing required files: {missing_files:?}");
                     return Ok(Calculator::exit_none(
                         config.clone(),
                         current_version,
@@ -97,16 +97,12 @@ impl Calculator {
         ));
         let route = Route::calculate(&current_version.semantic_version);
         let mut bump = Bump::calculate(&route, &conventional);
-        log::debug!(
-            "Calculated the bump `{}` based on the route `{}`",
-            bump,
-            route
-        );
+        log::debug!("Calculated the bump `{bump}` based on the route `{route}`");
 
         // Check the force level and apply if required
         log::debug!("Force level: {:?}", config.force);
         if let Some(ref force_level) = config.force {
-            log::trace!("Forcing bump level: `{:?}`", force_level);
+            log::trace!("Forcing bump level: `{force_level:?}`");
             log::trace!("Current version: `{}`", current_version.semantic_version);
             bump = force_level.to_bump(&current_version.semantic_version);
         };
@@ -167,7 +163,7 @@ impl Calculator {
             next_version,
         });
 
-        log::trace!("Calculated result for reporting: {:?}", calculated_result);
+        log::trace!("Calculated result for reporting: {calculated_result:?}");
 
         calculated_result
     }
