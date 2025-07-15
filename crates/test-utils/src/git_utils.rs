@@ -15,19 +15,19 @@ const GIT_TEMPLATE_DIR: &str = "tests/repo_template";
 pub fn create_test_git_directory(current_version: &str) -> (PathBuf, Repository) {
     let temp_dir_string = format!("tests/tmp/test-{}", Uuid::new_v4());
     let temp_dir = Path::new(&temp_dir_string);
-    println!("Temporary directory: {:?}", temp_dir);
+    println!("Temporary directory: {temp_dir:?}");
     let result = copy_dir::copy_dir(GIT_TEMPLATE_DIR, temp_dir);
-    println!("copy_dir result: {:?}", result);
+    println!("copy_dir result: {result:?}");
 
     let repo = Repository::init(temp_dir).expect("failed to initialise repo");
     let path_to_file = Path::new("first-file");
 
     let res = add_file_and_first_commit(&repo, path_to_file, "chore: initial commit");
 
-    println!("add_and_commit result: {:?}", res);
+    println!("add_and_commit result: {res:?}");
 
     if let Ok(commit) = find_last_commit(&repo) {
-        println!("commit: {:?}", commit);
+        println!("commit: {commit:?}");
         repo.tag_lightweight(current_version, commit.as_object(), false)
             .unwrap();
     }
