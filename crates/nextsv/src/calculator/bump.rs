@@ -43,7 +43,7 @@ impl fmt::Display for Bump {
             Bump::Beta => write!(f, "beta"),
             Bump::Rc => write!(f, "rc"),
             Bump::First => write!(f, "1.0.0"),
-            Bump::Custom(s) => write!(f, "{}", s),
+            Bump::Custom(s) => write!(f, "{s}"),
         }
     }
 }
