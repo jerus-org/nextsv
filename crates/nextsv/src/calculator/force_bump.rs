@@ -13,16 +13,16 @@ use std::{cmp, fmt};
 ///
 /// Variants are valid depending on the current version type.
 ///
-/// |  Variant  | Non Prodution |  Pre Release  |  Production   |              Description                  |
-/// | ----------|---------------| --------------|---------------|-------------------------------------------|
-/// | `Major`   |       X       |               |       X       | Bump the major component                  |
-/// | `Minor`   |       X       |               |       X       | Bump the minor component                  |
-/// | `Patch`   |       X       |               |       X       | Bump the patch component                  |
-/// | `First`   |       X       |               |               | Set the first production version (1.0.0)  |
-/// | `Release` |               |       X       |               | Remove the pre-release                    |
-/// | `Rc`      |       X       |       X       |       X       | Bump or create rc pre-release             |
-/// | `Beta`    |       X       |       X       |       X       | Bump or create beta pre-release           |
-/// | `Alpha`   |       X       |       X       |       X       | Bump or create alpha pre-release          |
+/// |  Variant  | Non Prod. |  Pre Rel. |  Prod. |          Description             |
+/// | ----------|-----------|-----------|--------|----------------------------------|
+/// | `Major`   |     X     |           |    X   | Bump the major component         |
+/// | `Minor`   |     X     |           |    X   | Bump the minor component         |
+/// | `Patch`   |     X     |           |    X   | Bump the patch component         |
+/// | `First`   |     X     |           |        | Set the version 1.0.0            |
+/// | `Release` |           |     X     |        | Remove the pre-release           |
+/// | `Rc`      |     X     |     X     |    X   | Bump or create rc pre-release    |
+/// | `Beta`    |     X     |     X     |    X   | Bump or create beta pre-release  |
+/// | `Alpha`   |     X     |     X     |    X   | Bump or create alpha pre-release |
 ///
 ///  Where it is not valid the bump is forced to [`None`].
 #[derive(Debug, PartialEq, Eq, Clone, ValueEnum, Parser)]
