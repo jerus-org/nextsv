@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate git2 to 0.20.2(pr [#359])
 - deps: update rust crate trycmd to 0.15.10(pr [#360])
 - deps: update dependency toolkit to v2.12.1(pr [#361])
+- deps: update github/codeql-action action to v3.29.4(pr [#362])
 
 ## [0.19.22] - 2025-05-28
 
@@ -1243,6 +1244,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#359]: https://github.com/jerus-org/nextsv/pull/359
 [#360]: https://github.com/jerus-org/nextsv/pull/360
 [#361]: https://github.com/jerus-org/nextsv/pull/361
+[#362]: https://github.com/jerus-org/nextsv/pull/362
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.22...HEAD
 [0.19.22]: https://github.com/jerus-org/nextsv/compare/v0.19.21...v0.19.22
 [0.19.21]: https://github.com/jerus-org/nextsv/compare/v0.19.20...v0.19.21
