@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update ossf/scorecard-action action to v2.4.2(pr [#355])
 - deps: update rust crate clap to 4.5.41(pr [#356])
 - deps: update rust crate clap-verbosity-flag to 3.0.3(pr [#357])
+- deps: update rust crate color-eyre to 0.6.5(pr [#358])
 
 ## [0.19.22] - 2025-05-28
 
@@ -1235,6 +1236,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#355]: https://github.com/jerus-org/nextsv/pull/355
 [#356]: https://github.com/jerus-org/nextsv/pull/356
 [#357]: https://github.com/jerus-org/nextsv/pull/357
+[#358]: https://github.com/jerus-org/nextsv/pull/358
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.22...HEAD
 [0.19.22]: https://github.com/jerus-org/nextsv/compare/v0.19.21...v0.19.22
 [0.19.21]: https://github.com/jerus-org/nextsv/compare/v0.19.20...v0.19.21
