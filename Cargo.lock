@@ -866,7 +866,7 @@ dependencies = [
 
 [[package]]
 name = "nextsv"
-version = "0.19.22"
+version = "0.19.23"
 dependencies = [
  "autocfg",
  "cargo_toml",
@@ -1321,7 +1321,7 @@ dependencies = [
 
 [[package]]
 name = "test_utils"
-version = "0.19.5"
+version = "0.19.23"
 dependencies = [
  "chrono",
  "copy_dir",

@@ -57,7 +57,7 @@ Run in your project directory and check the version
 
 ```console
 $ nextsv --version
-nextsv 0.19.22
+nextsv 0.19.23
 
 ```
 
@@ -122,6 +122,6 @@ To use the library add the crate to dependencies in the project's Cargo.toml.
 ```toml
 
 [dependencies]
-nextsv = "0.19.22"
+nextsv = "0.19.23"
 
 ```
