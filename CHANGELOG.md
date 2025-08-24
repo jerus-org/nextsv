@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate clap to 4.5.45(pr [#367])
 - deps: update rust crate clap-verbosity-flag to 3.0.4(pr [#368])
 - deps: update rust crate thiserror to 2.0.16(pr [#369])
+- deps: update actions/checkout action to v4.3.0(pr [#370])
 
 ## [0.19.23] - 2025-07-28
 
@@ -1264,6 +1265,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#367]: https://github.com/jerus-org/nextsv/pull/367
 [#368]: https://github.com/jerus-org/nextsv/pull/368
 [#369]: https://github.com/jerus-org/nextsv/pull/369
+[#370]: https://github.com/jerus-org/nextsv/pull/370
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.23...HEAD
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
 [0.19.22]: https://github.com/jerus-org/nextsv/compare/v0.19.21...v0.19.22
