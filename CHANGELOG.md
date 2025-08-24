@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update actions/checkout action to v4.3.0(pr [#370])
 - deps: update rust crate rstest to 0.26.1(pr [#371])
 - deps: update rust crate uuid to 1.18.0(pr [#372])
+- deps: update actions/checkout action to v5(pr [#373])
 
 ## [0.19.23] - 2025-07-28
 
@@ -1270,6 +1271,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#370]: https://github.com/jerus-org/nextsv/pull/370
 [#371]: https://github.com/jerus-org/nextsv/pull/371
 [#372]: https://github.com/jerus-org/nextsv/pull/372
+[#373]: https://github.com/jerus-org/nextsv/pull/373
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.23...HEAD
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
 [0.19.22]: https://github.com/jerus-org/nextsv/compare/v0.19.21...v0.19.22
