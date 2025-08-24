@@ -9,7 +9,7 @@ rust-version = "1.81"
 repository = "https://github.com/jerusdp/nextsv"
 
 [workspace.dependencies]
-cargo_toml = "0.22.1"
+cargo_toml = "0.22.3"
 clap = { version = "4.5.41", features = ["derive"] }
 clap-verbosity-flag = "3.0.3"
 colored = "3.0.0"
