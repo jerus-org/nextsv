@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- ♻️ refactor(git_utils)-enhance find_last_commit function signature(pr [#375])
+
 ### Security
 
 - Dependencies: bump tracing-subscriber from 0.3.19 to 0.3.20 in the cargo group across 1 directory(pr [#374])
@@ -1279,6 +1283,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#372]: https://github.com/jerus-org/nextsv/pull/372
 [#373]: https://github.com/jerus-org/nextsv/pull/373
 [#374]: https://github.com/jerus-org/nextsv/pull/374
+[#375]: https://github.com/jerus-org/nextsv/pull/375
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
