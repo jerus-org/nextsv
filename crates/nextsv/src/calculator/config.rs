@@ -71,7 +71,7 @@ impl CalculatorConfig {
     ///
     /// The subdir identifies a string by which the commits will be filtered.
     /// The objective of the filtering is to limit the calculation to commits related
-    /// to one crate within a worlspace.
+    /// to one crate within a workspace.
     ///
     /// # Example
     ///
@@ -80,7 +80,7 @@ impl CalculatorConfig {
     ///
     /// Note:
     ///
-    /// A version prefix should be used to identify the relevent crate version tag.
+    /// A version prefix should be used to identify the relevant crate version tag.
     ///
     /// ```no_run
     /// # fn main() -> Result<(),nextsv::Error> {
@@ -110,7 +110,7 @@ impl CalculatorConfig {
     ///
     /// Note:
     ///
-    /// A version prefix should be used to identify the relevent crate version tag.
+    /// A version prefix should be used to identify the relevant crate version tag.
     ///
     /// ```no_run
     /// # fn main() -> Result<(),nextsv::Error> {
@@ -131,7 +131,7 @@ impl CalculatorConfig {
 
     /// Set the flag indicating if the bump should be reported by the [`Calculator::report`] method.
     /// - `true` indicates that the value should be reported
-    /// - `false` inidcates that the value should not be reported
+    /// - `false` indicates that the value should not be reported
     pub fn set_bump_report(mut self, bump_report: bool) -> Self {
         self.report_bump = bump_report;
         self
@@ -139,7 +139,7 @@ impl CalculatorConfig {
 
     /// Set the flag indicating if the calculated version number should be reported by the [`Calculator::report`] method.
     /// - `true` indicates that the value should be reported
-    /// - `false` inidcates that the value should not be reported
+    /// - `false` indicates that the value should not be reported
     pub fn set_version_report(mut self, report_number: bool) -> Self {
         self.report_number = report_number;
         self
@@ -147,7 +147,7 @@ impl CalculatorConfig {
 
     /// Force the bump result ignoring the bump that would be indicated by an analysis of conventional commits.
     ///
-    /// The forced bump result will be reported and the next vesion will be calculated based on the forced bump level.
+    /// The forced bump result will be reported and the next version will be calculated based on the forced bump level.
     ///
     /// # Example
     ///
@@ -205,7 +205,7 @@ impl CalculatorConfig {
     /// # }
     /// ```
     /// The bump `minor` confirms that the checked files have been updated by the
-    /// convential commits submitted as part of proposed release.
+    /// conventional commits submitted as part of proposed release.
     ///
     /// ```console
     /// minor
@@ -246,7 +246,7 @@ impl CalculatorConfig {
     /// # }
     /// ```
     ///
-    /// The bump `minor` indicates that the highest conventional commit in the hierachy
+    /// The bump `minor` indicates that the highest conventional commit in the hierarchy
     /// is a `feat` commit. The commits may or may not includes changes to the required files.
     ///
     /// ```console
@@ -254,7 +254,7 @@ impl CalculatorConfig {
     /// ```
     ///
     /// The bump `major` confirms that the checked files have been updated by the
-    /// convential commits submitted as part of proposed release.
+    /// conventional commits submitted as part of proposed release.
     ///
     /// ```console
     /// major
@@ -291,7 +291,7 @@ impl CalculatorConfig {
 
     /// Set a threshold that must be met before the calculated bump is reported.
     ///
-    /// The threshold is set based on the [`Hierarchy`] enumm.
+    /// The threshold is set based on the [`Hierarchy`] enum.
     ///
     /// # Example
     ///
@@ -310,7 +310,7 @@ impl CalculatorConfig {
     /// # }
     /// ```
     ///
-    /// The bump `minor` indicates that the highest conventional commit in the hierachy
+    /// The bump `minor` indicates that the highest conventional commit in the hierarchy
     /// is a `feat` commit.
     ///
     /// ```console
