@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - ♻️ refactor(git_utils)-enhance find_last_commit function signature(pr [#375])
+- chore-rename CHANGELOG.md to PRLOG.md(pr [#376])
 
 ### Security
 
@@ -1284,6 +1285,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#373]: https://github.com/jerus-org/nextsv/pull/373
 [#374]: https://github.com/jerus-org/nextsv/pull/374
 [#375]: https://github.com/jerus-org/nextsv/pull/375
+[#376]: https://github.com/jerus-org/nextsv/pull/376
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
