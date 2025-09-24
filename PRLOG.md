@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(git_utils)-enhance find_last_commit function signature(pr [#375])
 - chore-rename CHANGELOG.md to PRLOG.md(pr [#376])
 
+### Fixed
+
+- deps: update rust crate clap to 4.5.48(pr [#378])
+
 ### Security
 
 - Dependencies: bump tracing-subscriber from 0.3.19 to 0.3.20 in the cargo group across 1 directory(pr [#374])
@@ -1286,6 +1290,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#374]: https://github.com/jerus-org/nextsv/pull/374
 [#375]: https://github.com/jerus-org/nextsv/pull/375
 [#376]: https://github.com/jerus-org/nextsv/pull/376
+[#378]: https://github.com/jerus-org/nextsv/pull/378
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
