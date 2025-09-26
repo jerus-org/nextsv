@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ♻️ refactor(git_utils)-enhance find_last_commit function signature(pr [#375])
 - chore-rename CHANGELOG.md to PRLOG.md(pr [#376])
+- 👷 ci(circleci)-update circleci toolkit orb version(pr [#384])
 
 ### Fixed
 
@@ -1301,6 +1302,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#380]: https://github.com/jerus-org/nextsv/pull/380
 [#381]: https://github.com/jerus-org/nextsv/pull/381
 [#382]: https://github.com/jerus-org/nextsv/pull/382
+[#384]: https://github.com/jerus-org/nextsv/pull/384
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
