@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate regex to 1.12.2(pr [#391])
 - deps: update github/codeql-action action to v4(pr [#392])
 - deps: update actions/checkout action to v5.0.1(pr [#393])
+- deps: update rust crate clap to 4.5.53(pr [#394])
 
 ### Security
 
@@ -1321,6 +1322,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#391]: https://github.com/jerus-org/nextsv/pull/391
 [#392]: https://github.com/jerus-org/nextsv/pull/392
 [#393]: https://github.com/jerus-org/nextsv/pull/393
+[#394]: https://github.com/jerus-org/nextsv/pull/394
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
