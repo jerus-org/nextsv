@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update actions/checkout action to v5.0.1(pr [#393])
 - deps: update rust crate clap to 4.5.53(pr [#394])
 - deps: update rust crate snapbox to 0.6.23(pr [#395])
+- deps: update rust crate trycmd to 0.15.11(pr [#396])
 
 ### Security
 
@@ -1325,6 +1326,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#393]: https://github.com/jerus-org/nextsv/pull/393
 [#394]: https://github.com/jerus-org/nextsv/pull/394
 [#395]: https://github.com/jerus-org/nextsv/pull/395
+[#396]: https://github.com/jerus-org/nextsv/pull/396
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
