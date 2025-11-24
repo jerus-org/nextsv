@@ -3,12 +3,10 @@ use std::path::PathBuf;
 use std::{fs, process::Command};
 
 use rstest::rstest;
-use snapbox::cmd::cargo_bin;
-
 use test_utils::git_utils;
 
 fn execute_test(arguments: &str, temp_dir: &PathBuf) -> String {
-    let cmd = cargo_bin!("nextsv");
+    let cmd = snapbox::cmd::cargo_bin!("nextsv");
     println!("cmd: {cmd:?}");
 
     let test_args: Vec<&str> = arguments.split_ascii_whitespace().collect();
@@ -36,7 +34,7 @@ fn test_repo_no_changes() {
     let (temp_dir, _repo) = git_utils::create_test_git_directory("v0.1.0");
     println!("temp_dir: {temp_dir:?}");
 
-    let output = Command::new(cargo_bin!("nextsv"))
+    let output = Command::new(snapbox::cmd::cargo_bin!("nextsv"))
         .arg("calculate")
         .current_dir(&temp_dir)
         .output()
