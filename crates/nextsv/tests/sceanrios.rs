@@ -1,12 +1,12 @@
 use std::{path::PathBuf, process::Command};
 
 use git2::Repository;
-use snapbox::cmd::cargo_bin;
+use snapbox::cmd;
 
 use test_utils::git_utils;
 
 fn execute_test(arguments: &str, temp_dir: &PathBuf) -> String {
-    let cmd = cargo_bin!("nextsv");
+    let cmd = cmd::cargo_bin!("nextsv");
     println!("cmd: {cmd:?}");
 
     let test_args: Vec<&str> = arguments.split_ascii_whitespace().collect();
