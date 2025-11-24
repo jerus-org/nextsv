@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update dependency toolkit to v2.16.0(pr [#397])
 - deps: update github/codeql-action action to v4.31.5(pr [#398])
 - deps: update actions/checkout action to v6(pr [#399])
+- deps: update actions/upload-artifact action to v5(pr [#400])
 
 ### Security
 
@@ -1333,6 +1334,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#397]: https://github.com/jerus-org/nextsv/pull/397
 [#398]: https://github.com/jerus-org/nextsv/pull/398
 [#399]: https://github.com/jerus-org/nextsv/pull/399
+[#400]: https://github.com/jerus-org/nextsv/pull/400
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
