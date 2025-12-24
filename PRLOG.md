@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate git2 to 0.20.3(pr [#403])
 - deps: update rust crate log to 0.4.29(pr [#404])
 - deps: update rust crate uuid to 1.19.0(pr [#406])
+- deps: update actions/upload-artifact action to v6(pr [#407])
 
 ### Security
 
@@ -1347,6 +1348,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#403]: https://github.com/jerus-org/nextsv/pull/403
 [#404]: https://github.com/jerus-org/nextsv/pull/404
 [#406]: https://github.com/jerus-org/nextsv/pull/406
+[#407]: https://github.com/jerus-org/nextsv/pull/407
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
