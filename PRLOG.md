@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update actions/checkout action to v6.0.1(pr [#401])
 - deps: update github/codeql-action action to v4.31.9(pr [#402])
 - deps: update rust crate git2 to 0.20.3(pr [#403])
+- deps: update rust crate log to 0.4.29(pr [#404])
 
 ### Security
 
@@ -1343,6 +1344,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#401]: https://github.com/jerus-org/nextsv/pull/401
 [#402]: https://github.com/jerus-org/nextsv/pull/402
 [#403]: https://github.com/jerus-org/nextsv/pull/403
+[#404]: https://github.com/jerus-org/nextsv/pull/404
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
