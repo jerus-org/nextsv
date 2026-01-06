@@ -21,7 +21,7 @@ parameters:
     description: "If true, the release workflow will be executed."
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@4.0.1
+  toolkit: jerus-org/circleci-toolkit@4.2.0
 
 workflows:
   check_last_commit:
@@ -67,7 +67,7 @@ workflows:
           min_rust_version: << pipeline.parameters.min_rust_version >>
       - toolkit/security:
           context: SonarCloud
-      - toolkit/trigger_success_pipeline:
+      - toolkit/trigger_pipeline:
           requires:
             - toolkit/required_builds
             - toolkit/test_doc_build
