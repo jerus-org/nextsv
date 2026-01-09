@@ -139,14 +139,14 @@ impl VersionTag {
     ) -> Result<Self, Error> {
         log::debug!("Repository opened to find latest version tag.");
 
-        let package = if !package.is_empty() {
-            format!("{package}-")
+        let version_prefix = if !package.is_empty() {
+            format!("{package}-v")
         } else {
-            String::new()
+            version_prefix.to_string()
         };
 
         // Setup regex to test the tag for a version number: major.minor,patch
-        let re_version = format!(r"({package}{version_prefix}\d+\.\d+\.\d+)");
+        let re_version = format!(r"({version_prefix}\d+\.\d+\.\d+)");
         log::debug!("Regex to search for version tags is: `{re_version}`.");
         let re = match Regex::new(&re_version) {
             Ok(r) => r,
@@ -159,18 +159,18 @@ impl VersionTag {
                 log::trace!("Is git tag `{tag}` a version tag?");
                 if let Some(version) = re.captures(&tag) {
                     log::trace!("Captured version: {version:?}");
-                    let version = VersionTag::parse(&tag, version_prefix).unwrap();
+                    let version = VersionTag::parse(&tag, &version_prefix).unwrap();
                     versions.push(version);
                 }
             }
             true
         })?;
 
-        trace_items(versions.clone(), version_prefix);
+        trace_items(versions.clone(), &version_prefix);
         log::trace!("Original last version: {:?}", versions.last());
         versions.sort();
         log::debug!("Version tags have been sorted");
-        trace_items(versions.clone(), version_prefix);
+        trace_items(versions.clone(), &version_prefix);
 
         let current_version = match versions.last().cloned() {
             Some(v) => {
