@@ -139,11 +139,7 @@ impl VersionTag {
     ) -> Result<Self, Error> {
         log::debug!("Repository opened to find latest version tag.");
 
-        let version_prefix = if !package.is_empty() {
-            format!("{package}-v")
-        } else {
-            version_prefix.to_string()
-        };
+        let version_prefix = get_tag_prefix(package, version_prefix);
 
         // Setup regex to test the tag for a version number: major.minor,patch
         let re_version = format!(r"({version_prefix}\d+\.\d+\.\d+)");
@@ -180,6 +176,14 @@ impl VersionTag {
             None => return Err(Error::NoVersionTag),
         };
         Ok(current_version)
+    }
+}
+
+fn get_tag_prefix(package: &str, prefix: &str) -> String {
+    if !package.is_empty() {
+        format!("{package}-v")
+    } else {
+        prefix.to_string()
     }
 }
 
@@ -429,6 +433,22 @@ mod tests {
         println!("result: {result:?}");
         assert_eq!(expected_result, format!("{result:?}"));
         assert_eq!(expected_pass, result.is_ok());
+    }
+    #[rstest]
+    #[case::prefix_set("", "test-v", "test-v")]
+    #[case::package_set("nextsv", "v", "nextsv-v")]
+    #[case::package_and_prefix_set("nextsv", "test-v", "nextsv-v")]
+
+    fn test_get_package_prefix(
+        #[case] package: &str,
+        #[case] prefix: &str,
+        #[case] expected_result: &str,
+    ) {
+        get_test_logger();
+
+        let version_prefix = get_tag_prefix(package, prefix);
+        println!("result: {version_prefix:?}");
+        assert_eq!(expected_result.to_string(), version_prefix);
     }
 
     #[test]
