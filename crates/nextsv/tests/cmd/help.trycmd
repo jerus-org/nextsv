@@ -72,13 +72,30 @@ Calculate the next version number
 Usage: nextsv calculate [OPTIONS]
 
 Options:
-  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
-  -v, --verbose...         Increase logging verbosity
-  -q, --quiet...           Decrease logging verbosity
-  -s, --subdir <SUBDIR>    Filter to commits in the specified sub directory only
-  -k, --package <PACKAGE>  Set subdir filter based on specific workspace package (takes priority over --subdir)
-  -h, --help               Print help
-  -V, --version            Print version
+  -p, --prefix <PREFIX>
+          Prefix string to identify version number tags
+          
+          [default: v]
+
+  -v, --verbose...
+          Increase logging verbosity
+
+  -q, --quiet...
+          Decrease logging verbosity
+
+  -s, --subdir <SUBDIR>
+          Filter to commits in the specified sub directory only
+
+  -k, --package <PACKAGE>
+          Select package from workspace. Overrides --prefix and --subdir
+          
+          Equivalent to setting: --prefix <package-name> --subdir <package-dir>
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
 
 ```
 
@@ -122,14 +139,33 @@ Commands:
   help      Print this message or the help of the given subcommand(s)
 
 Options:
-  -v, --verbose...         Increase logging verbosity
-  -q, --quiet...           Decrease logging verbosity
-  -f, --files <FILES>      
-  -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
-  -s, --subdir <SUBDIR>    Filter to commits in the specified sub directory only
-  -k, --package <PACKAGE>  Set subdir filter based on specific workspace package (takes priority over --subdir)
-  -h, --help               Print help
-  -V, --version            Print version
+  -v, --verbose...
+          Increase logging verbosity
+
+  -q, --quiet...
+          Decrease logging verbosity
+
+  -f, --files <FILES>
+          
+
+  -p, --prefix <PREFIX>
+          Prefix string to identify version number tags
+          
+          [default: v]
+
+  -s, --subdir <SUBDIR>
+          Filter to commits in the specified sub directory only
+
+  -k, --package <PACKAGE>
+          Select package from workspace. Overrides --prefix and --subdir
+          
+          Equivalent to setting: --prefix <package-name> --subdir <package-dir>
+
+  -h, --help
+          Print help (see a summary with '-h')
+
+  -V, --version
+          Print version
 
 ```
 
@@ -144,8 +180,8 @@ Options:
   -v, --verbose...         Increase logging verbosity
   -q, --quiet...           Decrease logging verbosity
   -s, --subdir <SUBDIR>    Filter to commits in the specified sub directory only
-  -k, --package <PACKAGE>  Set subdir filter based on specific workspace package (takes priority over --subdir)
-  -h, --help               Print help
+  -k, --package <PACKAGE>  Select package from workspace. Overrides --prefix and --subdir
+  -h, --help               Print help (see more with '--help')
   -V, --version            Print version
 
 ```
@@ -195,8 +231,8 @@ Options:
   -f, --files <FILES>      
   -p, --prefix <PREFIX>    Prefix string to identify version number tags [default: v]
   -s, --subdir <SUBDIR>    Filter to commits in the specified sub directory only
-  -k, --package <PACKAGE>  Set subdir filter based on specific workspace package (takes priority over --subdir)
-  -h, --help               Print help
+  -k, --package <PACKAGE>  Select package from workspace. Overrides --prefix and --subdir
+  -h, --help               Print help (see more with '--help')
   -V, --version            Print version
 
 ```
