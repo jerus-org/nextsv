@@ -2,4 +2,12 @@ pre-release-commit-message = "chore: Release nextsv v{{version}}"
 tag-message = "{{tag_name}}"
 tag-name = "nextsv-v{{version}}"
 pre-release-hook = ["./release-hook.sh"]
-pre-release-replacements = []
+[[pre-release-replacements]]
+file = "README.md"
+search = "nextsv [0-9]+\\.[0-9]+\\.[0-9]+"
+replace = "nextsv {{version}}"
+
+[[pre-release-replacements]]
+file = "README.md"
+search = 'nextsv = "[0-9]+\\.[0-9]+\\.[0-9]+"'
+replace = 'nextsv = "{{version}}"'
