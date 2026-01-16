@@ -1,0 +1,7 @@
+sign-tag = true
+sign-commit = true
+consolidate-commits = true
+allow-branch = ["main"]
+# PRLOG.md is now managed independently via scripts/release-prlog.sh
+# Each crate has its own tag prefix and CHANGELOG generation
+pre-release-replacements = []
