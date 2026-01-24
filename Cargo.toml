@@ -23,7 +23,7 @@ thiserror = "2.0.17"
 
 map-macro = "0.3.0"
 rstest = "0.26.1"
-snapbox = { version = "0.6.23", features = ["cmd"] }
+snapbox = { version = "0.6.24", features = ["cmd"] }
 trycmd = "0.15.11"
 autocfg = "1.5.0"
 
