@@ -301,9 +301,18 @@ mod tests {
 
     /// SemVer §11: Major version takes highest precedence
     #[rstest]
-    #[case::major_gt(Semantic::new("2", "0", "0", "", ""), Semantic::new("1", "0", "0", "", ""))]
-    #[case::major_gt_despite_minor(Semantic::new("2", "0", "0", "", ""), Semantic::new("1", "9", "0", "", ""))]
-    #[case::major_gt_despite_patch(Semantic::new("2", "0", "0", "", ""), Semantic::new("1", "0", "9", "", ""))]
+    #[case::major_gt(
+        Semantic::new("2", "0", "0", "", ""),
+        Semantic::new("1", "0", "0", "", "")
+    )]
+    #[case::major_gt_despite_minor(
+        Semantic::new("2", "0", "0", "", ""),
+        Semantic::new("1", "9", "0", "", "")
+    )]
+    #[case::major_gt_despite_patch(
+        Semantic::new("2", "0", "0", "", ""),
+        Semantic::new("1", "0", "9", "", "")
+    )]
     fn major_version_precedence(#[case] higher: Semantic, #[case] lower: Semantic) {
         assert!(higher > lower, "{higher} should be > {lower}");
         assert!(lower < higher, "{lower} should be < {higher}");
@@ -311,8 +320,14 @@ mod tests {
 
     /// SemVer §11: Minor version precedence when major is equal
     #[rstest]
-    #[case::minor_gt(Semantic::new("1", "1", "0", "", ""), Semantic::new("1", "0", "0", "", ""))]
-    #[case::minor_gt_despite_patch(Semantic::new("1", "2", "0", "", ""), Semantic::new("1", "1", "9", "", ""))]
+    #[case::minor_gt(
+        Semantic::new("1", "1", "0", "", ""),
+        Semantic::new("1", "0", "0", "", "")
+    )]
+    #[case::minor_gt_despite_patch(
+        Semantic::new("1", "2", "0", "", ""),
+        Semantic::new("1", "1", "9", "", "")
+    )]
     fn minor_version_precedence(#[case] higher: Semantic, #[case] lower: Semantic) {
         assert!(higher > lower, "{higher} should be > {lower}");
         assert!(lower < higher, "{lower} should be < {higher}");
@@ -320,8 +335,14 @@ mod tests {
 
     /// SemVer §11: Patch version precedence when major and minor are equal
     #[rstest]
-    #[case::patch_gt(Semantic::new("1", "0", "1", "", ""), Semantic::new("1", "0", "0", "", ""))]
-    #[case::patch_ordering(Semantic::new("0", "1", "3", "", ""), Semantic::new("0", "1", "2", "", ""))]
+    #[case::patch_gt(
+        Semantic::new("1", "0", "1", "", ""),
+        Semantic::new("1", "0", "0", "", "")
+    )]
+    #[case::patch_ordering(
+        Semantic::new("0", "1", "3", "", ""),
+        Semantic::new("0", "1", "2", "", "")
+    )]
     fn patch_version_precedence(#[case] higher: Semantic, #[case] lower: Semantic) {
         assert!(higher > lower, "{higher} should be > {lower}");
         assert!(lower < higher, "{lower} should be < {higher}");
@@ -329,9 +350,18 @@ mod tests {
 
     /// SemVer §11: Equal versions
     #[rstest]
-    #[case::zeros(Semantic::new("0", "0", "0", "", ""), Semantic::new("0", "0", "0", "", ""))]
-    #[case::ones(Semantic::new("1", "1", "1", "", ""), Semantic::new("1", "1", "1", "", ""))]
-    #[case::with_pre(Semantic::new("1", "0", "0", "alpha.1", ""), Semantic::new("1", "0", "0", "alpha.1", ""))]
+    #[case::zeros(
+        Semantic::new("0", "0", "0", "", ""),
+        Semantic::new("0", "0", "0", "", "")
+    )]
+    #[case::ones(
+        Semantic::new("1", "1", "1", "", ""),
+        Semantic::new("1", "1", "1", "", "")
+    )]
+    #[case::with_pre(
+        Semantic::new("1", "0", "0", "alpha.1", ""),
+        Semantic::new("1", "0", "0", "alpha.1", "")
+    )]
     fn equal_versions(#[case] a: Semantic, #[case] b: Semantic) {
         assert_eq!(a.cmp(&b), std::cmp::Ordering::Equal, "{a} should equal {b}");
         assert_eq!(a, b, "{a} should == {b}");
@@ -502,7 +532,14 @@ mod tests {
         versions.sort();
 
         let expected = [
-            "0.0.1", "0.1.0", "1.0.0-alpha", "1.0.0-rc.1", "1.0.0", "1.0.1", "1.1.0", "2.0.0",
+            "0.0.1",
+            "0.1.0",
+            "1.0.0-alpha",
+            "1.0.0-rc.1",
+            "1.0.0",
+            "1.0.1",
+            "1.1.0",
+            "2.0.0",
         ];
 
         let sorted_strings: Vec<String> = versions.iter().map(|v| v.to_string()).collect();
