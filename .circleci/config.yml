@@ -47,6 +47,25 @@ workflows:
         - << pipeline.parameters.validation_flag >>
         - not: << pipeline.parameters.release_flag >>
     jobs:
+      # Signature verification for trusted PRs (with write access for comments)
+      - toolkit/verify_commit_signatures:
+          name: verify_commit_signatures_trusted
+          context: bot-check
+          post_comment: true
+          update_pcu: false
+          filters:
+            branches:
+              ignore:
+                - main
+                - /pull\/[0-9]+/
+      # Signature verification for forked PRs (read-only, no comments)
+      - toolkit/verify_commit_signatures:
+          name: verify_commit_signatures_forked
+          post_comment: false
+          update_pcu: false
+          filters:
+            branches:
+              only: /pull\/[0-9]+/
       - toolkit/label:
           min_rust_version: << pipeline.parameters.min_rust_version >>
           context: pcu-app
@@ -57,6 +76,11 @@ workflows:
       - toolkit/code_coverage:
           min_rust_version: << pipeline.parameters.min_rust_version >>
           package: nextsv
+          filters:
+            branches:
+              ignore: /pull\/[0-9]+/
+          requires:
+            - security with sonarcloud
       - toolkit/required_builds:
           min_rust_version: << pipeline.parameters.min_rust_version >>
       - toolkit/optional_builds:
@@ -65,21 +89,38 @@ workflows:
           min_rust_version: << pipeline.parameters.min_rust_version >>
       - toolkit/idiomatic_rust:
           min_rust_version: << pipeline.parameters.min_rust_version >>
+      - toolkit/common_tests:
+          min_rust_version: << pipeline.parameters.min_rust_version >>
       - toolkit/security:
+          name: security audit only
+          sonarcloud: false
+          filters:
+            branches:
+              only: /pull\/[0-9]+/
+      - toolkit/security:
+          name: security with sonarcloud
           context: SonarCloud
-      - toolkit/trigger_pipeline:
-          requires:
-            - toolkit/required_builds
-            - toolkit/test_doc_build
-            - toolkit/idiomatic_rust
-            - toolkit/security
-            - toolkit/code_coverage
-          context:
-            - bot-check
           filters:
             branches:
               ignore:
+                - /pull\/[0-9]+/
                 - main
+      - toolkit/trigger_pipeline:
+          context: bot-check
+          filters:
+            branches:
+              ignore:
+                - /pull\/[0-9]+/
+                - main
+          requires:
+            - verify_commit_signatures_trusted
+            - toolkit/code_coverage
+            - toolkit/idiomatic_rust
+            - toolkit/test_doc_build
+            - toolkit/required_builds
+            - toolkit/common_tests
+            - security audit only
+            - security with sonarcloud
 
   on_success:
     when:
