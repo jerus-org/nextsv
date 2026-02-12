@@ -24,7 +24,7 @@ thiserror = "2.0.18"
 map-macro = "0.3.0"
 rstest = "0.26.1"
 snapbox = { version = "0.6.24", features = ["cmd"] }
-trycmd = "0.15.11"
+trycmd = "1.0.0"
 autocfg = "1.5.0"
 
 [workspace.lints.clippy]
