@@ -1433,3 +1433,121 @@ fn test_repo_number_only_with_commit(
     // assess the result
     assert_eq!(expected, test_result);
 }
+
+/// Helper that returns (exit_code, stdout) for tests that need to check failure.
+fn execute_test_with_exit_code(arguments: &str, temp_dir: &PathBuf) -> (i32, String) {
+    let cmd = snapbox::cmd::cargo_bin!("nextsv");
+    let test_args: Vec<&str> = arguments.split_ascii_whitespace().collect();
+
+    let output = Command::new(cmd)
+        .args(test_args)
+        .current_dir(temp_dir)
+        .output()
+        .unwrap();
+
+    let exit_code = output.status.code().unwrap();
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    let stderr = String::from_utf8(output.stderr).unwrap();
+
+    println!("Exit code: {exit_code}");
+    println!("stdout:\n-------\n{stdout}");
+    println!("stderr:\n-------\n{stderr}");
+    (exit_code, stdout)
+}
+
+/// Regression tests for <https://github.com/jerus-org/nextsv/issues/443>:
+/// Verify that force --prefix correctly identifies version tags and does not
+/// match crate tags when using a workspace prefix or vice versa.
+#[rstest]
+#[case::force_explicit_prefix_v("v0.1.0", "-n force --prefix v patch", "patch\n0.1.1\n")]
+#[case::force_crate_prefix(
+    "gen-changelog-v0.1.0",
+    "-n force --prefix gen-changelog-v patch",
+    "patch\n0.1.1\n"
+)]
+#[case::force_default_prefix_matches_workspace_tag("v1.2.0", "-n force patch", "patch\n1.2.1\n")]
+fn test_force_with_prefix(
+    #[case] current_version: &str,
+    #[case] arguments: &str,
+    #[case] expected: &str,
+) {
+    // setup base state
+    let (temp_dir, repo) = git_utils::create_test_git_directory(current_version);
+
+    // create a commit so force has something to work with
+    let result =
+        git_utils::create_file_and_commit(&repo, temp_dir.clone(), "fix: test commit", None);
+    println!("commit result: {result:?}");
+
+    // execute the test
+    let test_result = execute_test(arguments, &temp_dir);
+
+    // tidy up
+    let result = fs::remove_dir_all(&temp_dir);
+    println!("remove_dir_all result: {result:?}");
+
+    // assess the result
+    assert_eq!(expected, test_result);
+}
+
+/// Verify that force with mismatched prefix fails (no version tag found).
+#[rstest]
+#[case::workspace_prefix_must_not_match_crate_tag(
+    "gen-changelog-v0.1.0",
+    "-n force --prefix v patch"
+)]
+#[case::crate_prefix_must_not_match_workspace_tag(
+    "v0.1.0",
+    "-n force --prefix gen-changelog-v patch"
+)]
+fn test_force_with_wrong_prefix_fails(#[case] current_version: &str, #[case] arguments: &str) {
+    // setup base state
+    let (temp_dir, repo) = git_utils::create_test_git_directory(current_version);
+
+    // create a commit
+    let result =
+        git_utils::create_file_and_commit(&repo, temp_dir.clone(), "fix: test commit", None);
+    println!("commit result: {result:?}");
+
+    // execute the test - should fail with non-zero exit code
+    let (exit_code, _stdout) = execute_test_with_exit_code(arguments, &temp_dir);
+
+    // tidy up
+    let result = fs::remove_dir_all(&temp_dir);
+    println!("remove_dir_all result: {result:?}");
+
+    // NoVersionTag maps to EXIT_UNEXPECTED_ERROR (10)
+    assert_ne!(
+        0, exit_code,
+        "Expected non-zero exit code for mismatched prefix"
+    );
+}
+
+/// Verify prefix isolation when repo has both workspace and crate tags.
+/// Force with prefix "v" should only see workspace tags, not crate tags.
+#[test]
+fn test_force_prefix_isolation_multi_tag_repo() {
+    // Create repo with workspace tag v0.1.0
+    let (temp_dir, repo) = git_utils::create_test_git_directory("v0.1.0");
+
+    // Also add a crate tag at a higher version on the same commit
+    if let Ok(commit) = git_utils::find_last_commit(&repo) {
+        repo.tag_lightweight("gen-changelog-v0.5.0", commit.as_object(), false)
+            .unwrap();
+    }
+
+    // create a commit
+    let result =
+        git_utils::create_file_and_commit(&repo, temp_dir.clone(), "fix: test commit", None);
+    println!("commit result: {result:?}");
+
+    // Force patch with prefix "v" should bump from v0.1.0 -> 0.1.1
+    // NOT from gen-changelog-v0.5.0
+    let test_result = execute_test("-n force --prefix v patch", &temp_dir);
+
+    // tidy up
+    let result = fs::remove_dir_all(&temp_dir);
+    println!("remove_dir_all result: {result:?}");
+
+    assert_eq!("patch\n0.1.1\n", test_result);
+}
