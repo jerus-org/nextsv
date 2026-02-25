@@ -142,7 +142,7 @@ impl VersionTag {
         let version_prefix = get_tag_prefix(package, version_prefix);
 
         // Setup regex to test the tag for a version number: major.minor,patch
-        let re_version = format!(r"({version_prefix}\d+\.\d+\.\d+)");
+        let re_version = build_version_regex(&version_prefix);
         log::debug!("Regex to search for version tags is: `{re_version}`.");
         let re = match Regex::new(&re_version) {
             Ok(r) => r,
@@ -177,6 +177,15 @@ impl VersionTag {
         };
         Ok(current_version)
     }
+}
+
+/// Build the regex pattern for matching version tags.
+///
+/// Anchors after `refs/tags/` so that prefix "v" only matches workspace
+/// tags like `refs/tags/v1.0.0` and not crate tags like
+/// `refs/tags/gen-changelog-v1.0.0`.
+fn build_version_regex(version_prefix: &str) -> String {
+    format!(r"^refs/tags/{version_prefix}\d+\.\d+\.\d+")
 }
 
 fn get_tag_prefix(package: &str, prefix: &str) -> String {
@@ -449,6 +458,45 @@ mod tests {
         let version_prefix = get_tag_prefix(package, prefix);
         println!("result: {version_prefix:?}");
         assert_eq!(expected_result.to_string(), version_prefix);
+    }
+
+    /// Test that the version tag regex correctly discriminates between
+    /// workspace tags (prefix "v") and crate tags (prefix "gen-changelog-v").
+    ///
+    /// Regression test for <https://github.com/jerus-org/nextsv/issues/443>:
+    /// The unanchored regex `(v\d+\.\d+\.\d+)` incorrectly matches "v0.1.6"
+    /// inside "refs/tags/gen-changelog-v0.1.6".
+    #[rstest]
+    #[case::workspace_prefix_matches_workspace_tag("v", "refs/tags/v0.1.6", true)]
+    #[case::workspace_prefix_must_not_match_crate_tag("v", "refs/tags/gen-changelog-v0.1.6", false)]
+    #[case::crate_prefix_matches_crate_tag(
+        "gen-changelog-v",
+        "refs/tags/gen-changelog-v0.1.6",
+        true
+    )]
+    #[case::crate_prefix_must_not_match_workspace_tag("gen-changelog-v", "refs/tags/v0.1.6", false)]
+    #[case::workspace_prefix_matches_higher_version("v", "refs/tags/v1.2.3", true)]
+    #[case::workspace_prefix_must_not_match_other_crate("v", "refs/tags/nextsv-v2.0.0", false)]
+    #[case::crate_prefix_matches_own_crate("nextsv-v", "refs/tags/nextsv-v2.0.0", true)]
+    #[case::crate_prefix_must_not_match_different_crate(
+        "nextsv-v",
+        "refs/tags/gen-changelog-v0.1.6",
+        false
+    )]
+    fn test_version_tag_regex_anchoring(
+        #[case] version_prefix: &str,
+        #[case] tag: &str,
+        #[case] should_match: bool,
+    ) {
+        get_test_logger();
+
+        let re_version = build_version_regex(version_prefix);
+        let re = Regex::new(&re_version).unwrap();
+        let matched = re.is_match(tag);
+        assert_eq!(
+            should_match, matched,
+            "prefix={version_prefix:?} tag={tag:?}: expected match={should_match} got={matched}"
+        );
     }
 
     #[test]

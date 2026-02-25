@@ -67,6 +67,9 @@ struct Force {
     /// First flag to set first version and pre-release in the same transaction
     #[arg(short, long)]
     first: bool,
+    /// Prefix string to identify version number tags
+    #[arg(short, long, value_parser, default_value = "v")]
+    prefix: String,
 }
 
 #[derive(Parser, Debug)]
@@ -118,6 +121,7 @@ fn run() -> ExitResult {
 
     match args.command {
         Commands::Force(args) => {
+            calculator_config = calculator_config.set_prefix(&args.prefix);
             calculator_config = calculator_config.set_force_bump(args.bump);
             if args.first {
                 log::debug!("Setting first version and pre-release in the same transaction");
