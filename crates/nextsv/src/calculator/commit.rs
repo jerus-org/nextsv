@@ -37,6 +37,10 @@ impl<'a> Commit<'a> {
     //     self.git_commit.time().seconds().to_string()
     // }
 
+    pub(crate) fn is_merge(&self) -> bool {
+        self.git_commit.parents().len() > 1
+    }
+
     pub(crate) fn files(&self) -> Vec<PathBuf> {
         let mut diff_files = vec![];
 

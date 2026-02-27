@@ -99,8 +99,8 @@ impl ConventionalCommits {
             let summary = cmt.message();
             log::debug!("commit found: `{summary}`");
 
-            if summary.starts_with("Merge") {
-                log::debug!("Exiting loop as Merge commit found");
+            if cmt.is_merge() {
+                log::debug!("Skipping merge commit: `{summary}`");
                 continue;
             }
 
@@ -112,7 +112,10 @@ impl ConventionalCommits {
                 let dup_files = files.clone();
                 let root_files: Vec<_> = dup_files
                     .iter()
-                    .filter(|file| !file.to_str().unwrap().contains("/"))
+                    .filter(|file| {
+                        let s = file.to_str().unwrap();
+                        !s.contains("/") && (s.ends_with(".toml") || s.ends_with(".lock"))
+                    })
                     .collect();
                 log::debug!("root files: `{root_files:#?}`");
                 let mut qualified_files: Vec<_> = files
