@@ -10,7 +10,7 @@ repository = "https://github.com/jerusdp/nextsv"
 
 [workspace.dependencies]
 cargo_toml = "0.22.3"
-clap = { version = "4.5.58", features = ["derive"] }
+clap = { version = "4.5.60", features = ["derive"] }
 clap-verbosity-flag = "3.0.4"
 colored = "3.1.1"
 env_logger = "0.11.9"
