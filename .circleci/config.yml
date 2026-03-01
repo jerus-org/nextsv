@@ -6,7 +6,7 @@ parameters:
     default: "1.82"
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@4.6.0
+  toolkit: jerus-org/circleci-toolkit@4.7.0
 
 workflows:
   validation:
@@ -30,7 +30,7 @@ workflows:
           filters:
             branches:
               only: /pull\/[0-9]+/
-      - toolkit/required_builds:
+      - toolkit/required_builds_rolling:
           min_rust_version: << pipeline.parameters.min_rust_version >>
       - toolkit/optional_builds:
           min_rust_version: << pipeline.parameters.min_rust_version >>
@@ -47,7 +47,7 @@ workflows:
           filters:
             branches:
               ignore: main
-      - toolkit/common_tests:
+      - toolkit/common_tests_rolling:
           min_rust_version: << pipeline.parameters.min_rust_version >>
       # security audit only: runs on forked PRs (no secrets exposure) and main
       - toolkit/security:
