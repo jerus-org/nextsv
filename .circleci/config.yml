@@ -10,9 +10,6 @@ orbs:
 
 workflows:
   validation:
-    when:
-      not:
-        equal: [scheduled_pipeline, << pipeline.trigger_source >>]
     jobs:
       # Signature verification for trusted PRs (with write access for comments)
       - toolkit/verify_commit_signatures:
