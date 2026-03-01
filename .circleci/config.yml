@@ -8,10 +8,6 @@ parameters:
     type: boolean
     default: false
     description: "If true, the validation pipeline will be executed."
-  success_flag:
-    type: boolean
-    default: false
-    description: "If true, the success pipeline will be executed."
 
 orbs:
   toolkit: jerus-org/circleci-toolkit@4.6.0
@@ -22,7 +18,6 @@ workflows:
       and:
         - not:
             equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - not: << pipeline.parameters.success_flag >>
         - not: << pipeline.parameters.validation_flag >>
 
     jobs:
@@ -35,7 +30,6 @@ workflows:
       and:
         - not:
             equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - not: << pipeline.parameters.success_flag >>
         - << pipeline.parameters.validation_flag >>
     jobs:
       # Signature verification for trusted PRs (with write access for comments)
@@ -57,37 +51,35 @@ workflows:
           filters:
             branches:
               only: /pull\/[0-9]+/
-      - toolkit/label:
-          min_rust_version: << pipeline.parameters.min_rust_version >>
-          context: pcu-app
-          filters:
-            branches:
-              only:
-                - main
-      - toolkit/code_coverage:
-          min_rust_version: << pipeline.parameters.min_rust_version >>
-          package: nextsv
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - security with sonarcloud
       - toolkit/required_builds:
           min_rust_version: << pipeline.parameters.min_rust_version >>
       - toolkit/optional_builds:
           min_rust_version: << pipeline.parameters.min_rust_version >>
+          filters:
+            branches:
+              ignore: main
       - toolkit/test_doc_build:
           min_rust_version: << pipeline.parameters.min_rust_version >>
+          filters:
+            branches:
+              ignore: main
       - toolkit/idiomatic_rust:
           min_rust_version: << pipeline.parameters.min_rust_version >>
+          filters:
+            branches:
+              ignore: main
       - toolkit/common_tests:
           min_rust_version: << pipeline.parameters.min_rust_version >>
+      # security audit only: runs on forked PRs (no secrets exposure) and main
       - toolkit/security:
           name: security audit only
           sonarcloud: false
           filters:
             branches:
-              only: /pull\/[0-9]+/
+              only:
+                - main
+                - /pull\/[0-9]+/
+      # security with sonarcloud: runs on trusted feature branches only
       - toolkit/security:
           name: security with sonarcloud
           context: SonarCloud
@@ -96,30 +88,13 @@ workflows:
               ignore:
                 - /pull\/[0-9]+/
                 - main
-      - toolkit/trigger_pipeline:
-          context: bot-check
+      - toolkit/code_coverage:
+          min_rust_version: << pipeline.parameters.min_rust_version >>
+          package: nextsv
           filters:
             branches:
               ignore:
                 - /pull\/[0-9]+/
                 - main
           requires:
-            - verify_commit_signatures_trusted
-            - toolkit/code_coverage
-            - toolkit/idiomatic_rust
-            - toolkit/test_doc_build
-            - toolkit/required_builds
-            - toolkit/common_tests
-            - security audit only
             - security with sonarcloud
-
-  on_success:
-    when:
-      and:
-        - not:
-            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - << pipeline.parameters.success_flag >>
-        - not: << pipeline.parameters.validation_flag >>
-
-    jobs:
-      - toolkit/end_success
