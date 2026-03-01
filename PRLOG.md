@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - chore-modernise CI pipelines(pr [#449])
 - chore-remove check_last_commit workflow(pr [#451])
+- chore-switch to rolling build jobs and bump toolkit to 4.7.0(pr [#455])
 
 ### Fixed
 
@@ -1422,6 +1423,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#449]: https://github.com/jerus-org/nextsv/pull/449
 [#450]: https://github.com/jerus-org/nextsv/pull/450
 [#451]: https://github.com/jerus-org/nextsv/pull/451
+[#455]: https://github.com/jerus-org/nextsv/pull/455
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.28...HEAD
 [0.19.28]: https://github.com/jerus-org/nextsv/compare/v0.19.27...v0.19.28
 [0.19.27]: https://github.com/jerus-org/nextsv/compare/v0.19.26...v0.19.27
