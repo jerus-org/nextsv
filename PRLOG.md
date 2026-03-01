@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - deps: update github/codeql-action action to v4.32.4(pr [#445])
+- silence bot pipeline trigger and fix PRLOG(pr [#450])
 
 ## [0.19.28] - 2026-02-27
 
@@ -1418,7 +1419,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#407]: https://github.com/jerus-org/nextsv/pull/407
 [#409]: https://github.com/jerus-org/nextsv/pull/409
 [#449]: https://github.com/jerus-org/nextsv/pull/449
-[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.24...HEAD
+[#450]: https://github.com/jerus-org/nextsv/pull/450
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.28...HEAD
+[0.19.28]: https://github.com/jerus-org/nextsv/compare/v0.19.27...v0.19.28
+[0.19.27]: https://github.com/jerus-org/nextsv/compare/v0.19.26...v0.19.27
+[0.19.26]: https://github.com/jerus-org/nextsv/compare/v0.19.25...v0.19.26
+[0.19.25]: https://github.com/jerus-org/nextsv/compare/v0.19.24...v0.19.25
 [0.19.24]: https://github.com/jerus-org/nextsv/compare/v0.19.23...v0.19.24
 [0.19.23]: https://github.com/jerus-org/nextsv/compare/v0.19.22...v0.19.23
 [0.19.22]: https://github.com/jerus-org/nextsv/compare/v0.19.21...v0.19.22
