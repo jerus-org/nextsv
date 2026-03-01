@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - silence bot pipeline trigger and fix PRLOG(pr [#450])
 - deps: update rust crate chrono to 0.4.44(pr [#446])
 - deps: update rust crate clap to 4.5.60(pr [#452])
+- deps: update rust crate uuid to 1.21.0(pr [#453])
 
 ## [0.19.28] - 2026-02-27
 
@@ -1428,6 +1429,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#455]: https://github.com/jerus-org/nextsv/pull/455
 [#446]: https://github.com/jerus-org/nextsv/pull/446
 [#452]: https://github.com/jerus-org/nextsv/pull/452
+[#453]: https://github.com/jerus-org/nextsv/pull/453
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.28...HEAD
 [0.19.28]: https://github.com/jerus-org/nextsv/compare/v0.19.27...v0.19.28
 [0.19.27]: https://github.com/jerus-org/nextsv/compare/v0.19.26...v0.19.27
