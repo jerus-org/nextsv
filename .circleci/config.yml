@@ -24,6 +24,7 @@ workflows:
       - toolkit/choose_pipeline:
           name: choose pipeline based on committer
           context: bot-check
+          pipeline_flag_test_passed: ""
 
   validation:
     when:

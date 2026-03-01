@@ -9,11 +9,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- chore-modernise CI pipelines(pr [#449])
+
+### Fixed
+
+- deps: update github/codeql-action action to v4.32.4(pr [#445])
+
+## [0.19.28] - 2026-02-27
+
+### Fixed
+
+- fix: skip merge commits by parent count(pr [#448])
+
+## [0.19.27] - 2026-02-25
+
+### Changed
+
+- chore: inherit workspace settings in test-utils(pr [#429])
+- feat: add security improvements to CI(pr [#430])
+
+### Fixed
+
+- fix: comply with SemVer ordering rules(pr [#431])
+- deps: update github/codeql-action action to v4.32.2(pr [#432])
+- deps: update rust crate clap to 4.5.58(pr [#433])
+- deps: update rust crate env_logger to 0.11.9(pr [#434])
+- deps: update rust crate git2 to 0.20.4(pr [#435])
+- deps: update rust crate regex to 1.12.3(pr [#436])
+- deps: update dependency toolkit to v4.4.2(pr [#437])
+- deps: update rust crate git-conventional to v1(pr [#438])
+- deps: update test tools to v1 (major)(pr [#441])
+- fix: anchor version tag regex (#443)(pr [#447])
+- deps: update dependency toolkit to v4.5.0(pr [#444])
+
+### Security
+
+- deps: update rust crate git2 to v0.20.4 [security](pr [#428])
+
+## [0.19.26] - 2026-01-31
+
+### Changed
+
+- chore: add standard config files(pr [#415])
+
+### Fixed
+
+- deps: update actions/checkout action to v6.0.2(pr [#416])
+- deps: update github/codeql-action action to v4.31.11(pr [#417])
+- deps: update rust crate chrono to 0.4.43(pr [#418])
+- deps: update rust crate clap to 4.5.54(pr [#419])
+- deps: update rust crate snapbox to 0.6.24(pr [#420])
+- deps: update rust crate thiserror to 2.0.18(pr [#421])
+- deps: update rust crate colored to 3.1.1(pr [#422])
+- deps: update dependency toolkit to v4.2.2(pr [#423])
+- deps: update rust crate clap to 4.5.56(pr [#424])
+- deps: update github/codeql-action action to v4.32.0(pr [#425])
+- deps: update rust crate uuid to 1.20.0(pr [#426])
+
+## [0.19.25] - 2026-01-11
+
+### Changed
+
 - ♻️ refactor(git_utils)-enhance find_last_commit function signature(pr [#375])
 - chore-rename CHANGELOG.md to PRLOG.md(pr [#376])
 - 👷 ci(circleci)-update circleci toolkit orb version(pr [#384])
 - chore-migrate to circleci-toolkit v4.0.1 with rolling images(pr [#409])
-- chore-modernise CI pipelines(pr [#449])
+- ci-migrate to toolkit v4.0.1 and post-merge prlog(pr [#410])
+- chore-clarify package prefix and subdir interaction(pr [#411])
+- chore(gitignore)-add tmp directory to ignore list(pr [#412])
+- ci(circleci)-update toolkit orb version(pr [#413])
+- chore(nextsv)-remove changelog symlink and add release hook(pr [#414])
 
 ### Fixed
 
