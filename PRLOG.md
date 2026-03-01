@@ -10,11 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - chore-modernise CI pipelines(pr [#449])
+- chore-remove check_last_commit workflow(pr [#451])
+- chore-switch to rolling build jobs and bump toolkit to 4.7.0(pr [#455])
 
 ### Fixed
 
 - deps: update github/codeql-action action to v4.32.4(pr [#445])
 - silence bot pipeline trigger and fix PRLOG(pr [#450])
+- deps: update rust crate chrono to 0.4.44(pr [#446])
 
 ## [0.19.28] - 2026-02-27
 
@@ -1420,6 +1423,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#409]: https://github.com/jerus-org/nextsv/pull/409
 [#449]: https://github.com/jerus-org/nextsv/pull/449
 [#450]: https://github.com/jerus-org/nextsv/pull/450
+[#451]: https://github.com/jerus-org/nextsv/pull/451
+[#455]: https://github.com/jerus-org/nextsv/pull/455
+[#446]: https://github.com/jerus-org/nextsv/pull/446
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.28...HEAD
 [0.19.28]: https://github.com/jerus-org/nextsv/compare/v0.19.27...v0.19.28
 [0.19.27]: https://github.com/jerus-org/nextsv/compare/v0.19.26...v0.19.27
