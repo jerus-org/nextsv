@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - chore-modernise CI pipelines(pr [#449])
+- chore-remove check_last_commit workflow(pr [#451])
 
 ### Fixed
 
@@ -1420,6 +1421,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#409]: https://github.com/jerus-org/nextsv/pull/409
 [#449]: https://github.com/jerus-org/nextsv/pull/449
 [#450]: https://github.com/jerus-org/nextsv/pull/450
+[#451]: https://github.com/jerus-org/nextsv/pull/451
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.19.28...HEAD
 [0.19.28]: https://github.com/jerus-org/nextsv/compare/v0.19.27...v0.19.28
 [0.19.27]: https://github.com/jerus-org/nextsv/compare/v0.19.26...v0.19.27
