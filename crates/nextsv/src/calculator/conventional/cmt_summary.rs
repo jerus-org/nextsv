@@ -162,6 +162,27 @@ mod tests {
     }
 
     #[rstest]
+    #[case("fix(deps): update serde to v2.0.0", true)]
+    #[case("fix(deps): update serde to v1.0.200", false)]
+    #[case("chore(deps): bump tokio (major)", true)]
+    #[case("feat: add new feature", false)]
+    #[case("fix(deps): update serde to v0.9.0 to v0.10.0", false)]
+    #[case("fix(deps): update serde to v10.0.0", true)]
+    #[case("chore(deps): bump serde from v1.0.0 to v2.0.0", true)]
+    #[case("fix(security): fix security vulnerability", false)]
+    #[case("chore(config): update settings", false)]
+    fn test_is_major_dep_bump(#[case] title: &str, #[case] expected: bool) -> Result<()> {
+        get_test_logger();
+        let cmt_summary = CmtSummary::parse(title).unwrap();
+        assert_eq!(
+            expected,
+            cmt_summary.is_major_dep_bump(),
+            "commit: {title}"
+        );
+        Ok(())
+    }
+
+    #[rstest]
     #[case("feat: add new feature", "feat")]
     #[case("✨ feat: add new feature", "feat")]
     #[case("feat: add new feature", "feat")]

@@ -281,6 +281,36 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_major_dep_bumps_collected_and_top_type_unaffected() {
+        get_test_logger();
+
+        let mut con_commits = super::ConventionalCommits::new();
+        // A regular fix commit — should not be flagged
+        con_commits.update_from_summary("fix: fix an existing feature");
+        // A major dep bump — should be collected
+        con_commits.update_from_summary("fix(deps): update serde to v2.0.0");
+        // Another major dep bump via (major) marker
+        con_commits.update_from_summary("chore(deps): bump tokio (major)");
+
+        // top_type should still be Fix (dep bumps don't elevate version)
+        assert_eq!(TopType::Fix, con_commits.top_type);
+        // Both major dep bumps should be collected
+        assert_eq!(2, con_commits.major_dep_bumps.len());
+    }
+
+    #[test]
+    fn test_no_major_dep_bumps_when_none_present() {
+        get_test_logger();
+
+        let mut con_commits = super::ConventionalCommits::new();
+        con_commits.update_from_summary("fix: fix an existing feature");
+        con_commits.update_from_summary("feat: add new feature");
+        con_commits.update_from_summary("chore(deps): update serde to v1.0.200");
+
+        assert!(con_commits.major_dep_bumps.is_empty());
+    }
+
     #[rstest]
     #[case::feat_other_feat("feat: add new feature", TopType::Other, TopType::Feature)]
     #[case::emoji_feat_other_feat("✨ feat: add new feature", TopType::Other, TopType::Feature)]
