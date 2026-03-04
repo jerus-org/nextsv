@@ -54,6 +54,49 @@ impl CmtSummary {
     pub fn type_string(&self) -> String {
         self.type_.clone().unwrap_or_default()
     }
+
+    /// Returns true if this commit appears to be a major-version dependency bump.
+    ///
+    /// Detection is heuristic and conservative: false negatives are acceptable,
+    /// false positives are not. A commit is considered a major dep bump when:
+    /// - The type is `fix` or `chore`
+    /// - The scope contains `deps`
+    /// - The title contains either `(major)` or a version pattern `v<N>` where N >= 2
+    pub fn is_major_dep_bump(&self) -> bool {
+        let type_matches = matches!(self.type_.as_deref(), Some("fix") | Some("chore"));
+
+        let scope_has_deps = self
+            .scope
+            .as_deref()
+            .map(|s| s.contains("deps"))
+            .unwrap_or(false);
+
+        if !type_matches || !scope_has_deps {
+            return false;
+        }
+
+        // Check for explicit (major) marker
+        if self.title.contains("(major)") {
+            return true;
+        }
+
+        // Check for `v<N>` where N >= 2 anywhere in the title.
+        // Use a simple scan: find occurrences of " to v" or just "v" followed by digits.
+        // We look for " vN" where N is a number >= 2 at the start of a version string.
+        // Pattern: "v" then one or more digits, then "." — the leading digit must be >= 2.
+        let re = regex::Regex::new(r"(?i)\bv(\d+)\.").expect("valid regex");
+        for cap in re.captures_iter(&self.title) {
+            if let Some(m) = cap.get(1) {
+                if let Ok(major) = m.as_str().parse::<u64>() {
+                    if major >= 2 {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        false
+    }
 }
 
 impl std::fmt::Display for CmtSummary {
@@ -159,6 +202,23 @@ mod tests {
         assert_eq!(cmt_summary.type_, Some("chore".to_string()));
         assert_eq!(cmt_summary.scope, Some("config.yml".to_string()));
         assert!(!cmt_summary.breaking);
+    }
+
+    #[rstest]
+    #[case("fix(deps): update serde to v2.0.0", true)]
+    #[case("fix(deps): update serde to v1.0.200", false)]
+    #[case("chore(deps): bump tokio (major)", true)]
+    #[case("feat: add new feature", false)]
+    #[case("fix(deps): update serde to v0.9.0 to v0.10.0", false)]
+    #[case("fix(deps): update serde to v10.0.0", true)]
+    #[case("chore(deps): bump serde from v1.0.0 to v2.0.0", true)]
+    #[case("fix(security): fix security vulnerability", false)]
+    #[case("chore(config): update settings", false)]
+    fn test_is_major_dep_bump(#[case] title: &str, #[case] expected: bool) -> Result<()> {
+        get_test_logger();
+        let cmt_summary = CmtSummary::parse(title).unwrap();
+        assert_eq!(expected, cmt_summary.is_major_dep_bump(), "commit: {title}");
+        Ok(())
     }
 
     #[rstest]

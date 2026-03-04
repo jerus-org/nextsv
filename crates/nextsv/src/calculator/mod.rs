@@ -154,6 +154,12 @@ impl Calculator {
             }
         }
 
+        // Emit advisory warnings to stderr for major dependency bumps.
+        // These go to stderr only — stdout is machine-consumed by CI pipelines.
+        for title in &conventional.major_dep_bumps {
+            eprintln!("WARNING: major dependency bump detected: {title}");
+        }
+
         let calculated_result = Ok(Calculator {
             config,
             current_version,

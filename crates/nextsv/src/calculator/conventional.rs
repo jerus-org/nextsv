@@ -26,6 +26,9 @@ pub(crate) struct ConventionalCommits {
     pub(crate) top_type: TopType,
     pub(crate) changed_files: HashSet<OsString>,
     pub(crate) all_files: HashSet<OsString>,
+    /// Titles of commits detected as major-version dependency bumps.
+    /// Used to emit advisory warnings to stderr after version calculation.
+    pub(crate) major_dep_bumps: Vec<String>,
 }
 
 impl ConventionalCommits {
@@ -187,11 +190,16 @@ impl ConventionalCommits {
             "Commit: ({}) {} {}",
             &commit_type,
             cmt_summary.title,
-            Hierarchy::parse(&cmt_summary.type_.unwrap_or("".to_string()))
+            Hierarchy::parse(&cmt_summary.type_.clone().unwrap_or("".to_string()))
                 .unwrap_or(Hierarchy::Other),
         );
         let counter = self.counts.entry(commit_type.clone()).or_insert(0);
         *counter += 1;
+
+        if cmt_summary.is_major_dep_bump() {
+            log::debug!("Major dependency bump detected: {}", cmt_summary.title);
+            self.major_dep_bumps.push(cmt_summary.title.clone());
+        }
 
         if !self.breaking {
             log::trace!("Not broken yet!");
@@ -279,6 +287,36 @@ mod tests {
             let lhs = test.0;
             assert_eq!(test.2, lhs.cmp(&test.1));
         }
+    }
+
+    #[test]
+    fn test_major_dep_bumps_collected_and_top_type_unaffected() {
+        get_test_logger();
+
+        let mut con_commits = super::ConventionalCommits::new();
+        // A regular fix commit — should not be flagged
+        con_commits.update_from_summary("fix: fix an existing feature");
+        // A major dep bump — should be collected
+        con_commits.update_from_summary("fix(deps): update serde to v2.0.0");
+        // Another major dep bump via (major) marker
+        con_commits.update_from_summary("chore(deps): bump tokio (major)");
+
+        // top_type should still be Fix (dep bumps don't elevate version)
+        assert_eq!(TopType::Fix, con_commits.top_type);
+        // Both major dep bumps should be collected
+        assert_eq!(2, con_commits.major_dep_bumps.len());
+    }
+
+    #[test]
+    fn test_no_major_dep_bumps_when_none_present() {
+        get_test_logger();
+
+        let mut con_commits = super::ConventionalCommits::new();
+        con_commits.update_from_summary("fix: fix an existing feature");
+        con_commits.update_from_summary("feat: add new feature");
+        con_commits.update_from_summary("chore(deps): update serde to v1.0.200");
+
+        assert!(con_commits.major_dep_bumps.is_empty());
     }
 
     #[rstest]
