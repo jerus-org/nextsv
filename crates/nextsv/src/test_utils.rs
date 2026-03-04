@@ -104,6 +104,7 @@ pub(crate) fn gen_conventional_commits() -> ConventionalCommits {
         all_files: files,
         breaking: false,
         top_type: TopType::Feature,
+        major_dep_bumps: vec![],
     }
 }
 
@@ -131,6 +132,7 @@ pub(crate) fn gen_conventional_commit(
         changed_files: files.clone(),
         all_files: files,
         top_type,
+        major_dep_bumps: vec![],
     }
 }
 

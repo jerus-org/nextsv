@@ -26,6 +26,9 @@ pub(crate) struct ConventionalCommits {
     pub(crate) top_type: TopType,
     pub(crate) changed_files: HashSet<OsString>,
     pub(crate) all_files: HashSet<OsString>,
+    /// Titles of commits detected as major-version dependency bumps.
+    /// Used to emit advisory warnings to stderr after version calculation.
+    pub(crate) major_dep_bumps: Vec<String>,
 }
 
 impl ConventionalCommits {
@@ -187,11 +190,16 @@ impl ConventionalCommits {
             "Commit: ({}) {} {}",
             &commit_type,
             cmt_summary.title,
-            Hierarchy::parse(&cmt_summary.type_.unwrap_or("".to_string()))
+            Hierarchy::parse(&cmt_summary.type_.clone().unwrap_or("".to_string()))
                 .unwrap_or(Hierarchy::Other),
         );
         let counter = self.counts.entry(commit_type.clone()).or_insert(0);
         *counter += 1;
+
+        if cmt_summary.is_major_dep_bump() {
+            log::debug!("Major dependency bump detected: {}", cmt_summary.title);
+            self.major_dep_bumps.push(cmt_summary.title.clone());
+        }
 
         if !self.breaking {
             log::trace!("Not broken yet!");
