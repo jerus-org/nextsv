@@ -9,16 +9,13 @@ version: 2.1
 #   label         - labels the next queued Renovate PR so it is rebased and runs
 
 parameters:
-  min_rust_version:
-    type: string
-    default: "1.82"
   update_pcu:
     type: boolean
     default: false
     description: "If true, pcu is updated from its main github branch before running."
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@4.7.1
+  toolkit: jerus-org/circleci-toolkit@6.0.0
 
 workflows:
   update_prlog:
@@ -29,13 +26,11 @@ workflows:
             - release
             - bot-check
             - pcu-app
-          min_rust_version: << pipeline.parameters.min_rust_version >>
           target_branch: "main"
           pcu_from_merge: --from-merge
           update_pcu: << pipeline.parameters.update_pcu >>
           pcu_verbosity: "-vvv"
       - toolkit/label:
-          min_rust_version: << pipeline.parameters.min_rust_version >>
           context: pcu-app
           requires:
             - update-prlog-on-main
