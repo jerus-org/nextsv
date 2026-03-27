@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - use container pcu in update_prlog(pr [#458])
+- deps: update rust crate env_logger to 0.11.10(pr [#460])
 
 ## [0.9.0] - 2026-03-02
 
@@ -1453,6 +1454,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#458]: https://github.com/jerus-org/nextsv/pull/458
 [#459]: https://github.com/jerus-org/nextsv/pull/459
 [#470]: https://github.com/jerus-org/nextsv/pull/470
+[#460]: https://github.com/jerus-org/nextsv/pull/460
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.0...HEAD
 [0.9.0]: https://github.com/jerus-org/nextsv/compare/v0.19.28...v0.9.0
 [0.19.28]: https://github.com/jerus-org/nextsv/compare/v0.19.27...v0.19.28
