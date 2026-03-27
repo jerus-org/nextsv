@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate clap to 4.6.0(pr [#464])
 - deps: update rust crate git-conventional to 1.1.0(pr [#465])
 - deps: update rust crate uuid to 1.23.0(pr [#466])
+- remove jq from tools verification(pr [#471])
 
 ## [0.9.0] - 2026-03-02
 
@@ -1465,6 +1466,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#464]: https://github.com/jerus-org/nextsv/pull/464
 [#465]: https://github.com/jerus-org/nextsv/pull/465
 [#466]: https://github.com/jerus-org/nextsv/pull/466
+[#471]: https://github.com/jerus-org/nextsv/pull/471
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.0...HEAD
 [0.9.0]: https://github.com/jerus-org/nextsv/compare/v0.19.28...v0.9.0
 [0.19.28]: https://github.com/jerus-org/nextsv/compare/v0.19.27...v0.19.28
