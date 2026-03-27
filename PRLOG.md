@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - chore-update toolkit to 4.7.1(pr [#457])
+- chore-migrate CI to circleci-toolkit 6.0.0(pr [#470])
 
 ### Fixed
 
@@ -1451,6 +1452,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#457]: https://github.com/jerus-org/nextsv/pull/457
 [#458]: https://github.com/jerus-org/nextsv/pull/458
 [#459]: https://github.com/jerus-org/nextsv/pull/459
+[#470]: https://github.com/jerus-org/nextsv/pull/470
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.0...HEAD
 [0.9.0]: https://github.com/jerus-org/nextsv/compare/v0.19.28...v0.9.0
 [0.19.28]: https://github.com/jerus-org/nextsv/compare/v0.19.27...v0.19.28
