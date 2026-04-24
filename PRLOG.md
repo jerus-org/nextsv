@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - deps: update dependency toolkit to v6.2.0(pr [#478])
 - deps: update actions/upload-artifact action to v7.0.1(pr [#473])
+- deps: update github/codeql-action action to v4.35.2(pr [#474])
 
 ## [0.9.1] - 2026-03-27
 
@@ -1478,6 +1479,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#472]: https://github.com/jerus-org/nextsv/pull/472
 [#478]: https://github.com/jerus-org/nextsv/pull/478
 [#473]: https://github.com/jerus-org/nextsv/pull/473
+[#474]: https://github.com/jerus-org/nextsv/pull/474
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.1...HEAD
 [0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/jerus-org/nextsv/compare/v0.19.28...v0.9.0
