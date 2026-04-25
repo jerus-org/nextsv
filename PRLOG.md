@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update actions/upload-artifact action to v7.0.1(pr [#473])
 - deps: update github/codeql-action action to v4.35.2(pr [#474])
 - deps: update rust crate clap to 4.6.1(pr [#475])
+- deps: update rust crate snapbox to 1.2.1(pr [#476])
 
 ## [0.9.1] - 2026-03-27
 
@@ -1482,6 +1483,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#473]: https://github.com/jerus-org/nextsv/pull/473
 [#474]: https://github.com/jerus-org/nextsv/pull/474
 [#475]: https://github.com/jerus-org/nextsv/pull/475
+[#476]: https://github.com/jerus-org/nextsv/pull/476
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.1...HEAD
 [0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/jerus-org/nextsv/compare/v0.19.28...v0.9.0
