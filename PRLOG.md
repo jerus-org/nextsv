@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate clap to 4.6.1(pr [#475])
 - deps: update rust crate snapbox to 1.2.1(pr [#476])
 - deps: update rust crate uuid to 1.23.1(pr [#477])
+- deps: update rust crate autocfg to 1.5.1(pr [#479])
 
 ## [0.9.1] - 2026-03-27
 
@@ -1486,6 +1487,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#475]: https://github.com/jerus-org/nextsv/pull/475
 [#476]: https://github.com/jerus-org/nextsv/pull/476
 [#477]: https://github.com/jerus-org/nextsv/pull/477
+[#479]: https://github.com/jerus-org/nextsv/pull/479
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.1...HEAD
 [0.9.1]: https://github.com/jerus-org/nextsv/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/jerus-org/nextsv/compare/v0.19.28...v0.9.0
