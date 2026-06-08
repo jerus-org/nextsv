@@ -738,7 +738,7 @@ dependencies = [
 
 [[package]]
 name = "nextsv"
-version = "0.19.30"
+version = "0.19.31"
 dependencies = [
  "autocfg",
  "cargo_toml",
