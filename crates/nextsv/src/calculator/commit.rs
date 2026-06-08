@@ -2,6 +2,8 @@ use std::path::PathBuf;
 
 use git2::{Commit as GitCommit, Repository};
 
+use crate::Error;
+
 #[derive(Clone)]
 pub struct Commit<'a> {
     git_commit: GitCommit<'a>,
@@ -17,8 +19,8 @@ impl<'a> Commit<'a> {
     //     &self.git_commit
     // }
 
-    pub(crate) fn message(&self) -> String {
-        self.git_commit.summary().unwrap_or_default().to_string()
+    pub(crate) fn message(&self) -> Result<String, Error> {
+        Ok(self.git_commit.summary()?.unwrap_or_default().to_string())
     }
 
     // pub(crate) fn hash(&self) -> String {

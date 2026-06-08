@@ -99,7 +99,7 @@ impl ConventionalCommits {
         // Walk back through the commits to collect the commit summary and identify conventional commits
         for commit in revwalk.flatten() {
             let cmt = Commit::new(commit.clone(), repo);
-            let summary = cmt.message();
+            let summary = cmt.message()?;
             log::debug!("commit found: `{summary}`");
 
             if cmt.is_merge() {
@@ -147,22 +147,13 @@ impl ConventionalCommits {
                 let tree = commit.tree().unwrap();
                 let mut all_files = HashSet::new();
                 tree.walk(TreeWalkMode::PreOrder, |_, entry| {
-                    if let Some(os_string) = entry.name() {
+                    let _ = entry.name().map(|os_string| {
+                        log::trace!("file found: {:?}", os_string);
                         all_files.insert(OsString::from(os_string));
-                    }
+                    });
                     TreeWalkResult::Ok
                 })?;
                 conventional_commits.all_files = all_files;
-                // let mut diff_options = DiffOptions::new();
-                // let diff =
-                //     repo.diff_tree_to_tree(Some(&tag_tree), Some(&tree), Some(&mut diff_options))?;
-                // let mut files = HashSet::new();
-                // diff.print(git2::DiffFormat::NameOnly, |delta, _hunk, _line| {
-                //     let file = delta.new_file().path().unwrap().file_name().unwrap();
-                //     log::debug!("file found: {:?}", file);
-                //     files.insert(file.to_os_string());
-                //     true
-                // })?;
                 tree_flag = false;
             }
         }
@@ -173,12 +164,15 @@ impl ConventionalCommits {
     }
 
     pub(crate) fn push(&mut self, commit: &git2::Commit) -> &Self {
-        if commit.summary().unwrap_or("No") != "No" {
-            let summary = commit.summary().unwrap();
+        if commit.summary().is_ok() && commit.summary().unwrap().is_some() {
+            let summary = commit.summary().unwrap().unwrap();
             self.update_from_summary(summary);
         }
-        self.commits
-            .push(commit.summary().unwrap_or("NotConventional").to_string());
+
+        if let Ok(opt_os) = commit.summary() {
+            let commit_type = opt_os.unwrap_or("NotConventional");
+            self.commits.push(commit_type.to_string());
+        };
         self
     }
 
