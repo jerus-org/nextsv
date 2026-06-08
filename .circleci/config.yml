@@ -66,6 +66,7 @@ workflows:
                 - main
       - toolkit/code_coverage:
           package: nextsv
+          codecov: false
           filters:
             branches:
               ignore:
