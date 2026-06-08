@@ -6,7 +6,7 @@ parameters:
     default: "1.82"
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@6.2.0
+  toolkit: jerus-org/circleci-toolkit@6.3.0
 
 workflows:
   validation:
@@ -66,7 +66,6 @@ workflows:
                 - main
       - toolkit/code_coverage:
           package: nextsv
-          codecov: false
           filters:
             branches:
               ignore:
