@@ -53,7 +53,6 @@ workflows:
           filters:
             branches:
               only:
-                - main
                 - /pull\/[0-9]+/
       # security with sonarcloud: runs on trusted feature branches only
       - toolkit/security:
@@ -63,7 +62,6 @@ workflows:
             branches:
               ignore:
                 - /pull\/[0-9]+/
-                - main
       - toolkit/code_coverage:
           package: nextsv
           filters:
