@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ci-run sonarcloud security on main(pr [#491])
 
+### Fixed
+
+- deps: update rust crate log to 0.4.33(pr [#492])
+
 ## [0.9.3] - 2026-06-19
 
 ### Fixed
@@ -1523,6 +1527,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#487]: https://github.com/jerus-org/nextsv/pull/487
 [#488]: https://github.com/jerus-org/nextsv/pull/488
 [#491]: https://github.com/jerus-org/nextsv/pull/491
+[#492]: https://github.com/jerus-org/nextsv/pull/492
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.3...HEAD
 [0.9.3]: https://github.com/jerus-org/nextsv/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...v0.9.2
