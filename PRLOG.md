@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate log to 0.4.33(pr [#492])
 - deps: update rust crate cargo_toml to v1(pr [#495])
 - deps: update rust crate env_logger to 0.11.11(pr [#493])
+- deps: update rust crate uuid to 1.23.4(pr [#494])
 
 ## [0.9.3] - 2026-06-19
 
@@ -1532,6 +1533,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#492]: https://github.com/jerus-org/nextsv/pull/492
 [#495]: https://github.com/jerus-org/nextsv/pull/495
 [#493]: https://github.com/jerus-org/nextsv/pull/493
+[#494]: https://github.com/jerus-org/nextsv/pull/494
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.3...HEAD
 [0.9.3]: https://github.com/jerus-org/nextsv/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...v0.9.2
