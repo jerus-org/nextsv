@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- deps: patch RUSTSEC-2026-0204 (crossbeam-epoch) + RUSTSEC-2026-0190 (anyhow)(pr [#497])
+
 ## [0.9.4] - 2026-06-26
 
 ### Changed
@@ -1534,6 +1540,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#495]: https://github.com/jerus-org/nextsv/pull/495
 [#493]: https://github.com/jerus-org/nextsv/pull/493
 [#494]: https://github.com/jerus-org/nextsv/pull/494
+[#497]: https://github.com/jerus-org/nextsv/pull/497
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.4...HEAD
 [0.9.4]: https://github.com/jerus-org/nextsv/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/jerus-org/nextsv/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/jerus-org/nextsv/compare/v0.9.1...v0.9.2
