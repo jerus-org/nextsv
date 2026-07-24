@@ -19,7 +19,7 @@ git2 = "0.21.0"
 log = "0.4.33"
 proc-exit = "2.0.2"
 regex = "1.12.4"
-thiserror = "2.0.18"
+thiserror = "2.0.19"
 
 map-macro = "0.3.0"
 rstest = "0.26.1"
