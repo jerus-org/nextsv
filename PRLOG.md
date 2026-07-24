@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: patch RUSTSEC-2026-0204 (crossbeam-epoch) + RUSTSEC-2026-0190 (anyhow)(pr [#497])
 - deps: update dependency toolkit to v6.6.2(pr [#504])
 - deps: lock file maintenance(pr [#498])
+- deps: update actions/checkout action to v7.0.1(pr [#499])
 
 ## [0.9.4] - 2026-06-26
 
@@ -1545,6 +1546,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#497]: https://github.com/jerus-org/nextsv/pull/497
 [#504]: https://github.com/jerus-org/nextsv/pull/504
 [#498]: https://github.com/jerus-org/nextsv/pull/498
+[#499]: https://github.com/jerus-org/nextsv/pull/499
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.4...HEAD
 [0.9.4]: https://github.com/jerus-org/nextsv/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/jerus-org/nextsv/compare/v0.9.2...v0.9.3
