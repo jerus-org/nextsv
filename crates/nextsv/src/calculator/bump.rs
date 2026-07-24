@@ -118,7 +118,7 @@ impl Bump {
                 } else {
                     log::debug!(
                         "{} conventional commit(s) found requiring increment of patch number",
-                        &conventional.counts.values().sum::<u32>()
+                        conventional.counts.values().sum::<u32>()
                     );
                     Bump::Patch
                 };
@@ -141,7 +141,7 @@ impl Bump {
                 } else {
                     log::debug!(
                         "{} conventional commit(s) found requiring increment of patch number",
-                        &conventional.counts.values().sum::<u32>()
+                        conventional.counts.values().sum::<u32>()
                     );
                     Bump::Patch
                 };

@@ -10,7 +10,7 @@ repository = "https://github.com/jerusdp/nextsv"
 
 [workspace.dependencies]
 cargo_toml = "1.0.0"
-clap = { version = "4.6.1", features = ["derive"] }
+clap = { version = "4.6.4", features = ["derive"] }
 clap-verbosity-flag = "3.0.4"
 colored = "3.1.1"
 env_logger = "0.11.11"
@@ -18,13 +18,13 @@ git-conventional = "1.1.0"
 git2 = "0.21.0"
 log = "0.4.33"
 proc-exit = "2.0.2"
-regex = "1.12.4"
-thiserror = "2.0.18"
+regex = "1.13.1"
+thiserror = "2.0.19"
 
 map-macro = "0.3.0"
 rstest = "0.26.1"
 snapbox = { version = "1.2.2", features = ["cmd"] }
-trycmd = "1.2.0"
+trycmd = "1.2.1"
 autocfg = "1.5.1"
 
 [workspace.lints.clippy]

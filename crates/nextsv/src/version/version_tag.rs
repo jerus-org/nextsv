@@ -170,7 +170,7 @@ impl VersionTag {
 
         let current_version = match versions.last().cloned() {
             Some(v) => {
-                log::trace!("latest version found is {:?}", &v);
+                log::trace!("latest version found is {v:?}");
                 v
             }
             None => return Err(Error::NoVersionTag),
