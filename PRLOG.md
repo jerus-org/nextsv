@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate clap to 4.6.4(pr [#501])
 - deps: update rust crate thiserror to 2.0.19(pr [#502])
 - deps: update rust crate trycmd to 1.2.1(pr [#503])
+- deps: update github/codeql-action action to v4.37.3(pr [#505])
 
 ## [0.9.4] - 2026-06-26
 
@@ -1555,6 +1556,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#501]: https://github.com/jerus-org/nextsv/pull/501
 [#502]: https://github.com/jerus-org/nextsv/pull/502
 [#503]: https://github.com/jerus-org/nextsv/pull/503
+[#505]: https://github.com/jerus-org/nextsv/pull/505
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.4...HEAD
 [0.9.4]: https://github.com/jerus-org/nextsv/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/jerus-org/nextsv/compare/v0.9.2...v0.9.3
