@@ -182,7 +182,7 @@ impl ConventionalCommits {
 
         log::trace!(
             "Commit: ({}) {} {}",
-            &commit_type,
+            commit_type,
             cmt_summary.title,
             Hierarchy::parse(&cmt_summary.type_.clone().unwrap_or("".to_string()))
                 .unwrap_or(Hierarchy::Other),
@@ -212,12 +212,9 @@ impl ConventionalCommits {
 
 fn get_subdir_for_package(package: Option<&str>, subdir: Option<&str>) -> Option<String> {
     if package.is_none() {
-        if let Some(subdir) = subdir {
-            let s = subdir.to_string();
-            return Some(s);
-        } else {
-            return None;
-        }
+        let subdir = subdir?;
+        let s = subdir.to_string();
+        return Some(s);
     };
 
     let rel_package = package.unwrap();
