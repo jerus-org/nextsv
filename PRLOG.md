@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: lock file maintenance(pr [#498])
 - deps: update actions/checkout action to v7.0.1(pr [#499])
 - deps: update ossf/scorecard-action action to v2.4.4(pr [#500])
+- deps: update rust crate clap to 4.6.4(pr [#501])
 
 ## [0.9.4] - 2026-06-26
 
@@ -1549,6 +1550,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#498]: https://github.com/jerus-org/nextsv/pull/498
 [#499]: https://github.com/jerus-org/nextsv/pull/499
 [#500]: https://github.com/jerus-org/nextsv/pull/500
+[#501]: https://github.com/jerus-org/nextsv/pull/501
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.4...HEAD
 [0.9.4]: https://github.com/jerus-org/nextsv/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/jerus-org/nextsv/compare/v0.9.2...v0.9.3
