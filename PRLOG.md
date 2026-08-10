@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - docs-refresh update_prlog header comment(pr [#509])
 
+### Fixed
+
+- deps: update dependency toolkit to v7(pr [#514])
+
 ## [0.9.5] - 2026-07-24
 
 ### Fixed
@@ -1570,6 +1574,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#507]: https://github.com/jerus-org/nextsv/pull/507
 [#508]: https://github.com/jerus-org/nextsv/pull/508
 [#509]: https://github.com/jerus-org/nextsv/pull/509
+[#514]: https://github.com/jerus-org/nextsv/pull/514
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.5...HEAD
 [0.9.5]: https://github.com/jerus-org/nextsv/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/jerus-org/nextsv/compare/v0.9.3...v0.9.4
