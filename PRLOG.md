@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: lock file maintenance(pr [#516])
 - deps: update dependency toolkit to v7.3.0(pr [#521])
 - deps: lock file maintenance(pr [#518])
+- deps: update github/codeql-action action to v4.37.8(pr [#519])
 
 ## [0.9.6] - 2026-08-10
 
@@ -1596,6 +1597,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#516]: https://github.com/jerus-org/nextsv/pull/516
 [#521]: https://github.com/jerus-org/nextsv/pull/521
 [#518]: https://github.com/jerus-org/nextsv/pull/518
+[#519]: https://github.com/jerus-org/nextsv/pull/519
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.6...HEAD
 [0.9.6]: https://github.com/jerus-org/nextsv/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/jerus-org/nextsv/compare/v0.9.4...v0.9.5
