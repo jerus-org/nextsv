@@ -1,6 +1,6 @@
 [package]
 name = "nextsv"
-version = "0.19.35"
+version = "0.19.36"
 edition.workspace = true
 authors = ["jerusdp <jrussell@jerus.ie>"]
 rust-version.workspace = true
@@ -64,4 +64,4 @@ bin-dir = "{ bin }{ binary-ext }"
 # See docs/RELEASING.md.
 [package.metadata.binstall.signing]
 algorithm = "minisign"
-pubkey = "RWScU7fKmlryb+LLIGVASMW+AHmUnCEcK/guAxYdQHC9M/ULXMsPvXkh"
+pubkey = "RWQ9nC31ZkiyYQ3s3uDV2OyXm3Kx6U5Vi3GR+vowFq65vtEoku5b5HMZ"
