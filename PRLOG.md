@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - deps: update dependency toolkit to v8(pr [#531])
+- deps: lock file maintenance(pr [#523])
 
 ## [0.9.7] - 2026-08-28
 
@@ -1609,6 +1610,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#520]: https://github.com/jerus-org/nextsv/pull/520
 [#522]: https://github.com/jerus-org/nextsv/pull/522
 [#531]: https://github.com/jerus-org/nextsv/pull/531
+[#523]: https://github.com/jerus-org/nextsv/pull/523
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.7...HEAD
 [0.9.7]: https://github.com/jerus-org/nextsv/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/jerus-org/nextsv/compare/v0.9.5...v0.9.6
