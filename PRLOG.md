@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: lock file maintenance(pr [#523])
 - deps: update rust crate cargo_toml to 1.0.1(pr [#524])
 - deps: update rust crate clap to 4.6.7(pr [#525])
+- deps: update rust crate thiserror to 2.0.21(pr [#526])
 
 ## [0.9.7] - 2026-08-28
 
@@ -1615,6 +1616,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#523]: https://github.com/jerus-org/nextsv/pull/523
 [#524]: https://github.com/jerus-org/nextsv/pull/524
 [#525]: https://github.com/jerus-org/nextsv/pull/525
+[#526]: https://github.com/jerus-org/nextsv/pull/526
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.7...HEAD
 [0.9.7]: https://github.com/jerus-org/nextsv/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/jerus-org/nextsv/compare/v0.9.5...v0.9.6
