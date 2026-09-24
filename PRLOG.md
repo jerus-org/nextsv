@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - deps: update dependency toolkit to v8(pr [#531])
 - deps: lock file maintenance(pr [#523])
+- deps: update rust crate cargo_toml to 1.0.1(pr [#524])
 
 ## [0.9.7] - 2026-08-28
 
@@ -1611,6 +1612,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#522]: https://github.com/jerus-org/nextsv/pull/522
 [#531]: https://github.com/jerus-org/nextsv/pull/531
 [#523]: https://github.com/jerus-org/nextsv/pull/523
+[#524]: https://github.com/jerus-org/nextsv/pull/524
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.7...HEAD
 [0.9.7]: https://github.com/jerus-org/nextsv/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/jerus-org/nextsv/compare/v0.9.5...v0.9.6
