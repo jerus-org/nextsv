@@ -40,11 +40,13 @@ workflows:
           filters:
             branches:
               ignore: main
+      # No branch filter: "security with sonarcloud" runs on main and
+      # requires this job for its clippy_report. CircleCI does not run a job
+      # whose `requires` dependency was itself filtered out on that branch,
+      # so filtering this to ignore: main would silently skip sonarcloud on
+      # main entirely (jerus-org/nextsv#517).
       - toolkit/idiomatic_rust:
           clippy_report: true
-          filters:
-            branches:
-              ignore: main
       - toolkit/common_tests:
           min_rust_version: << pipeline.parameters.min_rust_version >>
       # security audit only: runs on forked PRs (no secrets exposure) and main
@@ -56,9 +58,13 @@ workflows:
               only:
                 - /pull\/[0-9]+/
       # security with sonarcloud: runs on trusted feature branches only
+      # toolkit/security defaults no_sonarcloud_on_main: true (skip the
+      # sonarcloud step on main) — override it here or main never actually
+      # gets scanned despite this job's name and branch filter.
       - toolkit/security:
           name: security with sonarcloud
           context: SonarCloud
+          no_sonarcloud_on_main: false
           clippy_report: true
           requires:
             - toolkit/idiomatic_rust
