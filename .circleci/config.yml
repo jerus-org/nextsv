@@ -58,13 +58,9 @@ workflows:
               only:
                 - /pull\/[0-9]+/
       # security with sonarcloud: runs on trusted feature branches only
-      # toolkit/security defaults no_sonarcloud_on_main: true (skip the
-      # sonarcloud step on main) — override it here or main never actually
-      # gets scanned despite this job's name and branch filter.
       - toolkit/security:
           name: security with sonarcloud
           context: SonarCloud
-          no_sonarcloud_on_main: false
           clippy_report: true
           requires:
             - toolkit/idiomatic_rust
