@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- security-with-sonarcloud never runs on main(pr [#533])
+
 ## [0.9.9] - 2026-09-26
 
 ### Fixed
@@ -1630,6 +1636,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#529]: https://github.com/jerus-org/nextsv/pull/529
 [#530]: https://github.com/jerus-org/nextsv/pull/530
 [#532]: https://github.com/jerus-org/nextsv/pull/532
+[#533]: https://github.com/jerus-org/nextsv/pull/533
+[Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.9...HEAD
 [0.9.9]: https://github.com/jerus-org/nextsv/compare/v0.9.8...v0.9.9
 [0.9.8]: https://github.com/jerus-org/nextsv/compare/v0.9.7...v0.9.8
 [0.9.7]: https://github.com/jerus-org/nextsv/compare/v0.9.6...v0.9.7
