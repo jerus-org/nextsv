@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update dependency toolkit to v8.0.3(pr [#536])
 - deps: update github/codeql-action action to v4.39.1(pr [#537])
 - deps: update ossf/scorecard-action action to v2.5.0(pr [#538])
+- deps: update rust crate rstest to 0.28.0(pr [#539])
 
 ## [0.9.10] - 2026-09-27
 
@@ -1654,6 +1655,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#536]: https://github.com/jerus-org/nextsv/pull/536
 [#537]: https://github.com/jerus-org/nextsv/pull/537
 [#538]: https://github.com/jerus-org/nextsv/pull/538
+[#539]: https://github.com/jerus-org/nextsv/pull/539
 [Unreleased]: https://github.com/jerus-org/nextsv/compare/v0.9.10...HEAD
 [0.9.10]: https://github.com/jerus-org/nextsv/compare/v0.9.9...v0.9.10
 [0.9.9]: https://github.com/jerus-org/nextsv/compare/v0.9.8...v0.9.9
