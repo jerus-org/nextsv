@@ -18,7 +18,7 @@ git-conventional = "1.1.0"
 git2 = "0.21.0"
 log = "0.4.34"
 proc-exit = "2.0.2"
-regex = "1.13.1"
+regex = "1.13.2"
 thiserror = "2.0.21"
 
 map-macro = "0.3.0"
